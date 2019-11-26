@@ -1,0 +1,28 @@
+description "\377B28,0,200";
+
+file
+	README.md,
+	LICENSES.txt,
+	Definition.h,
+	UltimateOpenGL.h,
+	UltimateOpenGL.cpp,
+	Camera.h,
+	Camera.cpp,
+	Scene.h,
+	Scene.cpp,
+	Shader.h,
+	Shader.cpp,
+	Texture.h,
+	Texture.cpp,
+	stb_image.h,
+	stb_image.cpp,
+	glad.c,
+	Simps readonly separator,
+	Simps\DefaultFragmentShader.glsl,
+	Simps\DefaultVertexShader.glsl,
+	Simps\DirLight.glsl,
+	Simps\MaterialColor.glsl,
+	Simps\MaterialTexture.glsl,
+	Simps\PointLight.glsl,
+	Simps\SpotLight.glsl;
+
