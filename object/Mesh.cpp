@@ -9,7 +9,7 @@ Mesh::Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture
     setupMesh();
 }
 
-void Mesh::setupMesh()
+void Mesh::Load()
 {
 	// create buffers/arrays
     glGenVertexArrays(1, &VAO);
