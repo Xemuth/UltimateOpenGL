@@ -110,25 +110,30 @@ bool UltimateOpenGL_Context::RemoveScene(const Upp::String& nameOfScene){
 }
 
 //Textures
-bool UltimateOpenGL_Context::AddTextures(Upp::String TextureName,Upp::String textureFilePath, TextureColorSample colorSample, bool loadDefault, bool flipLoad){ //Add and load Texture
+Texture UltimateOpenGL_Context::AddTexture(const Upp::String& TextureName,const Upp::String& textureFilePath,TextureType _type,bool loadDefault, bool flipLoad){ //Add and load Texture
 	if(textures.Find(TextureName) == -1){
-		Texture& texture =textures.Add(TextureName);
+		Texture& texture =textures.Create(TextureName);
 		texture.SetPath(textureFilePath);
 		texture.SetName(TextureName);
-		texture.SetColorSample(colorSample);
 		if(!texture.Load(TextureCompteur,loadDefault,flipLoad)){
 			textures.RemoveKey(TextureName);
-			LOG("Error : AddTextures(String,String,ENUM_TextureColorSample,bool,bool) Loading error !\n");
-			return false;
+			LOG("Error : AddTextures(String,String,bool,bool) Loading error !\n");
+			return Texture;
 		}else{
 			LOG("Info : Texture " + TextureName +" Loaded with success !\n");
 			TextureCompteur++;
-			return true;
+			return texture;
 		}
-		return false;
+		return Texture;
 	}
-	return false;
+	return Texture;
 }
+Texture UltimateOpenGL_Context::GetTexture(const Upp::String& TextureName){
+	if(textures.Find(TextureName)	!=-1)
+		return textures.Get(TextureName);
+	return Texture;
+}
+
 Upp::VectorMap<Upp::String,Texture>& UltimateOpenGL_Context::GetTextures(){
 	return textures;
 }
@@ -160,4 +165,32 @@ void UltimateOpenGL_Context::Draw(){
 		LOG("Error, context don't have anyScene to Draw ! " + Upp::AsString(exception.what()));
 		exit(1);
 	}
+}
+
+//****************Static part **************************
+Upp::Vector<int> UltimateOpenGL_Context::TransformFloatColorToRGB(glm::vec3 FloatColor){
+	return Upp::Vector<int>{ ColorUniformisation((int)(FloatColor.x*255)),ColorUniformisation((int)(FloatColor.y*255)), ColorUniformisation((int)(FloatColor.z*255)) };
+}
+Upp::Vector<int> UltimateOpenGL_Context::TransformFloatColorToRGB(float RedFloat,float GreenFloat,float BlueFloat){
+	return Upp::Vector<int>{ ColorUniformisation((int)(RedFloat*255)),ColorUniformisation((int)(GreenFloat*255)), ColorUniformisation((int)(BlueFloat*255))};
+}
+glm::vec3 UltimateOpenGL_Context::TransformRGBToFloatColor(int Red,int Green,int Blue){
+	return  glm::vec3( ((float)ColorUniformisation(Red))/255.0f ,((float)ColorUniformisation(Green))/255.0f,((float)ColorUniformisation(Blue))/255.0f);
+}
+glm::vec3 UltimateOpenGL_Context::TransformRGBToFloatColor(Upp::Vector<int> rgb){
+	if(rgb.GetCount() < 3){
+		LOG("Erreur TransformRGBToFloatColor(Vector<int>) : Vector incorrect !\n");
+		return  glm::vec3(1.0);
+	}
+	return glm::vec3( ((float)ColorUniformisation(rgb[0]))/255.0f ,((float)ColorUniformisation(rgb[1]))/255.0f,((float)ColorUniformisation(rgb[2]))/255.0f);
+}
+int UltimateOpenGL_Context::ColorUniformisation(int ColorRgb){ //Fonction très utile et très complexe
+	if(ColorRgb> 255) ColorRgb=255;
+	if(ColorRgb< 0) ColorRgb=0;
+	return ColorRgb;
+}
+float UltimateOpenGL_Context::ColorUniformisation(float ColorFloat){
+	if(ColorFloat> 1.0f) ColorFloat=1.0f;
+	if(ColorFloat< 0.0f) ColorFloat=0.0f;
+	return ColorFloat;
 }

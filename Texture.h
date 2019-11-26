@@ -18,8 +18,10 @@ class Texture : Upp::Moveable<Texture>{ //only support 2D textures actually //Do
 	private:
 		Upp::String pathTexture = "";
 		Upp::String textureName = "";
-		TextureColorSample color = SAMPLE_RGB;
-
+		GLEnum format=GL_RGB;
+		TextureType type =DIFFUSE;
+		
+		
 		int width=-1;
 		int height=-1;
 		int nrChannels=-1;
@@ -58,6 +60,9 @@ class Texture : Upp::Moveable<Texture>{ //only support 2D textures actually //Do
 	bool SetPath(Upp::String _path);
 	void SetName(Upp::String _name); //By Default the name of the texture gonna be is name from loading files
 	void SetColorSample(TextureColorSample _color);
+	
+	Texture& SetType(TextureType _type);
+	TextureType GetType();
 	
 	bool IsMipMap() const; //Return if GenerateMipMap is to true or false
 	void ActivateMipMapGeneration(bool _activate);

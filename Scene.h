@@ -11,6 +11,8 @@ class Scene : public Upp::Moveable<Scene>{
 		UltimateOpenGL_Context* context= nullptr;
 		Upp::String name="";
 		
+		bool loaded = true;
+		
 		glm::vec3 BackGroundColor = glm::vec3(0.4f,0.5f,0.8f);
 
 		Upp::ArrayMap<Upp::String,GameObject> AllGamesObjects;
@@ -90,6 +92,7 @@ class Scene : public Upp::Moveable<Scene>{
 		
 		//Logique
 		void Load();
+		bool IsLoaded();
 		void Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform);
 };
 #endif

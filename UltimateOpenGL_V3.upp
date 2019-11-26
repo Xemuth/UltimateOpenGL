@@ -1,5 +1,9 @@
 description "\377B28,0,200";
 
+library
+	zlibstatic,
+	assimp;
+
 file
 	README.md,
 	LICENSES.txt,
@@ -14,9 +18,19 @@ file
 	Shader.cpp,
 	Texture.h,
 	Texture.cpp,
-	stb_image.h,
-	stb_image.cpp,
-	glad.c,
+	Object readonly separator,
+	object\GameObject.h,
+	object\GameObject.cpp,
+	object\Mesh.h,
+	object\Mesh.cpp,
+	object\Object3D.h,
+	object\Object3D.cpp,
+	object\Transform.h,
+	object\Transform.cpp,
+	Libs readonly separator,
+	libs\glad.c,
+	libs\stb_image.h,
+	libs\stb_image.cpp,
 	Simps readonly separator,
 	Simps\DefaultFragmentShader.glsl,
 	Simps\DefaultVertexShader.glsl,

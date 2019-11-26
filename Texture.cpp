@@ -197,23 +197,21 @@ bool Texture::Load(unsigned int ActiveIterator,bool loadDefault,bool flipLoad){
 			
 			if(loadDefault||textureparameters.GetCount() ==0)LoadDefaultTextureParameter();
 			LoadTextureParameter();
-			
-			/*glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
-		    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		    // set texture filtering parameters
-		    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);*/
-		    
+		
 			stbi_set_flip_vertically_on_load(flipLoad);
 			
 			unsigned char *data=nullptr; //Comment this and un comment Class attribute Data* to load it in our unsigned char* buffer
 			data = stbi_load(pathTexture.ToStd().c_str(), &width, &height, &nrChannels, 0);
 			if(data){
-				if(color == SAMPLE_RGB){
-					glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-				}else if(color == SAMPLE_RGBA){
-					glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-				}
+		        if (nrComponents == 1)
+		            format = GL_RED;
+		        else if (nrComponents == 3)
+		            format = GL_RGB;
+		        else if (nrComponents == 4)
+		            format = GL_RGBA;
+		        
+				glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+
 				if(GenerateMipMap)glGenerateMipmap(GL_TEXTURE_2D);
 					loaded =true;
 			}else{
@@ -231,6 +229,14 @@ bool Texture::Load(unsigned int ActiveIterator,bool loadDefault,bool flipLoad){
 	}
 	return loaded;
 }
+
+Texture& Texture::SetType(TextureType _type){
+	type=_type;
+}
+TextureType Texture::GetType(){
+	return type;
+}
+
 bool Texture::Use(){
 	if(loaded){
 		glActiveTexture(GL_TEXTURE0 +TextureIterator);

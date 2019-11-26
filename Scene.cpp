@@ -128,6 +128,10 @@ void Scene::Load(){
 			myObject2->Load();
 		}
 	}
+	loaded=true;
+}
+bool Scene::IsLoaded(){
+	return loaded;
 }
 void  Scene::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform){      
 	glClearColor(BackGroundColor.x,BackGroundColor.y,BackGroundColor.z, 1.0f); //définie la couleur de fond dans la fenetre graphique 

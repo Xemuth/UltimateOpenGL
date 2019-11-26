@@ -62,11 +62,20 @@ class UltimateOpenGL_Context{
 		bool RemoveScene(const Upp::String& nameOfScene);
 		
 		//Texture Management
-		bool AddTextures(Upp::String TextureName,Upp::String textureFilePath, TextureColorSample colorSample =SAMPLE_RGB, bool loadDefault=false, bool flipLoad=true);
+		Texture AddTexture(const Upp::String& TextureName,const Upp::String& textureFilePath,TextureType _type = DIFFUSE ,bool loadDefault=false, bool flipLoad=true);
+		Texture GetTexture(const Upp::String& TextureName);
 		Upp::VectorMap<Upp::String,Texture>& GetTextures();
 		
-		
 		void Draw();
+		
+		
+		//****************Static part **************************
+		static Upp::Vector<int> TransformFloatColorToRGB(glm::vec3 FloatColor);
+		static Upp::Vector<int> TransformFloatColorToRGB(float RedFloat,float GreenFloat,float BlueFloat);
+		static glm::vec3 TransformRGBToFloatColor(int Red,int Green,int Blue);
+		static glm::vec3 TransformRGBToFloatColor(Upp::Vector<int> rgb);
+		static int ColorUniformisation(int ColorRgb);
+		static float ColorUniformisation(float ColorFloat);
 };
 
 
