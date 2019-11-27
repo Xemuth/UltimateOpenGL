@@ -8,7 +8,7 @@ Scene::Scene::Scene(UltimateOpenGL_Context* _context_){
 	prepareDefaultLight();
 }
 Scene::~Scene(){
-	AllGamesObject.Clear();
+	AllGamesObjects.Clear();
 }
 
 //Context
@@ -37,11 +37,11 @@ glm::vec3 Scene::GetBackGroundColor(){
 
 //GameObject
 Upp::ArrayMap<Upp::String,GameObject>& Scene::GetAllGameObject(){
-	return AllGamesObject;
+	return AllGamesObjects;
 }
 bool Scene::RemoveGameObject(const Upp::String& name){
-	if(AllGamesObject.Find(name)!=-1){
-		AllGamesObject.RemoveKey(name);
+	if(AllGamesObjects.Find(name)!=-1){
+		AllGamesObjects.RemoveKey(name);
 		return true;
 	}
 	return false;
@@ -51,7 +51,7 @@ bool Scene::RemoveGameObject(const Upp::String& name){
 //Camera 
 Camera& Scene::AddCamera(const Upp::String& name){
 	if(AllCameras.Find(name) ==-1){
-		Camera& c=	AllCameras.Create(name);
+		Camera& c=	AllCameras.Create<Camera>(name);
 		c.SetScene(this);
 		c.SetName(name);
 		if(ActiveCamera == nullptr) ActiveCamera = &c;
@@ -60,7 +60,7 @@ Camera& Scene::AddCamera(const Upp::String& name){
 		return AllCameras.Get(name);
 	}
 }
-Camera& Scene::GetActiveCamera()
+Camera& Scene::GetActiveCamera(){
 	if(ActiveCamera == nullptr) throw UGLException(4,"Camera& Scene::GetActiveCamera() => No camera have been binded",1);
 		return *ActiveCamera;
 }
@@ -70,7 +70,7 @@ Camera& Scene::GetCamera(const Upp::String& name){
 	}
 	throw UGLException(8,"Camera& Scene::GetCamera(const Upp::String& name) => Camera named "+ name +" Do not exists",1);
 }
-Upp::VectorMap<Upp::String,Camera>& Scene::GetAllCamera(){
+Upp::ArrayMap<Upp::String,Camera>& Scene::GetAllCamera(){
 	return AllCameras;
 }
 bool Scene::SetActiveCamera(const Upp::String& name){
@@ -83,7 +83,7 @@ bool Scene::SetActiveCamera(const Upp::String& name){
 bool Scene::RemoveCamera(const Upp::String& name){
 	if(AllCameras.Find(name) !=-1){
 		if(ActiveCamera == &AllCameras.Get(name)) ActiveCamera==nullptr;
-		AllCameras.remove(AllCameras.Find(name));
+		AllCameras.Remove(AllCameras.Find(name));
 		return true;
 	}
 	return false;
@@ -92,37 +92,37 @@ bool Scene::RemoveCamera(const Upp::String& name){
 //Lights of scene
 int Scene::GetNumberOfDirLight(){
 	int number = 0;
-	for(const Upp::String& objectName : AllGamesObject.GetKeys()){
-		GameObject& myObject = AllGamesObject.Get(objectName);
+	for(const Upp::String& objectName : AllGamesObjects.GetKeys()){
+		GameObject& myObject = AllGamesObjects.Get(objectName);
 		number +=myObject.GetDirLights().GetCount();
 	}
 	return number;
 }
 int Scene::GetNumberOfSpotLight(){
 	int number = 0;
-	for(const Upp::String& objectName : AllGamesObject.GetKeys()){
-		GameObject& myObject = AllGamesObject.Get(objectName);
+	for(const Upp::String& objectName : AllGamesObjects.GetKeys()){
+		GameObject& myObject = AllGamesObjects.Get(objectName);
 		number +=myObject.GetSpotLights().GetCount();
 	}
 	return number;
 }
 int Scene::GetNumberOfPointLight(){
 	int number = 0;
-	for(const Upp::String& objectName : AllGamesObject.GetKeys()){
-		GameObject& myObject = AllGamesObject.Get(objectName);
+	for(const Upp::String& objectName : AllGamesObjects.GetKeys()){
+		GameObject& myObject = AllGamesObjects.Get(objectName);
 		number +=myObject.GetPointLights().GetCount();
 	}
 	return number;
 }
 void Scene::prepareDefaultLight(){
-	GameObject& go=	AllGamesObject.Add("defaultDirLight");
-	go.AddDirLight("defaultDirLight",DirLight(glm::vec3(0.0f,-1.0f,0.0f),glm::vec3( 0.04f, 0.04f, 0.04f),glm::vec3(0.9,0.9,0.9) ,glm::vec3( 0.04f, 0.04f, 0.04f)));
+	GameObject& go=	AllGamesObjects.Add("defaultDirLight");
+	go.AddDirLight("defaultDirLight").SetDirection(glm::vec3(0.0f,-1.0f,0.0f)).SetAmbient(glm::vec3( 0.04f, 0.04f, 0.04f)).SetDiffuse(glm::vec3(0.9,0.9,0.9)).SetSpecular(glm::vec3( 0.04f, 0.04f, 0.04f));
 }
 
 //Logique
 void Scene::Load(){
-	for(const Upp::String& objectName : AllGamesObject.GetKeys()){
-		GameObject* myObject = &AllGamesObject.Get(objectName);
+	for(const Upp::String& objectName : AllGamesObjects.GetKeys()){
+		GameObject* myObject = &AllGamesObjects.Get(objectName);
 		Object3D* myObject2 = dynamic_cast<Object3D*>(myObject);
 		if( myObject2 ){
 			myObject2->Load();
@@ -136,7 +136,7 @@ bool Scene::IsLoaded(){
 void  Scene::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform){      
 	glClearColor(BackGroundColor.x,BackGroundColor.y,BackGroundColor.z, 1.0f); //définie la couleur de fond dans la fenetre graphique 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //nétoie la fenetre graphique et la regénère Scene::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform){
-	for(GameObject& object : AllGamesObject){
+	for(GameObject& object : AllGamesObjects){
 		object.Draw(model,view,projection,transform,GetActiveCamera());
 	}
 }

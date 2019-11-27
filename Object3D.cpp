@@ -3,21 +3,21 @@
 Object3D::Object3D(const Upp::String& pathOfModel){
 	
 }
-void Object3D::LoadModel(string path){
+void Object3D::LoadModel(const Upp::String& path){
     // read file via ASSIMP
     Assimp::Importer importer;
     const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
     // check for errors
     if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
     {
-        cout << "ERROR::ASSIMP:: " << importer.GetErrorString() << endl;
+        Upp::Cout << "ERROR::ASSIMP:: " << Upp::String(importer.GetErrorString()) << Upp::EOL;
         return;
     }
     // retrieve the directory path of the filepath
-    directory = path.substr(0, path.find_last_of('/'));
+    directory = path.Mid(0, path.ReverseFind('/'));
 
     // process ASSIMP's root node recursively
-    processNode(scene->mRootNode, scene);
+    ProcessNode(scene->mRootNode, scene);
 }
 void Object3D::Draw(Shader shader){
 	for(unsigned int i = 0; i < meshes.size(); i++)
@@ -28,14 +28,39 @@ void Object3D::ProcessNode(aiNode *node, const aiScene *scene){
     for(unsigned int i = 0; i < node->mNumMeshes; i++)
     {
         aiMesh *mesh = scene->mMeshes[node->mMeshes[i]]; 
-        processMesh(mesh, scene);			
+        ProcessMesh(mesh, scene);			
     }
     // then do the same for each of its children
     for(unsigned int i = 0; i < node->mNumChildren; i++)
     {
-        processNode(node->mChildren[i], scene);
+        ProcessNode(node->mChildren[i], scene);
     }
 }
+
+void Object3D::ManageTextures(Upp::Vector<Texture>& vectorToFile, aiMaterial *mat, aiTextureType type){
+	for(unsigned int i = 0; i < mat->GetTextureCount(type); i++)
+    {
+    	aiString str;
+        mat->GetTexture(type, i, &str);
+        bool skip = false;
+        if(this->scene->GetContext()->GetTexture(Upp::String(str.C_Str())).IsLoaded()){
+            vectorToFile.Add(this->scene->GetContext()->GetTexture(Upp::String(str.C_Str())));
+        }else{
+            TextureType t = DIFFUSE;
+            if(type == aiTextureType_DIFFUSE)
+            	t=DIFFUSE;
+            else if(type == aiTextureType_SPECULAR)
+                t=SPECULAR;
+            else if(type == aiTextureType_HEIGHT)
+                t=HEIGHT;
+            else if(type == aiTextureType_NORMALS)
+                t=NORMAL;
+            
+            vectorToFile.Add(GetScene()->GetContext()->AddTexture(Upp::String(str.C_Str()),directory+"/"+ Upp::String(str.C_Str()),t));      
+        }
+    }
+}
+
 void Object3D::ProcessMesh(aiMesh *mesh, const aiScene *scene){
 	// data to fill
     Upp::Vector<Vertex> vertices;
@@ -95,22 +120,21 @@ void Object3D::ProcessMesh(aiMesh *mesh, const aiScene *scene){
     // as 'texture_diffuseN' where N is a sequential number ranging from 1 to MAX_SAMPLER_NUMBER. 
     // Same applies to other texture as the following list summarizes:
     // diffuse: texture_diffuseN
-    // specular: texture_specularN
+    // specular: texture_specularN	
     // normal: texture_normalN
 
+
     // 1. diffuse maps
-    vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
-    textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-    // 2. specular maps
-    vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
-    textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-    // 3. normal maps
-    std::vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
-    textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
-    // 4. height maps
-    std::vector<Texture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
-    textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
+    if(this->scene != nullptr && this->scene->GetContext() != nullptr){
+     	ManageTextures(textures,material,aiTextureType_DIFFUSE);
+     	ManageTextures(textures,material,aiTextureType_SPECULAR);
+     	ManageTextures(textures,material,aiTextureType_HEIGHT);
+     	ManageTextures(textures,material,aiTextureType_AMBIENT);
+     
+    }else{
+        LOG("Warning : cant load and Bind texture since no context is linked to object3D : " + name );
+    }
     
     // return a mesh object created from the extracted mesh data
-    return  meshes.Create(vertices, indices, textures);
+    meshes.Create(vertices, indices, textures);
 }

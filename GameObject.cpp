@@ -99,7 +99,7 @@ Upp::VectorMap<Upp::String,DirLight>& GameObject::GetDirLights(){
 }
 DirLight& GameObject::AddDirLight(const Upp::String& _name){
 	if(dirLights.Find(_name) ==-1){
-		return dirLights.Create(_name);
+		return dirLights.Add(_name);
 	}else{
 		return dirLights.Get(_name);
 	}
@@ -109,7 +109,7 @@ Upp::VectorMap<Upp::String,SpotLight>& GameObject::GetSpotLights(){
 }
 SpotLight& GameObject::AddSpotLight(const Upp::String& _name){
 	if(spotLights.Find(_name) ==-1){
-		return spotLights.Create(_name);
+		return spotLights.Add(_name);
 	}else{
 		return spotLights.Get(_name);
 	}	
@@ -119,7 +119,7 @@ Upp::VectorMap<Upp::String,PointLight>& GameObject::GetPointLights(){
 }
 PointLight& GameObject::AddPointLight(const Upp::String& _name){
 	if(pointLights.Find(_name) ==-1){
-		return pointLights.Create(_name);
+		return pointLights.Add(_name);
 	}else{
 		return pointLights.Get(_name);
 	}	

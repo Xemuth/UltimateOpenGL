@@ -59,7 +59,7 @@ class Scene : public Upp::Moveable<Scene>{
 		template <class T>
 		T& AddGameObject(const Upp::String& name,T& myObject){
 			if(AllGamesObjects.Find(name)==-1){
-				AllGamesObject.Add(name, myObject).SetScene(this);
+				AllGamesObjects.Add(name, myObject).SetScene(this);
 				myObject.SetName(name);
 				myObject.SetScene(this);
 				return myObject;
@@ -80,7 +80,7 @@ class Scene : public Upp::Moveable<Scene>{
 		Camera& AddCamera(const Upp::String& name);
 		Camera& GetActiveCamera();
 		Camera& GetCamera(const Upp::String& name);
-		Upp::VectorMap<Upp::String,Camera>& GetAllCamera();
+		Upp::ArrayMap<Upp::String,Camera>& GetAllCamera();
 		bool SetActiveCamera(const Upp::String& name);
 		bool RemoveCamera(const Upp::String& name);
 		

@@ -33,28 +33,17 @@ Texture::Texture(Upp::String _path){
 		LOG(_path + "\nDo not exist. Don't try to load it Right now, rather Redifine a path via SetPath(String path)\n");
 	}
 }
-Texture::Texture(Upp::String _path,TextureColorSample _color){
-	if(FileExists(_path)){
-		pathTexture = Replace(_path,Upp::Vector<Upp::String>{"\\"},Upp::Vector<Upp::String>{"/"});
-		LoadDefaultname();
-	}else{
-		LOG( _path +"\nDo not exist. Don't try to load it Right now, rather Redifine a path via SetPath(String path)\nHowever colorSample have been set to your value !\n");
-	}
-	color = _color;
-}
-Texture::Texture(Upp::String _path,Upp::String _Name,TextureColorSample _color){
+Texture::Texture(Upp::String _path,Upp::String _Name){
 	if(FileExists(_path)){
 		pathTexture = Replace(_path,Upp::Vector<Upp::String>{"\\"},Upp::Vector<Upp::String>{"/"});
 	}else{
 		LOG(_path + "\nDo not exist. Don't try to load it Right now, rather Redifine a path via SetPath(String path)\nHowever colorSample and TextureName have been set to your value !\n");
 	}
-	color = _color;
 	textureName = _Name;
 }
 Texture::Texture(const Texture& texture){
 	pathTexture = texture.GetPath();
 	textureName = texture.GetName();
-	color = texture.GetTextureColor();
 	width = texture.GetWidth();
 	height = texture.GetHeight();
 	nrChannels = texture.GetNrChannels();
@@ -129,9 +118,6 @@ bool Texture::SetPath(Upp::String _path){
 void Texture::SetName(Upp::String _name){//By Default the name of the texture gonna be is name from loading files
 	textureName = _name;
 }
-void Texture::SetColorSample(TextureColorSample _color){
-	color = _color;
-}
 bool Texture::IsMipMap() const{//Return if GenerateMipMap is to true or false
 	return GenerateMipMap;
 }
@@ -164,14 +150,10 @@ int Texture::GetNrChannels() const{
 bool Texture::IsLoaded() const{
 	return loaded;
 }
-TextureColorSample Texture::GetTextureColor() const{
-	return color;
-}
 
 Texture& Texture::operator=(const Texture& texture){
 	pathTexture = texture.GetPath();
 	textureName = texture.GetName();
-	color = texture.GetTextureColor();
 	
 	width = texture.GetWidth();
 	height = texture.GetHeight();
@@ -203,11 +185,11 @@ bool Texture::Load(unsigned int ActiveIterator,bool loadDefault,bool flipLoad){
 			unsigned char *data=nullptr; //Comment this and un comment Class attribute Data* to load it in our unsigned char* buffer
 			data = stbi_load(pathTexture.ToStd().c_str(), &width, &height, &nrChannels, 0);
 			if(data){
-		        if (nrComponents == 1)
+		        if (nrChannels == 1)
 		            format = GL_RED;
-		        else if (nrComponents == 3)
+		        else if (nrChannels == 3)
 		            format = GL_RGB;
-		        else if (nrComponents == 4)
+		        else if (nrChannels == 4)
 		            format = GL_RGBA;
 		        
 				glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);

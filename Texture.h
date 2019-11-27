@@ -18,7 +18,7 @@ class Texture : Upp::Moveable<Texture>{ //only support 2D textures actually //Do
 	private:
 		Upp::String pathTexture = "";
 		Upp::String textureName = "";
-		GLEnum format=GL_RGB;
+		GLenum format=GL_RGB;
 		TextureType type =DIFFUSE;
 		
 		
@@ -43,8 +43,7 @@ class Texture : Upp::Moveable<Texture>{ //only support 2D textures actually //Do
 	
 	Texture();
 	Texture(Upp::String _path);
-	Texture(Upp::String _path,TextureColorSample _color = SAMPLE_RGB);
-	Texture(Upp::String _path,Upp::String _Name,TextureColorSample _color = SAMPLE_RGB);
+	Texture(Upp::String _path,Upp::String _Name);
 	Texture(const Texture& texture);
 	~Texture();
 	
@@ -59,7 +58,6 @@ class Texture : Upp::Moveable<Texture>{ //only support 2D textures actually //Do
 	
 	bool SetPath(Upp::String _path);
 	void SetName(Upp::String _name); //By Default the name of the texture gonna be is name from loading files
-	void SetColorSample(TextureColorSample _color);
 	
 	Texture& SetType(TextureType _type);
 	TextureType GetType();

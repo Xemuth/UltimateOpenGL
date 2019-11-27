@@ -1,16 +1,15 @@
 #include "Mesh.h"
 
-Mesh::Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures)
+Mesh::Mesh(Upp::Vector<Vertex> vertices, Upp::Vector<unsigned int> indices, Upp::Vector<Texture> textures)
 {
-    this->vertices = vertices;
-    this->indices = indices;
-    this->textures = textures;
+    this->vertices.Append(vertices);
+    this->indices.Append(indices);
+    this->textures.Append(textures);
 
-    setupMesh();
+    Load();
 }
 
-void Mesh::Load()
-{
+void Mesh::Load(){
 	// create buffers/arrays
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -47,8 +46,7 @@ void Mesh::Load()
     glBindVertexArray(0);
 }
 
-void Mesh::Draw(Shader shader) 
-{
+void Mesh::Draw(Shader shader){
 	// bind appropriate textures
     unsigned int diffuseNr  = 1;
     unsigned int specularNr = 1;
@@ -58,8 +56,8 @@ void Mesh::Draw(Shader shader)
     {
         glActiveTexture(GL_TEXTURE0 + i); // active proper texture unit before binding
         // retrieve texture number (the N in diffuse_textureN)
-        string number;
-        string name = textures[i].type;
+        Upp::String number;
+        Upp::String name = textures[i].type;
         if(name == "texture_diffuse")
 			number = std::to_string(diffuseNr++);
 		else if(name == "texture_specular")
@@ -72,7 +70,7 @@ void Mesh::Draw(Shader shader)
 												 // now set the sampler to the correct texture unit
         glUniform1i(glGetUniformLocation(shader.ID, (name + number).c_str()), i);
         // and finally bind the texture
-        glBindTexture(GL_TEXTURE_2D, textures[i].id);
+        glBindTexture(GL_TEXTURE_2D, textures[i].GetId());
     }
     
     // draw mesh
@@ -82,4 +80,78 @@ void Mesh::Draw(Shader shader)
 
     // always good practice to set everything back to defaults once configured.
     glActiveTexture(GL_TEXTURE0);
-}  
+}
+
+
+
+/* Texture Gestion */
+Mesh& Mesh::BindTexture(const Upp::String& TextureName){
+	if(object3D != nullptr && object3D->GetScene() != nullptr && object3D->GetScene()->GetContext() !=nullptr){
+		Texture t =object3D->GetScene()->GetContext()->GetTexture("TextureName");
+		if(t.IsLoaded())
+			textures.Add(t);
+		else
+			LOG(TextureName + " texture don't existe in context, you must add it before getting it !");
+	}
+	LOG("Mesh is not bind to GameObject or GameObject is not bind to Scene or Scene is not bind to Context wich is carrying texture");
+}
+bool Mesh::RemoveTexture(const Texture& _texture){
+	int cpt = 0;
+	for(Texture& t : textures){
+		if(t.GetId() == _texture.GetId()){
+			textures.Remove(cpt);
+			return true;
+		}
+		cpt++;
+	}
+	return false;
+}
+Upp::Vector<Texture>& Mesh::GetTextures(){
+	return textures;
+}
+
+/* Transform */
+Transform& Mesh::GetTransform(){
+	return transform;
+}
+void Mesh::SetTransform(const Transform& _transform){
+	transform = _transform;
+}
+
+/* Material Manager */
+Upp::VectorMap<Upp::String,MaterialTexture>& Mesh::GetMaterialTextures(){
+	return materialsTexture;
+}
+Upp::VectorMap<Upp::String,MaterialColor>& Mesh::GetMaterialColor(){
+	return materialsColor;
+}
+
+MaterialTexture& Mesh::CreateMaterialTexture(const Upp::String& _name){
+	if( materialsTexture.Find(_name) ==-1){
+		return materialsTexture.Add(_name);
+	}else{
+		return materialsTexture.Get(_name);
+	}
+}
+MaterialColor& Mesh::CreateMaterialColor(const Upp::String& _name){
+	if( materialsColor.Find(_name) ==-1){
+		return materialsColor.Add(_name);
+	}else{
+		return materialsColor.Get(_name);
+	}
+}
+//Miscelnious
+void Mesh::SetObject3D(Object3D* _object3D){
+	object3D = _object3D;
+}
+Object3D* Mesh::GetObject3D(){
+	return object3D;
+}
+
+void Mesh::SetLightAffected(bool _light){
+	LightAffected = _light;
+}
+bool Mesh::IsLightAffected(){
+	return LightAffected;
+}
+

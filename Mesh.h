@@ -2,8 +2,10 @@
 #define _UltimateOpenGL_V3_Mesh_h_
 
 #include "Definition.h"
+#include "Transform.h"
+#include "Shader.h"
 
-struct Vertex {
+struct Vertex : public Upp::Moveable<Vertex> {
     // position
     glm::vec3 Position;
     // normal
@@ -18,7 +20,7 @@ struct Vertex {
 
 class Mesh {
 	private:
-		
+			
 		Object3D* object3D =nullptr;
 		
         /*  Render data  */
@@ -55,7 +57,7 @@ class Mesh {
 		Upp::VectorMap<Upp::String,MaterialColor>& GetMaterialColor();
 		
 		MaterialTexture& CreateMaterialTexture(const Upp::String& _name);
-		MaterialColor& CreateMaterialColor(Uconst Upp::String& _name);
+		MaterialColor& CreateMaterialColor(const Upp::String& _name);
 		
 		
 		//Miscelnious
@@ -66,7 +68,7 @@ class Mesh {
 		bool IsLightAffected();
 
         /*  Functions  */
-        Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures);
+        Mesh(Upp::Vector<Vertex> vertices, Upp::Vector<unsigned int> indices, Upp::Vector<Texture> textures);
         void Draw(Shader shader);
 };
 #endif

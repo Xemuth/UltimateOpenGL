@@ -8,6 +8,9 @@ Upp::String& IncludeShader(Upp::String& shader);
 #include "Texture.h"
 #include "Shader.h"
 #include "GameObject.h"
+#include "Object3D.h"
+#include "Mesh.h"
+#include "Transform.h"
 #include "Scene.h"
 #include "Camera.h"
 
@@ -62,7 +65,7 @@ class UltimateOpenGL_Context{
 		bool RemoveScene(const Upp::String& nameOfScene);
 		
 		//Texture Management
-		Texture AddTexture(const Upp::String& TextureName,const Upp::String& textureFilePath,TextureType _type = DIFFUSE ,bool loadDefault=false, bool flipLoad=true);
+		Texture AddTexture(const Upp::String& TextureName,const Upp::String& textureFilePath,TextureType  _type = DIFFUSE ,bool loadDefault=false, bool flipLoad=true);
 		Texture GetTexture(const Upp::String& TextureName);
 		Upp::VectorMap<Upp::String,Texture>& GetTextures();
 		

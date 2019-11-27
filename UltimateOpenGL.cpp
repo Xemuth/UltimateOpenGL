@@ -71,11 +71,11 @@ Upp::Sizef UltimateOpenGL_Context::GetScreenSize(){
 //scene
 Scene& UltimateOpenGL_Context::AddScene(const Upp::String name){
 	if(AllScenes.Find(name) ==-1){
-		Scene& s=	AllScenes.Create(name,this);
+		Scene& s= AllScenes.Create<Scene>(name);
 		s.SetName(name);
 		s.SetContext(this);
 		if(ActiveScene == nullptr) ActiveScene = &s;
-		return c;
+		return s;
 	}else{
 		return AllScenes.Get(name);
 	}
@@ -101,9 +101,9 @@ bool UltimateOpenGL_Context::SetActiveScene(const Upp::String& name){
 	return false;
 }
 bool UltimateOpenGL_Context::RemoveScene(const Upp::String& nameOfScene){
-	if(AllScenes.Find(name) !=-1){
-		if(ActiveScene == &AllScenes.Get(name)) ActiveScene==nullptr;
-		AllScenes.remove(AllScenes.Find(name));
+	if(AllScenes.Find(nameOfScene) !=-1){
+		if(ActiveScene == &AllScenes.Get(nameOfScene)) ActiveScene==nullptr;
+		AllScenes.Remove(AllScenes.Find(nameOfScene));
 		return true;
 	}
 	return false;
@@ -112,26 +112,26 @@ bool UltimateOpenGL_Context::RemoveScene(const Upp::String& nameOfScene){
 //Textures
 Texture UltimateOpenGL_Context::AddTexture(const Upp::String& TextureName,const Upp::String& textureFilePath,TextureType _type,bool loadDefault, bool flipLoad){ //Add and load Texture
 	if(textures.Find(TextureName) == -1){
-		Texture& texture =textures.Create(TextureName);
+		Texture& texture =textures.Add(TextureName);
 		texture.SetPath(textureFilePath);
 		texture.SetName(TextureName);
 		if(!texture.Load(TextureCompteur,loadDefault,flipLoad)){
 			textures.RemoveKey(TextureName);
 			LOG("Error : AddTextures(String,String,bool,bool) Loading error !\n");
-			return Texture;
+			return Texture();
 		}else{
 			LOG("Info : Texture " + TextureName +" Loaded with success !\n");
 			TextureCompteur++;
 			return texture;
 		}
-		return Texture;
+		return Texture();
 	}
-	return Texture;
+	return Texture();
 }
 Texture UltimateOpenGL_Context::GetTexture(const Upp::String& TextureName){
 	if(textures.Find(TextureName)	!=-1)
 		return textures.Get(TextureName);
-	return Texture;
+	return Texture();
 }
 
 Upp::VectorMap<Upp::String,Texture>& UltimateOpenGL_Context::GetTextures(){
