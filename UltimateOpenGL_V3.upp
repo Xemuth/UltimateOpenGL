@@ -21,6 +21,8 @@ file
 	Object readonly separator,
 	GameObject.h,
 	GameObject.cpp,
+	Transform.h,
+	Transform.cpp,
 	Mesh.h,
 	Mesh.cpp,
 	Object3D.h,

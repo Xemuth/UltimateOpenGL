@@ -2,7 +2,7 @@
 *Ultimate Open gl V3 is a solution to make developpement of basic game easier to code instead of
 *using external program like Unity.
 *
-*	UltimateOpenGL V2
+*	UltimateOpenGL V3
 *	Copyright (C) 2019 Clément Hamon
 *	
 *	This software is provided 'as-is', without any express or implied

@@ -1,9 +1,11 @@
 #ifndef _UltimateOpenGL_V3_Mesh_h_
 #define _UltimateOpenGL_V3_Mesh_h_
 
+
 #include "Definition.h"
 #include "Transform.h"
 #include "Shader.h"
+#include "GameObject.h"
 
 struct Vertex : public Upp::Moveable<Vertex> {
     // position

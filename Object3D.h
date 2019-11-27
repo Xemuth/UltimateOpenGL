@@ -1,7 +1,6 @@
 #ifndef _UltimateOpenGL_V3_Object3D_h_
 #define _UltimateOpenGL_V3_Object3D_h_
 #include "Definition.h"
-#include "GameObject.h"
 #include "Mesh.h"
 
 #include <assimp/Importer.hpp>

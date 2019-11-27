@@ -4,7 +4,6 @@
 #include "Shader.h"
 #include "Texture.h"
 #include "Camera.h"
-#include "Scene.h"
 #include "Transform.h"
 
 class GameObject: public Upp::Moveable<GameObject>{

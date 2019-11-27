@@ -1,6 +1,6 @@
 #ifndef _UltimateOpenGL_V3_Transform_h_
 #define _UltimateOpenGL_V3_Transform_h_
-#include "GameObject.h"
+#include "Definition.h"
 
 class GameObject;
 
