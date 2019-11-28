@@ -1,4 +1,4 @@
-#include "Object3D.h"
+#include "UltimateOpenGL.h"
 
 Object3D::Object3D(const Upp::String& pathOfModel){
 	
@@ -10,7 +10,7 @@ void Object3D::LoadModel(const Upp::String& path){
     // check for errors
     if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
     {
-        Upp::Cout << "ERROR::ASSIMP:: " << Upp::String(importer.GetErrorString()) << Upp::EOL;
+        Upp::Cout() << "ERROR::ASSIMP:: " << Upp::String(importer.GetErrorString()) << Upp::EOL;
         return;
     }
     // retrieve the directory path of the filepath
@@ -19,10 +19,15 @@ void Object3D::LoadModel(const Upp::String& path){
     // process ASSIMP's root node recursively
     ProcessNode(scene->mRootNode, scene);
 }
-void Object3D::Draw(Shader shader){
+void Object3D::Draw(){
 	for(unsigned int i = 0; i < meshes.size(); i++)
-        meshes[i].Draw(shader);
+        meshes[i].Draw();
 }
+void Object3D::Load(){
+	for(unsigned int i = 0; i < meshes.size(); i++)
+        meshes[i].Load();
+}
+
 void Object3D::ProcessNode(aiNode *node, const aiScene *scene){
 	// process all the node's meshes (if any)
     for(unsigned int i = 0; i < node->mNumMeshes; i++)
@@ -136,5 +141,5 @@ void Object3D::ProcessMesh(aiMesh *mesh, const aiScene *scene){
     }
     
     // return a mesh object created from the extracted mesh data
-    meshes.Create(vertices, indices, textures);
+    meshes.Add(Mesh(vertices, indices, textures));
 }

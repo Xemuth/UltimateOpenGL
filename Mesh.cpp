@@ -1,6 +1,5 @@
-#include "Mesh.h"
-
-Mesh::Mesh(Upp::Vector<Vertex> vertices, Upp::Vector<unsigned int> indices, Upp::Vector<Texture> textures)
+#include "UltimateOpenGL.h"
+Mesh::Mesh(const Upp::Vector<Vertex>& vertices, Upp::Vector<unsigned int>& indices, Upp::Vector<Texture>& textures)
 {
     this->vertices.Append(vertices);
     this->indices.Append(indices);
@@ -46,7 +45,7 @@ void Mesh::Load(){
     glBindVertexArray(0);
 }
 
-void Mesh::Draw(Shader shader){
+void Mesh::Draw(){
 	// bind appropriate textures
     unsigned int diffuseNr  = 1;
     unsigned int specularNr = 1;
@@ -57,18 +56,18 @@ void Mesh::Draw(Shader shader){
         glActiveTexture(GL_TEXTURE0 + i); // active proper texture unit before binding
         // retrieve texture number (the N in diffuse_textureN)
         Upp::String number;
-        Upp::String name = textures[i].type;
-        if(name == "texture_diffuse")
+        TextureType name = textures[i].GetType();
+        if(name == DIFFUSE)
 			number = std::to_string(diffuseNr++);
-		else if(name == "texture_specular")
+		else if(name == SPECULAR)
 			number = std::to_string(specularNr++); // transfer unsigned int to stream
-        else if(name == "texture_normal")
+        else if(name == NORMAL)
 			number = std::to_string(normalNr++); // transfer unsigned int to stream
-         else if(name == "texture_height")
+         else if(name == HEIGHT)
 		    number = std::to_string(heightNr++); // transfer unsigned int to stream
 
 												 // now set the sampler to the correct texture unit
-        glUniform1i(glGetUniformLocation(shader.ID, (name + number).c_str()), i);
+       // glUniform1i(glGetUniformLocation(shader.GetId(), (name + number).c_str()), i);
         // and finally bind the texture
         glBindTexture(GL_TEXTURE_2D, textures[i].GetId());
     }
@@ -83,17 +82,27 @@ void Mesh::Draw(Shader shader){
 }
 
 
+void Mesh::SetShader(Shader& _shader){
+	shader = _shader;
+}
+Shader& Mesh::GetShader(){
+	return shader;
+}
+
 
 /* Texture Gestion */
 Mesh& Mesh::BindTexture(const Upp::String& TextureName){
 	if(object3D != nullptr && object3D->GetScene() != nullptr && object3D->GetScene()->GetContext() !=nullptr){
 		Texture t =object3D->GetScene()->GetContext()->GetTexture("TextureName");
-		if(t.IsLoaded())
+		if(t.IsLoaded()){
 			textures.Add(t);
+			return *this;
+		}
 		else
 			LOG(TextureName + " texture don't existe in context, you must add it before getting it !");
 	}
 	LOG("Mesh is not bind to GameObject or GameObject is not bind to Scene or Scene is not bind to Context wich is carrying texture");
+	return *this;
 }
 bool Mesh::RemoveTexture(const Texture& _texture){
 	int cpt = 0;

@@ -6,12 +6,6 @@
 #include "Simps/SpotLight.glsl"
 #include "Simps/DirLight.glsl"
 
-UltimateOpenGL_Context::UltimateOpenGL_Context(){
-	StartTimer();
-}
-UltimateOpenGL_Context::~UltimateOpenGL_Context(){
-}
-
 Upp::String& IncludeShader(Upp::String& shader){
 	shader.Replace("MATERIAL_TEXTURE_STRUCT()",MATERIAL_TEXTURE_STRUCT());
 	shader.Replace("MATERIAL_COLOR_STRUCT()",MATERIAL_COLOR_STRUCT());
@@ -37,6 +31,40 @@ Upp::String& IncludeShader(Upp::String& shader){
 	return shader;
 }
 
+UltimateOpenGL_Context::UltimateOpenGL_Context(){
+	StartTimer();
+}
+UltimateOpenGL_Context::~UltimateOpenGL_Context(){
+}
+
+
+//****************Static part **************************
+Upp::Vector<int> UltimateOpenGL_Context::TransformGlmColorToRGB(glm::vec3 FloatColor){
+	return Upp::Vector<int>{ this->ColorUniformisation((int)(FloatColor.x*255)),this->ColorUniformisation((int)(FloatColor.y*255)), this->ColorUniformisation((int)(FloatColor.z*255)) };
+}
+Upp::Vector<int> UltimateOpenGL_Context::TransformFloatColorToRGB(float RedFloat,float GreenFloat,float BlueFloat){
+	return Upp::Vector<int>{ this->ColorUniformisation((int)(RedFloat*255)),this->ColorUniformisation((int)(GreenFloat*255)), this->ColorUniformisation((int)(BlueFloat*255))};
+}
+glm::vec3 UltimateOpenGL_Context::TransformRGBToFloatColor(int Red,int Green,int Blue){
+	return  glm::vec3( ((float)this->ColorUniformisation(Red))/255.0f ,((float)this->ColorUniformisation(Green))/255.0f,((float)this->ColorUniformisation(Blue))/255.0f);
+}
+glm::vec3 UltimateOpenGL_Context::TransformVectorToFloatColor(Upp::Vector<int> rgb){
+	if(rgb.GetCount() < 3){
+		LOG("Erreur TransformRGBToFloatColor(Vector<int>) : Vector incorrect !\n");
+		return  glm::vec3(1.0);
+	}
+	return glm::vec3( ((float)ColorUniformisation(rgb[0]))/255.0f ,((float)ColorUniformisation(rgb[1]))/255.0f,((float)ColorUniformisation(rgb[2]))/255.0f);
+}
+int UltimateOpenGL_Context::ColorUniformisation(int ColorRgb){ //Fonction très utile et très complexe
+	if(ColorRgb> 255) ColorRgb=255;
+	if(ColorRgb< 0) ColorRgb=0;
+	return ColorRgb;
+}
+float UltimateOpenGL_Context::ColorUniformisation(float ColorFloat){
+	if(ColorFloat> 1.0f) ColorFloat=1.0f;
+	if(ColorFloat< 0.0f) ColorFloat=0.0f;
+	return ColorFloat;
+}
 
 //time management
 void UltimateOpenGL_Context::StartTimer(){
@@ -69,7 +97,7 @@ Upp::Sizef UltimateOpenGL_Context::GetScreenSize(){
 }
 
 //scene
-Scene& UltimateOpenGL_Context::AddScene(const Upp::String name){
+Scene& UltimateOpenGL_Context::AddScene(const Upp::String& name){
 	if(AllScenes.Find(name) ==-1){
 		Scene& s= AllScenes.Create<Scene>(name);
 		s.SetName(name);
@@ -167,30 +195,3 @@ void UltimateOpenGL_Context::Draw(){
 	}
 }
 
-//****************Static part **************************
-Upp::Vector<int> UltimateOpenGL_Context::TransformFloatColorToRGB(glm::vec3 FloatColor){
-	return Upp::Vector<int>{ ColorUniformisation((int)(FloatColor.x*255)),ColorUniformisation((int)(FloatColor.y*255)), ColorUniformisation((int)(FloatColor.z*255)) };
-}
-Upp::Vector<int> UltimateOpenGL_Context::TransformFloatColorToRGB(float RedFloat,float GreenFloat,float BlueFloat){
-	return Upp::Vector<int>{ ColorUniformisation((int)(RedFloat*255)),ColorUniformisation((int)(GreenFloat*255)), ColorUniformisation((int)(BlueFloat*255))};
-}
-glm::vec3 UltimateOpenGL_Context::TransformRGBToFloatColor(int Red,int Green,int Blue){
-	return  glm::vec3( ((float)ColorUniformisation(Red))/255.0f ,((float)ColorUniformisation(Green))/255.0f,((float)ColorUniformisation(Blue))/255.0f);
-}
-glm::vec3 UltimateOpenGL_Context::TransformRGBToFloatColor(Upp::Vector<int> rgb){
-	if(rgb.GetCount() < 3){
-		LOG("Erreur TransformRGBToFloatColor(Vector<int>) : Vector incorrect !\n");
-		return  glm::vec3(1.0);
-	}
-	return glm::vec3( ((float)ColorUniformisation(rgb[0]))/255.0f ,((float)ColorUniformisation(rgb[1]))/255.0f,((float)ColorUniformisation(rgb[2]))/255.0f);
-}
-int UltimateOpenGL_Context::ColorUniformisation(int ColorRgb){ //Fonction très utile et très complexe
-	if(ColorRgb> 255) ColorRgb=255;
-	if(ColorRgb< 0) ColorRgb=0;
-	return ColorRgb;
-}
-float UltimateOpenGL_Context::ColorUniformisation(float ColorFloat){
-	if(ColorFloat> 1.0f) ColorFloat=1.0f;
-	if(ColorFloat< 0.0f) ColorFloat=0.0f;
-	return ColorFloat;
-}

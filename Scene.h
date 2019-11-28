@@ -2,8 +2,7 @@
 #define _UltimateOpenGl_UltimateScene_h_
 #include "Definition.h"
 
-#include "GameObject.h"
-#include "UltimateOpenGL.h"
+
 class UltimateOpenGL_Context;
 
 class Scene : public Upp::Moveable<Scene>{

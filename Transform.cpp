@@ -1,4 +1,5 @@
-#include "Transform.h"
+#include "UltimateOpenGL.h"
+
 
 Transform::Transform(){
 }
@@ -30,7 +31,7 @@ Transform& Transform::operator=(const Transform& _transform){
 }
 
 void Transform::LaunchEvent(){
-	if(gameObject !=nullptr && gameObject->GetOnTransformFunction() != nullptr && gameObject->GetScene() != nullptr && gameObject->GetScene()->Isloaded())gameObject->GetOnTransformFunction()(*gameObject);
+	if(gameObject !=nullptr && gameObject->GetOnTransformFunction() != nullptr && gameObject->GetScene() != nullptr && gameObject->GetScene()->IsLoaded()) gameObject->GetOnTransformFunction()(*gameObject);
 }
 //Setter/Getter
 const glm::vec3& Transform::GetPosition()const{

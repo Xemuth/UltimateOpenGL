@@ -1,14 +1,12 @@
 #ifndef _UltimateOpenGL_V3_Object3D_h_
 #define _UltimateOpenGL_V3_Object3D_h_
 #include "Definition.h"
-#include "Mesh.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
 class Mesh;
-class GameObject;
 
 class Object3D : public GameObject, Upp::Moveable<Object3D>
 {
@@ -31,7 +29,8 @@ class Object3D : public GameObject, Upp::Moveable<Object3D>
         /*  Functions   */
         Object3D(const Upp::String& pathOfModel);
         void LoadModel(const Upp::String& path);
-        void Draw(Shader shader);	
+        void Load();
+        void Draw();	
    
 };
 

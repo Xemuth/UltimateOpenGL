@@ -1,5 +1,8 @@
 #include "Scene.h"
-
+#include "GameObject.h"
+#include "Camera.h"
+#include "Shader.h"
+#include "Object3D.h"
 Scene::Scene(){
 	prepareDefaultLight();
 }

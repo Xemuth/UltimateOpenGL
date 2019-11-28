@@ -1,11 +1,10 @@
 #ifndef _UltimateOpenGL_V3_Mesh_h_
 #define _UltimateOpenGL_V3_Mesh_h_
-
-
 #include "Definition.h"
-#include "Transform.h"
-#include "Shader.h"
-#include "GameObject.h"
+
+class Object3D;
+class Shader;
+class Scene;
 
 struct Vertex : public Upp::Moveable<Vertex> {
     // position
@@ -18,24 +17,32 @@ struct Vertex : public Upp::Moveable<Vertex> {
     glm::vec3 Tangent;
     // bitangent
     glm::vec3 Bitangent;
+    
+    Vertex(){}
+    Vertex(const Vertex& v){
+     	Position = v.Position;
+     	Normal = v.Normal;
+     	Tangent = v.Tangent;
+     	Bitangent = v.Bitangent;   
+    }
+    
 };
 
-class Mesh {
+class Mesh : public Upp::Moveable<Mesh> {
 	private:
 			
 		Object3D* object3D =nullptr;
 		
         /*  Render data  */
         unsigned int VAO, VBO, EBO;
-        /*  Functions    */
-        void Load();
+        
         
         /*  Mesh Data  */
         Upp::Vector<Vertex> vertices;
         Upp::Vector<unsigned int> indices;
         Upp::Vector<Texture> textures;
         
-        Shader shaders;
+        Shader shader;
         
         Transform transform;
         
@@ -66,11 +73,16 @@ class Mesh {
 		void SetObject3D(Object3D* _object3D);
 		Object3D* GetObject3D();
 		
+		void SetShader(Shader& _shader);
+		Shader& GetShader();
+		
 		void SetLightAffected(bool _light);
 		bool IsLightAffected();
 
         /*  Functions  */
-        Mesh(Upp::Vector<Vertex> vertices, Upp::Vector<unsigned int> indices, Upp::Vector<Texture> textures);
-        void Draw(Shader shader);
+        void Load();
+        Mesh() = default;
+        Mesh(const Upp::Vector<Vertex>& vertices, Upp::Vector<unsigned int>& indices, Upp::Vector<Texture>& textures);
+        void Draw();
 };
 #endif

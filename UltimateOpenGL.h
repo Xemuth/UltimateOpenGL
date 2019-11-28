@@ -10,7 +10,7 @@ Upp::String& IncludeShader(Upp::String& shader);
 #include "GameObject.h"
 #include "Object3D.h"
 #include "Mesh.h"
-#include "Transform.h"
+
 #include "Scene.h"
 #include "Camera.h"
 
@@ -57,7 +57,7 @@ class UltimateOpenGL_Context{
 		
 		
 		//scenes
-		Scene& AddScene(const Upp::String name);
+		Scene& AddScene(const Upp::String& name);
 		Scene& GetActiveScene();
 		Scene& GetScene(const Upp::String& name);
 		Upp::ArrayMap<Upp::String,Scene>& GetAllScene();
@@ -73,12 +73,12 @@ class UltimateOpenGL_Context{
 		
 		
 		//****************Static part **************************
-		static Upp::Vector<int> TransformFloatColorToRGB(glm::vec3 FloatColor);
-		static Upp::Vector<int> TransformFloatColorToRGB(float RedFloat,float GreenFloat,float BlueFloat);
-		static glm::vec3 TransformRGBToFloatColor(int Red,int Green,int Blue);
-		static glm::vec3 TransformRGBToFloatColor(Upp::Vector<int> rgb);
-		static int ColorUniformisation(int ColorRgb);
-		static float ColorUniformisation(float ColorFloat);
+		Upp::Vector<int> TransformGlmColorToRGB(glm::vec3 FloatColor);
+		Upp::Vector<int> TransformFloatColorToRGB(float RedFloat,float GreenFloat,float BlueFloat);
+		glm::vec3 TransformRGBToFloatColor(int Red,int Green,int Blue);
+		glm::vec3 TransformVectorToFloatColor(Upp::Vector<int> rgb);
+		int ColorUniformisation(int ColorRgb);
+		float ColorUniformisation(float ColorFloat);
 };
 
 

@@ -16,7 +16,6 @@ GameObject::GameObject(GameObject& object){
 	Scene* scene = object.GetScene();
 	
 	transform = object.GetTransform();
-	translationChaine.Append(object.translationChaine);
 
 	for(const Upp::String& light : object.dirLights.GetKeys()){
 		dirLights.Add(light,object.dirLights.Get(light));
@@ -35,7 +34,7 @@ void GameObject::operator=(GameObject& object){
 	Scene* scene = object.GetScene();
 	
 	transform = object.GetTransform();
-	translationChaine.Append(object.translationChaine);
+	
 
 	for(const Upp::String& light : object.dirLights.GetKeys()){
 		dirLights.Add(light,object.dirLights.Get(light));
@@ -53,6 +52,7 @@ Scene* GameObject::GetScene()const{
 }
 GameObject& GameObject::SetScene(Scene* _scene){
 	scene = _scene;
+	return *this;
 }
 
 Upp::String GameObject::GetName()const{

@@ -1,10 +1,9 @@
 #ifndef _UltimateOpenGL_V3_GameObject_h_
 #define _UltimateOpenGL_V3_GameObject_h_
 #include "Definition.h"
-#include "Shader.h"
-#include "Texture.h"
-#include "Camera.h"
 #include "Transform.h"
+
+class Scene;
 
 class GameObject: public Upp::Moveable<GameObject>{
 	protected:

@@ -1,4 +1,4 @@
-#include "GameObject.h"
+#include "Camera.h"
 
 Camera::Camera(glm::vec3 position , glm::vec3 up , float yaw, float pitch ): Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM){
     Position = position;
@@ -19,10 +19,10 @@ Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float u
 glm::mat4 Camera::GetViewMatrix(){
 	if(binded &&(KeyBinding || MouseBinding)){
 		if(KeyBinding){ 
-			Position = binded->GetTransform().GetPosition();
+		//	Position = binded->GetTransform().GetPosition();
 		}
 		if(MouseBinding){ 
-			Front = binded->GetTransform().GetFront();
+		//	Front = binded->GetTransform().GetFront();
 			//Position.z += 0.6f;
 		}
 	}else if(!warning && !binded &&(KeyBinding || MouseBinding)){

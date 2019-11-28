@@ -214,6 +214,7 @@ bool Texture::Load(unsigned int ActiveIterator,bool loadDefault,bool flipLoad){
 
 Texture& Texture::SetType(TextureType _type){
 	type=_type;
+	return *this;
 }
 TextureType Texture::GetType(){
 	return type;

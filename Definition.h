@@ -38,10 +38,13 @@ const float ZOOM        =  45.0f;
 class Scene;
 class Camera;
 class GameObject;
+class Mesh;
+class Transform;
 class Object3D;
 class Texture;
 class Shader;
 
+struct Vertex;
 struct TextureParameter;
 struct Material;
 struct MaterialTexture;
