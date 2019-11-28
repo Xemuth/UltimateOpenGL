@@ -1,9 +1,8 @@
 #ifndef _UltimateOpenGl_UltimateScene_h_
 #define _UltimateOpenGl_UltimateScene_h_
+
 #include "Definition.h"
 
-
-class UltimateOpenGL_Context;
 
 class Scene : public Upp::Moveable<Scene>{
 	protected:
@@ -50,7 +49,7 @@ class Scene : public Upp::Moveable<Scene>{
 					myObject.SetScene(this);
 					return myObject;
 				}else{
-					return AllGamesObjects.Get(Name);
+					return static_cast<T&>(AllGamesObjects.Get(Name));
 				}
 			}
 			throw UGLException(6,"GameObject& Scene::CreateGameObject<type T>(String name) => Invalide type not inherited from gameObject !",1);

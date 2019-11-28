@@ -40,13 +40,13 @@ UltimateOpenGL_Context::~UltimateOpenGL_Context(){
 
 //****************Static part **************************
 Upp::Vector<int> UltimateOpenGL_Context::TransformGlmColorToRGB(glm::vec3 FloatColor){
-	return Upp::Vector<int>{ this->ColorUniformisation((int)(FloatColor.x*255)),this->ColorUniformisation((int)(FloatColor.y*255)), this->ColorUniformisation((int)(FloatColor.z*255)) };
+	return Upp::Vector<int>{ ColorUniformisation((int)(FloatColor.x*255)),ColorUniformisation((int)(FloatColor.y*255)), ColorUniformisation((int)(FloatColor.z*255)) };
 }
 Upp::Vector<int> UltimateOpenGL_Context::TransformFloatColorToRGB(float RedFloat,float GreenFloat,float BlueFloat){
-	return Upp::Vector<int>{ this->ColorUniformisation((int)(RedFloat*255)),this->ColorUniformisation((int)(GreenFloat*255)), this->ColorUniformisation((int)(BlueFloat*255))};
+	return Upp::Vector<int>{ ColorUniformisation((int)(RedFloat*255)),ColorUniformisation((int)(GreenFloat*255)), ColorUniformisation((int)(BlueFloat*255))};
 }
 glm::vec3 UltimateOpenGL_Context::TransformRGBToFloatColor(int Red,int Green,int Blue){
-	return  glm::vec3( ((float)this->ColorUniformisation(Red))/255.0f ,((float)this->ColorUniformisation(Green))/255.0f,((float)this->ColorUniformisation(Blue))/255.0f);
+	return  glm::vec3( ((float)ColorUniformisation(Red))/255.0f ,((float)ColorUniformisation(Green))/255.0f,((float)ColorUniformisation(Blue))/255.0f);
 }
 glm::vec3 UltimateOpenGL_Context::TransformVectorToFloatColor(Upp::Vector<int> rgb){
 	if(rgb.GetCount() < 3){

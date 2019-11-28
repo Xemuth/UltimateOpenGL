@@ -35,14 +35,15 @@ const float SPEED       =  5.5f;
 const float SENSITIVITY =  0.1f;
 const float ZOOM        =  45.0f;
 
+class UltimateOpenGL_Context;
 class Scene;
 class Camera;
 class GameObject;
 class Mesh;
-class Transform;
 class Object3D;
 class Texture;
 class Shader;
+class Transform;
 
 struct Vertex;
 struct TextureParameter;

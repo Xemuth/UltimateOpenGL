@@ -1,3 +1,6 @@
+#ifndef _UltimateOpenGL_V3_DIRLIGHT_SHADER
+#define _UltimateOpenGL_V3_DIRLIGHT_SHADER
+
 #define LIGHT_DIR_STRUCT()STRINGIFY(\n\
 	struct DirLight {\n\
 	    vec3 direction;\n\
@@ -42,3 +45,4 @@
 	}\n\
 )
 
+#endif

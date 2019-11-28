@@ -2,10 +2,6 @@
 #define _UltimateOpenGL_V3_Mesh_h_
 #include "Definition.h"
 
-class Object3D;
-class Shader;
-class Scene;
-
 struct Vertex : public Upp::Moveable<Vertex> {
     // position
     glm::vec3 Position;
@@ -51,6 +47,13 @@ class Mesh : public Upp::Moveable<Mesh> {
     
     	bool LightAffected = true;
     public:
+	
+		unsigned int GetVAO();
+		unsigned int GetVBO();
+		unsigned int GetEBO();
+		
+		Upp::Vector<Vertex>& GetVertices();
+		Upp::Vector<unsigned int>& GetIndices();
 
 		/* Texture Gestion */
 		Mesh& BindTexture(const Upp::String& TextureName);
@@ -83,6 +86,7 @@ class Mesh : public Upp::Moveable<Mesh> {
         void Load();
         Mesh() = default;
         Mesh(const Upp::Vector<Vertex>& vertices, Upp::Vector<unsigned int>& indices, Upp::Vector<Texture>& textures);
+        Mesh(Mesh& _mesh);
         void Draw();
 };
 #endif

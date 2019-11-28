@@ -1,5 +1,6 @@
 #ifndef _UltimateOpenGl_UltimateTexture_h_
 #define _UltimateOpenGl_UltimateTexture_h_
+
 #include "Definition.h"
 
 struct TextureParameter : Upp::Moveable<TextureParameter>{

@@ -1,3 +1,5 @@
+#ifndef _UltimateOpenGL_V3_VERTEX_SHADER
+#define _UltimateOpenGL_V3_VERTEX_SHADER
 SHADER(330 core,
 	layout (location = 0) in vec3 aPos;\n
 	layout (location = 1) in vec3 aNormal;\n
@@ -26,3 +28,4 @@ SHADER(330 core,
 		@TEXTCOORDS_CALCULATION\n
 	}\n
 )
+#endif

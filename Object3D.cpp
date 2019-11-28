@@ -1,5 +1,16 @@
 #include "UltimateOpenGL.h"
 
+Object3D::Object3D(){
+}
+Object3D::Object3D(Scene* _scene){
+	scene = _scene;
+}
+Object3D::Object3D(Mesh& _mesh){
+//	meshes.Add(_mesh);
+}
+Object3D::Object3D(Upp::Array<Mesh>& _meshes){
+}
+
 Object3D::Object3D(const Upp::String& pathOfModel){
 	
 }
@@ -141,5 +152,5 @@ void Object3D::ProcessMesh(aiMesh *mesh, const aiScene *scene){
     }
     
     // return a mesh object created from the extracted mesh data
-    meshes.Add(Mesh(vertices, indices, textures));
+    //meshes.Add(Mesh(vertices, indices, textures));
 }

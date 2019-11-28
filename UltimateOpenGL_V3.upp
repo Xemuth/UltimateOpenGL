@@ -32,11 +32,11 @@ file
 	stb_image.cpp,
 	stb_image.h,
 	Simps readonly separator,
-	Simps\DefaultFragmentShader.glsl,
 	Simps\DefaultVertexShader.glsl,
-	Simps\DirLight.glsl,
+	Simps\DefaultFragmentShader.glsl,
 	Simps\MaterialColor.glsl,
 	Simps\MaterialTexture.glsl,
+	Simps\DirLight.glsl,
 	Simps\PointLight.glsl,
 	Simps\SpotLight.glsl;
 

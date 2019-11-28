@@ -1,3 +1,5 @@
+#ifndef _UltimateOpenGL_V3_POINTLIGHT_SHADER
+#define _UltimateOpenGL_V3_POINTLIGHT_SHADER
 #define LIGHT_POINT_STRUCT()STRINGIFY(\n\
 	struct PointLight {\n\
 	    vec3 position;\n\
@@ -55,3 +57,4 @@ vec3 CalcColorPointLight(MaterialColor material,PointLight light, vec3 normal, v
 	    return (ambient + diffuse + specular);\n\
 	}\n\
 )
+#endif

@@ -1,21 +1,24 @@
-#ifndef _UltimateOpenGL_UltimateOpenGl_h_
-#define _UltimateOpenGL_UltimateOpenGl_h_
+#ifndef _UltimateOpenGL_V3_UltimateOpenGl_h_
+#define _UltimateOpenGL_V3_UltimateOpenGl_h_
+
+#include <chrono>
+#include <ctime>
 
 #include "Definition.h"
 
-Upp::String& IncludeShader(Upp::String& shader);
-
-#include "Texture.h"
+#include "Camera.h"
 #include "Shader.h"
+#include "Transform.h"
+#include "Texture.h"
+
+#include "Scene.h"
+
 #include "GameObject.h"
 #include "Object3D.h"
 #include "Mesh.h"
 
-#include "Scene.h"
-#include "Camera.h"
+Upp::String& IncludeShader(Upp::String& shader);
 
-#include <chrono>
-#include <ctime>
 
 class UltimateOpenGL_Context{
 	private:
@@ -73,13 +76,11 @@ class UltimateOpenGL_Context{
 		
 		
 		//****************Static part **************************
-		Upp::Vector<int> TransformGlmColorToRGB(glm::vec3 FloatColor);
-		Upp::Vector<int> TransformFloatColorToRGB(float RedFloat,float GreenFloat,float BlueFloat);
-		glm::vec3 TransformRGBToFloatColor(int Red,int Green,int Blue);
-		glm::vec3 TransformVectorToFloatColor(Upp::Vector<int> rgb);
-		int ColorUniformisation(int ColorRgb);
-		float ColorUniformisation(float ColorFloat);
+		static Upp::Vector<int> TransformGlmColorToRGB(glm::vec3 FloatColor);
+		static Upp::Vector<int> TransformFloatColorToRGB(float RedFloat,float GreenFloat,float BlueFloat);
+		static glm::vec3 TransformRGBToFloatColor(int Red,int Green,int Blue);
+		static glm::vec3 TransformVectorToFloatColor(Upp::Vector<int> rgb);
+		static int ColorUniformisation(int ColorRgb);
+		static float ColorUniformisation(float ColorFloat);
 };
-
-
 #endif

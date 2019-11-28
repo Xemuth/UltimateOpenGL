@@ -8,6 +8,32 @@ Mesh::Mesh(const Upp::Vector<Vertex>& vertices, Upp::Vector<unsigned int>& indic
     Load();
 }
 
+Mesh::Mesh(Mesh& _mesh){
+	object3D = _mesh.GetObject3D();
+	VAO = _mesh.GetVAO();
+	VBO = _mesh.GetVBO();
+	EBO = _mesh.GetEBO();
+        
+    vertices.Append(_mesh.GetVertices());
+    indices.Append(_mesh.GetIndices());
+    textures.Append(_mesh.GetTextures());
+    
+    shader = _mesh.GetShader();
+    
+    transform = _mesh.GetTransform();
+    
+    Upp::VectorMap<Upp::String,MaterialColor>& mc = _mesh.GetMaterialColor();
+    for(const Upp::String& str : mc.GetKeys()){
+        materialsColor.Add(str, mc.Get(str));
+    }
+    Upp::VectorMap<Upp::String,MaterialTexture>& mt = _mesh.GetMaterialTextures();
+    for(const Upp::String& str : mt.GetKeys()){
+        materialsTexture.Add(str, mt.Get(str));
+    }
+
+	LightAffected = _mesh.IsLightAffected();
+}
+
 void Mesh::Load(){
 	// create buffers/arrays
     glGenVertexArrays(1, &VAO);
@@ -89,6 +115,23 @@ Shader& Mesh::GetShader(){
 	return shader;
 }
 
+
+unsigned int Mesh::GetVAO(){
+	return VAO;
+}
+unsigned int Mesh::GetVBO(){
+	return VBO;
+}
+unsigned int Mesh::GetEBO(){
+	return EBO;
+}
+
+Upp::Vector<Vertex>& Mesh::GetVertices(){
+	return vertices;
+}
+Upp::Vector<unsigned int>& Mesh::GetIndices(){
+	return indices;
+}
 
 /* Texture Gestion */
 Mesh& Mesh::BindTexture(const Upp::String& TextureName){
