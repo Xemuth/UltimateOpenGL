@@ -32,6 +32,9 @@ void Object3D::LoadModel(const Upp::String& path){
     ProcessNode(scene->mRootNode, scene);
 }
 void Object3D::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform,Camera& camera){
+	if(onDraw != nullptr){
+		onDraw(*this);	
+	}
 	for(unsigned int i = 0; i < meshes.size(); i++)
         meshes[i].Draw(model,view,projection,transform,camera);
 }
@@ -155,4 +158,5 @@ void Object3D::ProcessMesh(aiMesh *mesh, const aiScene *scene){
     // return a mesh object created from the extracted mesh data
     Mesh& m =  meshes.Create<Mesh>(vertices, indices, textures);
     m.SetObject3D(this);
+   	GetTransform().AddChild(&m.GetTransform());
 }

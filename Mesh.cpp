@@ -4,6 +4,12 @@ Mesh::Mesh(const Upp::Vector<Vertex>& vertices, Upp::Vector<unsigned int>& indic
     this->vertices.Append(vertices);
     this->indices.Append(indices);
     this->textures.Append(textures);
+    
+    for(Texture& t : textures){
+   		MaterialTexture& mt =  CreateMaterialTexture(t.GetName());
+   		mt.diffuse = t.GetTextureIterator(); 
+		mt.specular= t.GetTextureIterator();                                                                 
+    }
 
    //Load();
 }
@@ -94,9 +100,9 @@ void Mesh::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 tr
 		cptColor++;
 	}
 	int cptTexture =0;
+
+	
 	for(const Upp::String &mtStr : materialsTexture.GetKeys()){
-		materialsTexture.Get(mtStr).diffuse = object3D->GetScene()->GetContext()->GetTextures().Get(mtStr).GetTextureIterator(); 
-		materialsTexture.Get(mtStr).specular= object3D->GetScene()->GetContext()->GetTextures().Get(mtStr).GetTextureIterator();
 		object3D->GetScene()->GetContext()->GetTextures().Get(mtStr).Use();
 		shader.SetMaterialTexture("texture"+ Upp::AsString(cptTexture),materialsTexture.Get(mtStr));
 		cptTexture++;

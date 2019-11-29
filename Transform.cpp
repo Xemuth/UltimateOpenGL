@@ -187,10 +187,11 @@ Transform& Transform::SetNewPosition(glm::vec3 newPose,bool updateChilds ){//set
 	}
 	return *this;
 } 
+
+
 //Rotation transformation
 Transform& Transform::RotateFrom(glm::quat _quaterion,bool updateChilds ){
-	LaunchEvent();
-	quaterion =_quaterion *quaterion;
+	quaterion =quaterion *_quaterion ;	
 	if(updateChilds){
 		for(Transform* ptr1 : childs){
 			ptr1->RotateFrom(_quaterion,updateChilds);
@@ -199,7 +200,6 @@ Transform& Transform::RotateFrom(glm::quat _quaterion,bool updateChilds ){
 	return *this;
 }
 Transform& Transform::SetNewRotation(glm::quat _quaterion,bool updateChilds ){
-	LaunchEvent();
 	quaterion =_quaterion;
 	if(updateChilds){
 		for(Transform* ptr1 : childs){
@@ -209,16 +209,31 @@ Transform& Transform::SetNewRotation(glm::quat _quaterion,bool updateChilds ){
 	return *this;
 }
 Transform& Transform::RotateFromEulerAngles(float angle,glm::vec3 EulerAngles,bool updateChilds ){
-	RotateFrom( glm::angleAxis(angle, EulerAngles),updateChilds);
+	if(EulerAngles.x > 0){
+		RotateFrom( glm::angleAxis(angle, glm::vec3(1.0f,0.0f,0.0f)),updateChilds);
+	}
+	if(EulerAngles.y > 0){
+		RotateFrom( glm::angleAxis(angle, glm::vec3(0.0f,1.0f,0.0f)),updateChilds);
+	}
+	if(EulerAngles.z > 0){
+		RotateFrom( glm::angleAxis(angle, glm::vec3(0.0f,0.0f,1.0f)),updateChilds);
+	}
 	return *this;
 }
 Transform& Transform::SetNewRotationEulerAngles(float angle,glm::vec3 EulerAngles,bool updateChilds ){
-	SetNewRotation(glm::angleAxis(angle, EulerAngles),updateChilds);
+	if(EulerAngles.x > 0){
+		SetNewRotation( glm::angleAxis(angle, glm::vec3(1.0f,0.0f,0.0f)),updateChilds);
+	}
+	if(EulerAngles.y > 0){
+		SetNewRotation( glm::angleAxis(angle, glm::vec3(0.0f,1.0f,0.0f)),updateChilds);
+	}
+	if(EulerAngles.z > 0){
+		SetNewRotation( glm::angleAxis(angle, glm::vec3(0.0f,0.0f,1.0f)),updateChilds);
+	}
 	return *this;
 }
 //Rotation transformation buffer
 Transform& Transform::SecondRotateFrom(glm::quat _quaterion,bool updateChilds ){
-	LaunchEvent();
 	quaterionBuffer =_quaterion *quaterionBuffer;
 	if(updateChilds){
 		for(Transform* ptr1 : childs){
@@ -228,7 +243,6 @@ Transform& Transform::SecondRotateFrom(glm::quat _quaterion,bool updateChilds ){
 	return *this;
 }
 Transform& Transform::SecondSetNewRotation(glm::quat _quaterion,bool updateChilds ){
-	LaunchEvent();
 	quaterionBuffer =_quaterion;
 	if(updateChilds){
 		for(Transform* ptr1 : childs){
@@ -245,9 +259,9 @@ Transform& Transform::SecondSetNewRotationEulerAngles(float angle,glm::vec3 Eule
 	SecondSetNewRotation(glm::angleAxis(angle, EulerAngles),updateChilds);
 	return *this;
 }
+
 //Scale transformation
 Transform& Transform::ScaleFrom(glm::vec3 _scallar,bool updateChilds){
-	LaunchEvent();
 	scale = _scallar;
 	modelMatrix =  glm::scale(modelMatrix,scale);
 	if(updateChilds){
@@ -258,7 +272,6 @@ Transform& Transform::ScaleFrom(glm::vec3 _scallar,bool updateChilds){
 	return *this;
 }
 Transform& Transform::ScaleNewValue(glm::vec3 _scallar,bool updateChilds){ //we ensure the scall is made by mutiply 1.0f model matrix to new scallar
-	LaunchEvent();
 	scale = _scallar;
 	modelMatrix =  glm::scale(glm::mat4(1.0f),scale);
 	if(updateChilds){
