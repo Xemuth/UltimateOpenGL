@@ -1,11 +1,5 @@
 #ifndef _UltimateOpenGL_V3_Object3D_h_
 #define _UltimateOpenGL_V3_Object3D_h_
-
-
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
-
 #include "Definition.h"
 
 class Object3D : public GameObject, Upp::Moveable<Object3D>

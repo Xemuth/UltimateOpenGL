@@ -1,5 +1,5 @@
-#ifndef _UltimateOpenGl_UltimateScene_h_
-#define _UltimateOpenGl_UltimateScene_h_
+#ifndef _UltimateOpenGl_V3_Scene_h_
+#define _UltimateOpenGl_V3_Scene_h_
 
 #include "Definition.h"
 

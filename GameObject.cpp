@@ -1,5 +1,6 @@
 #include "GameObject.h"
 #include "Scene.h"
+#include "Shader.h"
 GameObject::GameObject(){}
 GameObject::GameObject(const Upp::String& _name){
 	name = _name;

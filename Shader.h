@@ -1,5 +1,5 @@
-#ifndef _UltimateOpenGl_UltimateShader_h_
-#define _UltimateOpenGl_UltimateShader_h_
+#ifndef _UltimateOpenGl_V3_Shader_h_
+#define _UltimateOpenGl_V3_Shader_h_
 #include "Definition.h"
 
 Upp::String& IncludeShader(Upp::String& shader);

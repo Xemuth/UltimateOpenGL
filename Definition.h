@@ -1,15 +1,11 @@
-#ifndef _UltimateOpenGL_V2_UltimateDefinition_h_
-#define _UltimateOpenGL_V2_UltimateDefinition_h_
+#ifndef _UltimateOpenGL_V3_Definition_h_
+#define _UltimateOpenGL_V3_Definition_h_
 #include <Core/Core.h>
 
 #define STRINGIFY(...) #__VA_ARGS__
 #define SHADER(version, shader) "#version " #version "\n" STRINGIFY(shader)
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtx/quaternion.hpp>
-#include <glm/gtx/norm.hpp>
+#include "stb_image.h"//Stb is used to easily load different image type 
 
 #ifndef flagUPPGL
 	#include <glad/glad.h> //Glad is used to init OpenGL
@@ -18,7 +14,17 @@
 #endif
 //YOu can use NO_GL_INIT flag to prevent glad to init it
 //however glad is require to get GL def
-#include "stb_image.h"//Stb is used to easily load different image type 
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/norm.hpp>
+
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
 
 enum GameObjectType{LIGHT,SOUND,OBJECT3D,OBJECT2D,OBJECTUI};
 enum TranslationType{TRANSLATION, ROTATION,SECOND_ROTATION, SCALE};

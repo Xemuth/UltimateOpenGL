@@ -1,5 +1,5 @@
-#ifndef _UltimateOpenGl_UltimateTexture_h_
-#define _UltimateOpenGl_UltimateTexture_h_
+#ifndef _UltimateOpenGl_V3_Texture_h_
+#define _UltimateOpenGl_V3_Texture_h_
 
 #include "Definition.h"
 

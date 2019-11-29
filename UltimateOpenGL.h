@@ -5,9 +5,9 @@
 #include <ctime>
 
 #include "Definition.h"
-
-#include "Camera.h"
 #include "Shader.h"
+#include "Camera.h"
+
 #include "Transform.h"
 #include "Texture.h"
 

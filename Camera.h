@@ -1,12 +1,7 @@
-#ifndef _UltimateOpenGl_UltimateCamera_h_
-#define _UltimateOpenGl_UltimateCamera_h_
+#ifndef _UltimateOpenGl_V3_Camera_h_
+#define _UltimateOpenGl_V3_Camera_h_
 #include "Definition.h"
 
-#ifndef flagUPPGL
-	#include <glad/glad.h>
-#else
-	#include <GLCtrl/GLCtrl.h>
-#endif
 
 class Object3D;
 
