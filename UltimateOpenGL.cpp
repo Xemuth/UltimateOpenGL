@@ -66,6 +66,15 @@ float UltimateOpenGL_Context::ColorUniformisation(float ColorFloat){
 	return ColorFloat;
 }
 
+Upp::String UltimateOpenGL_Context::TransformFilePath(const Upp::String& FilePath){
+	Upp::String FilePathBuffer =FilePath;
+
+	FilePathBuffer = Replace(FilePathBuffer,Upp::Vector<Upp::String>{"\\"},Upp::Vector<Upp::String>{"/"});
+
+	return FilePathBuffer;
+}
+
+
 //time management
 void UltimateOpenGL_Context::StartTimer(){
 	start= std::chrono::high_resolution_clock::now();

@@ -82,5 +82,6 @@ class UltimateOpenGL_Context{
 		static glm::vec3 TransformVectorToFloatColor(Upp::Vector<int> rgb);
 		static int ColorUniformisation(int ColorRgb);
 		static float ColorUniformisation(float ColorFloat);
+		static Upp::String TransformFilePath(const Upp::String& FilePath);		
 };
 #endif

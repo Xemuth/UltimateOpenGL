@@ -15,9 +15,10 @@ Object3D::Object3D(const Upp::String& pathOfModel){
 	
 }
 void Object3D::LoadModel(const Upp::String& path){
+	Upp::String realPath =UltimateOpenGL_Context::TransformFilePath(path);
     // read file via ASSIMP
     Assimp::Importer importer;
-    const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+    const aiScene* scene = importer.ReadFile(realPath, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
     // check for errors
     if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
     {
@@ -25,14 +26,14 @@ void Object3D::LoadModel(const Upp::String& path){
         return;
     }
     // retrieve the directory path of the filepath
-    directory = path.Mid(0, path.ReverseFind('/'));
+    directory = realPath.Left( realPath.ReverseFind('/'));
 
     // process ASSIMP's root node recursively
     ProcessNode(scene->mRootNode, scene);
 }
-void Object3D::Draw(){
+void Object3D::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform,Camera& camera){
 	for(unsigned int i = 0; i < meshes.size(); i++)
-        meshes[i].Draw();
+        meshes[i].Draw(model,view,projection,transform,camera);
 }
 void Object3D::Load(){
 	for(unsigned int i = 0; i < meshes.size(); i++)
@@ -152,5 +153,6 @@ void Object3D::ProcessMesh(aiMesh *mesh, const aiScene *scene){
     }
     
     // return a mesh object created from the extracted mesh data
-    //meshes.Add(Mesh(vertices, indices, textures));
+    Mesh& m =  meshes.Create<Mesh>(vertices, indices, textures);
+    m.SetObject3D(this);
 }

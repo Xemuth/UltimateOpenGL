@@ -47,6 +47,19 @@ class Mesh : public Upp::Moveable<Mesh> {
     
     	bool LightAffected = true;
     public:
+		
+		inline static Upp::VectorMap<Upp::String,Upp::String> BasicShaders{
+			{"Default_Vertex_Shader",
+				Replace(
+				#include "Simps/DefaultVertexShader.glsl"
+				,Upp::Vector<Upp::String>{R"(@)"},Upp::Vector<Upp::String>{"//"})
+			},
+			{"Default_Fragment_Shader",
+			Replace(
+				#include "Simps/DefaultFragmentShader.glsl"
+				,Upp::Vector<Upp::String>{R"(@)"},Upp::Vector<Upp::String>{"//"})
+			}
+		};
 	
 		unsigned int GetVAO();
 		unsigned int GetVBO();
@@ -84,9 +97,10 @@ class Mesh : public Upp::Moveable<Mesh> {
 
         /*  Functions  */
         void Load();
+        void GenerateAutoShader(int NbLightDir,int NbLightPoint,int NbLightSpot);
         Mesh() = default;
         Mesh(const Upp::Vector<Vertex>& vertices, Upp::Vector<unsigned int>& indices, Upp::Vector<Texture>& textures);
         Mesh(Mesh& _mesh);
-        void Draw();
+        void Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform,Camera& camera);
 };
 #endif
