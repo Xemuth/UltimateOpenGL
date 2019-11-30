@@ -5,12 +5,11 @@ Mesh::Mesh(const Upp::Vector<Vertex>& vertices, Upp::Vector<unsigned int>& indic
     this->indices.Append(indices);
     this->textures.Append(textures);
     
-    for(Texture& t : textures){
-   		MaterialTexture& mt =  CreateMaterialTexture(t.GetName());
-   		mt.diffuse = t.GetTextureIterator(); 
-		mt.specular= t.GetTextureIterator();                                                                 
-    }
-
+	for(Texture& t : textures){
+		MaterialTexture& m =  materialsTexture.Add(t.GetName());
+		m.SetDiffuse(t.GetTextureIterator());
+	}
+	
    //Load();
 }
 
@@ -41,6 +40,7 @@ Mesh::Mesh(Mesh& _mesh){
 }
 
 void Mesh::Load(){
+
 	if(!shader.IsCompiled() && object3D != nullptr && object3D->GetScene() != nullptr){
 		LOG("Shader not compiled !, Default shaders loaded !\n");
 		GenerateAutoShader(object3D->GetScene() ->GetNumberOfDirLight(),  object3D->GetScene() ->GetNumberOfPointLight(),object3D->GetScene()->GetNumberOfSpotLight());
@@ -103,8 +103,9 @@ void Mesh::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 tr
 
 	
 	for(const Upp::String &mtStr : materialsTexture.GetKeys()){
-		object3D->GetScene()->GetContext()->GetTextures().Get(mtStr).Use();
+		
 		shader.SetMaterialTexture("texture"+ Upp::AsString(cptTexture),materialsTexture.Get(mtStr));
+		object3D->GetScene()->GetContext()->GetTextures().Get(mtStr).Use();
 		cptTexture++;
 	}
     for(const Upp::String& str : object3D->GetScene()->GetAllGameObject().GetKeys()){
@@ -171,6 +172,20 @@ void Mesh::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 tr
     */
 }
 
+/*
+bool Mesh::BindTexture(Upp::String textureName,float textureShininess,Upp::String TextureSpecularName){
+	if(object3D != nullptr && object3D->GetScene() != nullptr &&  textureName.GetCount() > 0 && object3D->GetScene()->GetContext()->GetTextures().Find(textureName) !=-1){
+		if(TextureSpecularName.GetCount() > 0 && object3D->GetScene()->GetContext()->GetTextures().Find(TextureSpecularName)!=-1){
+			materialsTexture.Add(textureName, MaterialTexture(textureShininess,true,object3D->GetScene()->GetContext()->GetTextures().Get(textureName).GetTextureIterator(),object3D->GetScene()->GetContext()->GetTextures().Get(TextureSpecularName).GetTextureIterator()));
+		}else{
+			materialsTexture.Add(textureName, MaterialTexture(textureShininess,false,object3D->GetScene()->GetContext()->GetTextures().Get(textureName).GetTextureIterator(),0 ));
+		}
+		return true;
+	}else{
+		LOG("Error : BindTexture(String,float,String) Invalide texture name ! he can't be empty or undefined !\n");
+		return false;
+	}
+}*/
 
 void Mesh::SetShader(Shader& _shader){
 	shader = _shader;
@@ -200,13 +215,15 @@ Upp::Vector<unsigned int>& Mesh::GetIndices(){
 /* Texture Gestion */
 Mesh& Mesh::BindTexture(const Upp::String& TextureName){
 	if(object3D != nullptr && object3D->GetScene() != nullptr && object3D->GetScene()->GetContext() !=nullptr){
-		Texture t =object3D->GetScene()->GetContext()->GetTexture("TextureName");
+		Texture t =object3D->GetScene()->GetContext()->GetTexture(TextureName);
 		if(t.IsLoaded()){
 			textures.Add(t);
 			return *this;
 		}
-		else
+		else{
 			LOG(TextureName + " texture don't existe in context, you must add it before getting it !");
+			return *this;
+		}
 	}
 	LOG("Mesh is not bind to GameObject or GameObject is not bind to Scene or Scene is not bind to Context wich is carrying texture");
 	return *this;
@@ -302,44 +319,23 @@ void Mesh::GenerateAutoShader(int NbLightDir,int NbLightPoint,int NbLightSpot){
 			Upp::String textureNameIdentifier = "texture" + Upp::AsString(cpt) ;
 			all_uniform << "uniform MaterialTexture " << textureNameIdentifier << ";\n";
 			all_VecMulti << ((cpt > 0)?"*":"") <<  "texture(" + textureNameIdentifier + ".diffuse,TexCoords)"; 
-			if( NbLightDir > 0 && LightAffected){
+			cpt++;
+		}
+		if(all_uniform.GetCount()>0) fragmentShader.Replace("//UNIFORM_MATERIAL_TEXTURE_NAME",all_uniform);
+
+		if( NbLightDir > 0 && LightAffected){
+			cpt = 0;
+			for(const Upp::String& key : materialsTexture.GetKeys()){
+				Upp::String textureNameIdentifier = "texture" + Upp::AsString(cpt) ;
 				if(cpt == 0){
 					AllDirLights << "for(int i = 0; i < " + Upp::AsString(NbLightDir) +"; i++){\n";
 					AllDirLights << "\tresult += CalcTextureDirLight("+ textureNameIdentifier +",dirLights[i], norm, viewDir);\n";
 				}else{
 					AllDirLights << "\tresult += CalcTextureDirLight("+ textureNameIdentifier +",dirLights[i], norm, viewDir);\n";
 				}
-				if(cpt + 1 == NbLightDir){
-					AllDirLights << "}";	
-				}
+				cpt++;
 			}
-			if( NbLightPoint > 0 && LightAffected){
-				if(cpt == 0){
-					AllPointLights << "for(int i = 0; i < " + Upp::AsString(NbLightPoint) +"; i++){\n";
-					AllPointLights << "\tresult += CalcTexturePointLight("+ textureNameIdentifier +",pointLights[i], norm, FragPos , viewDir);\n";
-				}else{
-					AllPointLights << "\tresult += CalcTexturePointLight("+ textureNameIdentifier +",pointLights[i], norm, FragPos , viewDir);\n";
-				}
-				if(cpt+ 1 == NbLightPoint){
-					AllPointLights << "}";	
-				}
-			}
-			if( NbLightSpot > 0 && LightAffected){
-				if(cpt == 0){
-					AllSpotLights << "for(int i = 0; i < " + Upp::AsString(NbLightSpot) +"; i++){\n";
-					AllSpotLights << "\tresult += CalcTextureSpotLight("+ textureNameIdentifier +",spotLights[i], norm, FragPos , viewDir);\n";
-				}else{
-					AllSpotLights << "\tresult += CalcTextureSpotLight("+ textureNameIdentifier +",spotLights[i], norm, FragPos , viewDir);\n";
-				}
-				if(cpt+ 1 == NbLightSpot){
-					AllSpotLights << "}";	
-				}
-			}
-			cpt++;
-		}
-		if(all_uniform.GetCount()>0) fragmentShader.Replace("//UNIFORM_MATERIAL_TEXTURE_NAME",all_uniform);
-
-		if( NbLightDir > 0 && LightAffected){
+			AllDirLights << "}";	
 			fragmentShader.Replace("//STRUCT_DIR_LIGHT","LIGHT_DIR_STRUCT()");
 			fragmentShader.Replace("//IMPORT_DIR_LIGHT_TEXTURE_PROTOTYPE","LIGHT_DIR_TEXTURE_PROTOTYPE()");
 			fragmentShader.Replace("//DIR_LIGHT_TEXTURE_FUNCTION","LIGHT_DIR_TEXTURE_FUNCTION()");	
@@ -347,6 +343,18 @@ void Mesh::GenerateAutoShader(int NbLightDir,int NbLightPoint,int NbLightSpot){
 			fragmentShader.Replace("//DIRECTIONAL_LIGHTS",AllDirLights);
 		}
 		if( NbLightPoint > 0 && LightAffected){
+			cpt = 0;
+			for(const Upp::String& key : materialsTexture.GetKeys()){
+				Upp::String textureNameIdentifier = "texture" + Upp::AsString(cpt) ;
+				if(cpt == 0){
+					AllPointLights << "for(int i = 0; i < " + Upp::AsString(NbLightPoint) +"; i++){\n";
+					AllPointLights << "\tresult += CalcTexturePointLight("+ textureNameIdentifier +",pointLights[i], norm, FragPos , viewDir);\n";
+				}else{
+					AllPointLights << "\tresult += CalcTexturePointLight("+ textureNameIdentifier +",pointLights[i], norm, FragPos , viewDir);\n";
+				}
+				cpt++;
+			}
+			AllPointLights << "}";	
 			fragmentShader.Replace("//STRUCT_POINT_LIGHT","LIGHT_POINT_STRUCT()");
 			fragmentShader.Replace("//IMPORT_POINT_LIGHT_TEXTURE_PROTOTYPE","LIGHT_POINT_TEXTURE_PROTOTYPE()");
 			fragmentShader.Replace("//POINT_LIGHT_TEXTURE_FUNCTION","LIGHT_POINT_TEXTURE_FUNCTION()");	
@@ -354,6 +362,18 @@ void Mesh::GenerateAutoShader(int NbLightDir,int NbLightPoint,int NbLightSpot){
 			fragmentShader.Replace("//POINT_LIGHTS",AllPointLights);
 		}
 		if( NbLightSpot > 0 && LightAffected){
+			cpt = 0;
+			for(const Upp::String& key : materialsTexture.GetKeys()){
+				Upp::String textureNameIdentifier = "texture" + Upp::AsString(cpt) ;
+				if(cpt == 0){
+					AllSpotLights << "for(int i = 0; i < " + Upp::AsString(NbLightSpot) +"; i++){\n";
+					AllSpotLights << "\tresult += CalcTextureSpotLight("+ textureNameIdentifier +",spotLights[i], norm, FragPos , viewDir);\n";
+				}else{
+					AllSpotLights << "\tresult += CalcTextureSpotLight("+ textureNameIdentifier +",spotLights[i], norm, FragPos , viewDir);\n";
+				}
+				cpt++;
+			}
+			AllSpotLights << "}";
 			fragmentShader.Replace("//STRUCT_SPOT_LIGHT","LIGHT_SPOT_STRUCT()");
 			fragmentShader.Replace("//IMPORT_SPOT_LIGHT_TEXTURE_PROTOTYPE","LIGHT_SPOT_TEXTURE_PROTOTYPE()");
 			fragmentShader.Replace("//SPOT_LIGHT_TEXTURE_FUNCTION","LIGHT_SPOT_TEXTURE_FUNCTION()");	
@@ -379,44 +399,22 @@ void Mesh::GenerateAutoShader(int NbLightDir,int NbLightPoint,int NbLightSpot){
 			Upp::String colorIdentifier = "color" + Upp::AsString(cpt) ;
 			all_uniform << "uniform MaterialColor " <<  colorIdentifier << ";\n";
 			all_VecMulti << ((cpt > 0)?"*":"") <<  "vec4(" + colorIdentifier + ".diffuse,1.0)"; 
-			if( NbLightDir > 0 && LightAffected){
+			cpt++;
+		}
+		if(all_uniform.GetCount()>0) fragmentShader.Replace("//UNIFORM_MATERIAL_COLOR_NAME",all_uniform);
+		
+		if( NbLightDir > 0 && LightAffected){
+			cpt = 0;
+			for(const Upp::String& key : materialsColor.GetKeys()){
+				Upp::String colorIdentifier = "color" + Upp::AsString(cpt) ;
 				if(cpt == 0){
 					AllDirLights << "for(int i = 0; i < " + Upp::AsString(NbLightDir) +"; i++){\n";
 					AllDirLights << "\tresult += CalcColorDirLight("+ colorIdentifier +",dirLights[i], norm, viewDir);\n";
 				}else{
 					AllDirLights << "\tresult += CalcColorDirLight("+ colorIdentifier +",dirLights[i], norm, viewDir);\n";
 				}
-				if(cpt + 1 == NbLightDir){
-					AllDirLights << "}";	
-				}
 			}
-			if( NbLightPoint > 0 && LightAffected){
-				if(cpt == 0){
-					AllPointLights << "for(int i = 0; i < " + Upp::AsString(NbLightPoint) +"; i++){\n";
-					AllPointLights << "\tresult += CalcColorPointLight("+ colorIdentifier +",pointLights[i], norm, FragPos ,viewDir);\n";
-				}else{
-					AllPointLights << "\tresult += CalcColorPointLight("+ colorIdentifier +",pointLights[i], norm, FragPos ,viewDir);\n";
-				}
-				if(cpt+ 1 == NbLightPoint){
-					AllPointLights << "}";	
-				}
-			}
-			if( NbLightSpot > 0 && LightAffected){
-				if(cpt == 0){
-					AllSpotLights << "for(int i = 0; i < " + Upp::AsString(NbLightSpot) +"; i++){\n";
-					AllSpotLights << "\tresult += CalcColorSpotLight("+ colorIdentifier +",spotLights[i], norm, FragPos , viewDir);\n";
-				}else{
-					AllSpotLights << "\tresult += CalcColorSpotLight("+ colorIdentifier +",spotLights[i], norm, FragPos , viewDir);\n";
-				}
-				if(cpt+ 1 == NbLightSpot){
-					AllSpotLights << "}";	
-				}
-			}
-			cpt++;
-		}
-		if(all_uniform.GetCount()>0) fragmentShader.Replace("//UNIFORM_MATERIAL_COLOR_NAME",all_uniform);
-		
-		if( NbLightDir > 0 && LightAffected){
+			AllDirLights << "}";
 			fragmentShader.Replace("//STRUCT_DIR_LIGHT","LIGHT_DIR_STRUCT()");
 			fragmentShader.Replace("//IMPORT_DIR_LIGHT_COLOR_PROTOTYPE","LIGHT_DIR_COLOR_PROTOTYPE()");
 			fragmentShader.Replace("//DIR_LIGHT_COLOR_FUNCTION","LIGHT_DIR_COLOR_FUNCTION()");	
@@ -424,6 +422,17 @@ void Mesh::GenerateAutoShader(int NbLightDir,int NbLightPoint,int NbLightSpot){
 			fragmentShader.Replace("//DIRECTIONAL_LIGHTS",AllDirLights);
 		}
 		if( NbLightPoint > 0&& LightAffected){
+			cpt = 0;
+			for(const Upp::String& key : materialsColor.GetKeys()){
+				Upp::String colorIdentifier = "color" + Upp::AsString(cpt) ;
+				if(cpt == 0){
+					AllPointLights << "for(int i = 0; i < " + Upp::AsString(NbLightPoint) +"; i++){\n";
+					AllPointLights << "\tresult += CalcColorPointLight("+ colorIdentifier +",pointLights[i], norm, FragPos ,viewDir);\n";
+				}else{
+					AllPointLights << "\tresult += CalcColorPointLight("+ colorIdentifier +",pointLights[i], norm, FragPos ,viewDir);\n";
+				}
+			}
+			AllPointLights << "}";
 			fragmentShader.Replace("//STRUCT_POINT_LIGHT","LIGHT_POINT_STRUCT()");
 			fragmentShader.Replace("//IMPORT_POINT_LIGHT_COLOR_PROTOTYPE","LIGHT_POINT_COLOR_PROTOTYPE()");
 			fragmentShader.Replace("//POINT_LIGHT_COLOR_FUNCTION","LIGHT_POINT_COLOR_FUNCTION()");	
@@ -431,6 +440,17 @@ void Mesh::GenerateAutoShader(int NbLightDir,int NbLightPoint,int NbLightSpot){
 			fragmentShader.Replace("//POINT_LIGHTS",AllPointLights);
 		}
 		if( NbLightSpot > 0&& LightAffected){
+			cpt = 0;
+			for(const Upp::String& key : materialsColor.GetKeys()){
+				Upp::String colorIdentifier = "color" + Upp::AsString(cpt) ;
+				if(cpt == 0){
+					AllSpotLights << "for(int i = 0; i < " + Upp::AsString(NbLightSpot) +"; i++){\n";
+					AllSpotLights << "\tresult += CalcColorSpotLight("+ colorIdentifier +",spotLights[i], norm, FragPos , viewDir);\n";
+				}else{
+					AllSpotLights << "\tresult += CalcColorSpotLight("+ colorIdentifier +",spotLights[i], norm, FragPos , viewDir);\n";
+				}
+			}
+			AllSpotLights << "}";
 			fragmentShader.Replace("//STRUCT_SPOT_LIGHT","LIGHT_SPOT_STRUCT()");
 			fragmentShader.Replace("//IMPORT_SPOT_LIGHT_COLOR_PROTOTYPE","LIGHT_SPOT_COLOR_PROTOTYPE()");
 			fragmentShader.Replace("//SPOT_LIGHT_COLOR_FUNCTION","LIGHT_SPOT_COLOR_FUNCTION()");	

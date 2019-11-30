@@ -84,6 +84,7 @@ class Mesh : public Upp::Moveable<Mesh> {
 		MaterialTexture& CreateMaterialTexture(const Upp::String& _name);
 		MaterialColor& CreateMaterialColor(const Upp::String& _name);
 		
+	//	bool BindTexture(Upp::String textureName,float textureShininess,Upp::String TextureSpecularName);
 		
 		//Miscelnious
 		void SetObject3D(Object3D* _object3D);

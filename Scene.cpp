@@ -119,7 +119,7 @@ int Scene::GetNumberOfPointLight(){
 }
 void Scene::prepareDefaultLight(){
 	GameObject& go=	AllGamesObjects.Add("defaultDirLight");
-	go.AddDirLight("defaultDirLight").SetDirection(glm::vec3(0.0f,-1.0f,0.0f)).SetAmbient(glm::vec3( 0.04f, 0.04f, 0.04f)).SetDiffuse(glm::vec3(0.9,0.9,0.9)).SetSpecular(glm::vec3( 0.04f, 0.04f, 0.04f));
+	go.AddDirLight("defaultDirLight").SetDirection(glm::vec3(0.0f,-1.0f,0.0f)).SetAmbient(glm::vec3( 0.9f, 0.9f, 0.9f)).SetDiffuse(glm::vec3(0.9,0.9,0.9)).SetSpecular(glm::vec3( 0.04f, 0.04f, 0.04f));
 }
 
 //Logique
