@@ -6,7 +6,9 @@ Object3D::Object3D(Scene* _scene){
 	scene = _scene;
 }
 Object3D::Object3D(Mesh& _mesh){
-//	meshes.Add(_mesh);
+	Mesh& m =meshes.Create<Mesh>(_mesh);
+    m.SetObject3D(this);
+    transform.AddChild(&m.GetTransform());
 }
 Object3D::Object3D(Upp::Array<Mesh>& _meshes){
 }

@@ -98,6 +98,7 @@ class Mesh : public Upp::Moveable<Mesh> {
 
         /*  Functions  */
         void Load();
+        void LoadDefaultIndices();
         void GenerateAutoShader(int NbLightDir,int NbLightPoint,int NbLightSpot);
         Mesh() = default;
         Mesh(const Upp::Vector<Vertex>& vertices, Upp::Vector<unsigned int>& indices, Upp::Vector<Texture>& textures);
