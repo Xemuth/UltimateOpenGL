@@ -29,6 +29,8 @@ class Object3D : public GameObject, Upp::Moveable<Object3D>
         void LoadModel(const Upp::String& path);
         void Load();
         void Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform,Camera& camera);	
+        
+        Object3D& BindTexture(const Upp::String& TextureName);
    
 };
 

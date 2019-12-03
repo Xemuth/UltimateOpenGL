@@ -20,7 +20,22 @@ void Object3D::LoadModel(const Upp::String& path){
 	Upp::String realPath =UltimateOpenGL_Context::TransformFilePath(path);
     // read file via ASSIMP
     Assimp::Importer importer;
-    const aiScene* scene = importer.ReadFile(realPath, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+  //  const aiScene* scene = importer.ReadFile(realPath, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace |aiProcess_GenNormals );
+    const aiScene* scene = importer.ReadFile(realPath,aiProcess_JoinIdenticalVertices |		// join identical vertices/ optimize indexing
+		aiProcess_ValidateDataStructure |		// perform a full validation of the loader's output
+		aiProcess_ImproveCacheLocality |		// improve the cache locality of the output vertices
+		aiProcess_RemoveRedundantMaterials |	// remove redundant materials
+		aiProcess_GenUVCoords |					// convert spherical, cylindrical, box and planar mapping to proper UVs
+		aiProcess_TransformUVCoords |			// pre-process UV transformations (scaling, translation ...)
+		//aiProcess_FindInstances |				// search for instanced meshes and remove them by references to one master
+		aiProcess_LimitBoneWeights |			// limit bone weights to 4 per vertex
+		aiProcess_OptimizeMeshes |				// join small meshes, if possible;
+		//aiProcess_PreTransformVertices |
+		aiProcess_GenSmoothNormals |			// generate smooth normal vectors if not existing
+		aiProcess_SplitLargeMeshes |			// split large, unrenderable meshes into sub-meshes
+		aiProcess_Triangulate |					// triangulate polygons with more than 3 edges
+		aiProcess_ConvertToLeftHanded |			// convert everything to D3D left handed space
+		aiProcess_SortByPType);
     // check for errors
     if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
     {
@@ -78,10 +93,29 @@ void Object3D::ManageTextures(Upp::Vector<Texture>& vectorToFile, aiMaterial *ma
             else if(type == aiTextureType_NORMALS)
                 t=NORMAL;
             
-            vectorToFile.Add(GetScene()->GetContext()->AddTexture(Upp::String(str.C_Str()),directory+"/"+ Upp::String(str.C_Str()),t));      
+            vectorToFile.Add(GetScene()->GetContext()->AddTexture(Upp::String(str.C_Str()),directory+"/"+ Upp::String(str.C_Str()),t,false,false));      
         }
     }
 }
+
+Object3D& Object3D::BindTexture(const Upp::String& TextureName){
+	if( scene != nullptr && scene->GetContext() !=nullptr){
+		Texture t = scene->GetContext()->GetTexture(TextureName);
+		if(t.IsLoaded()){
+			for(Mesh& m : meshes){
+				m.GetTextures().Add(t);
+			}
+			return *this;
+		}
+		else{
+			LOG(TextureName + " texture don't existe in context, you must add it before getting it !");
+			return *this;
+		}
+	}
+	LOG("Error : Object3D" + name +" is not bind to Scene or Scene is not bind to Context wich is carrying texture");
+	return *this;
+}
+
 
 void Object3D::ProcessMesh(aiMesh *mesh, const aiScene *scene){
 	// data to fill
@@ -100,7 +134,7 @@ void Object3D::ProcessMesh(aiMesh *mesh, const aiScene *scene){
         vector.z = mesh->mVertices[i].z;
         vertex.Position = vector;
         // normals
-        vector.x = mesh->mNormals[i].x;
+       vector.x = mesh->mNormals[i].x;
         vector.y = mesh->mNormals[i].y;
         vector.z = mesh->mNormals[i].z;
         vertex.Normal = vector;
@@ -117,7 +151,7 @@ void Object3D::ProcessMesh(aiMesh *mesh, const aiScene *scene){
         else
             vertex.TexCoords = glm::vec2(0.0f, 0.0f);
         // tangent
-        vector.x = mesh->mTangents[i].x;
+       	/*vector.x = mesh->mTangents[i].x;
         vector.y = mesh->mTangents[i].y;
         vector.z = mesh->mTangents[i].z;
         vertex.Tangent = vector;
@@ -125,7 +159,7 @@ void Object3D::ProcessMesh(aiMesh *mesh, const aiScene *scene){
         vector.x = mesh->mBitangents[i].x;
         vector.y = mesh->mBitangents[i].y;
         vector.z = mesh->mBitangents[i].z;
-        vertex.Bitangent = vector;
+        vertex.Bitangent = vector;*/
         vertices.push_back(vertex);
     }
     // now wak through each of the mesh's faces (a face is a mesh its triangle) and retrieve the corresponding vertex indices.

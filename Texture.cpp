@@ -54,9 +54,9 @@ Texture::Texture(const Texture& texture){
 	textureparameters.Append(texture.GetTextureParameters());
 }
 Texture::~Texture(){
-	if(loaded){
+	/*if(loaded){
 		glDeleteTextures(1, &ID);
-	}
+	}*/
 }
 
 void Texture::LoadTextureParameter(){
@@ -193,10 +193,10 @@ bool Texture::Load(unsigned int ActiveIterator,bool loadDefault,bool flipLoad){
 		            format = GL_RGBA;
 		        
 				glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			/*	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);*/
 
 				
 				if(GenerateMipMap)glGenerateMipmap(GL_TEXTURE_2D);
@@ -227,6 +227,7 @@ TextureType Texture::GetType(){
 
 bool Texture::Use(){
 	if(loaded){
+		//Upp::Cout() << "Using texture ID " << Upp::AsString(ID) << " to the iterator number " <<Upp::AsString(TextureIterator) << "\n";
 		glActiveTexture(GL_TEXTURE0 +TextureIterator);
 		glBindTexture(GL_TEXTURE_2D, ID);
 		return true;

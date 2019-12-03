@@ -5,10 +5,7 @@ Mesh::Mesh(const Upp::Vector<Vertex>& vertices, Upp::Vector<unsigned int>& indic
     this->indices.Append(indices);
     this->textures.Append(textures);
     
-	for(Texture& t : textures){
-		MaterialTexture& m =  materialsTexture.Add(t.GetName());
-		m.SetDiffuse(t.GetTextureIterator());
-	}
+
 	
    //Load();
 }
@@ -47,6 +44,13 @@ void Mesh::LoadDefaultIndices(){
 
 void Mesh::Load(){
 	if(indices.size() != 0 || vertices.size() != 0){
+		if(textures.GetCount() > 0 && materialsTexture.GetCount() == 0){
+			for(Texture& t : textures){
+			//	Upp::Cout() << "Texture of mesh is " + t.GetName() + " with ID of " +  Upp::AsString(t.GetId()) + "\n";
+				MaterialTexture& m =  materialsTexture.Add(t.GetName());
+				m.SetDiffuse(t.GetTextureIterator());
+			}
+		}
 		if(!shader.IsCompiled() && object3D != nullptr && object3D->GetScene() != nullptr){
 			LOG("Shader not compiled !, Default shaders loaded !\n");
 			GenerateAutoShader(object3D->GetScene() ->GetNumberOfDirLight(),  object3D->GetScene() ->GetNumberOfPointLight(),object3D->GetScene()->GetNumberOfSpotLight());
@@ -55,6 +59,8 @@ void Mesh::Load(){
             LOG("No indice defined ! Auto generation of incices !");
             LoadDefaultIndices();
         }
+
+
 		// create buffers/arrays
 	    glGenVertexArrays(1, &VAO);
 	    glGenBuffers(1, &VBO);
@@ -70,6 +76,20 @@ void Mesh::Load(){
 	
 	    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+	
+	
+	/*	Upp::Cout() << "SizeOFVertex : " << sizeof(Vertex) << "\n";
+		float* buffer = nullptr;
+		for(Vertex& v : vertices){
+			buffer = (float*)&v;
+			
+			for (int e =0 ; e < 13 ; e++){
+				Upp::Cout() <<Upp::AsString(*buffer) <<",";	
+				buffer++;
+			}
+			
+			Upp::Cout() <<  Upp::EOL;
+		}*/
 	
 	    // set the vertex attribute pointers
 	    // vertex Positions
@@ -89,6 +109,7 @@ void Mesh::Load(){
 	    glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Bitangent));
 	
 	    glBindVertexArray(0);
+	   // shader.Use();
 	}else{
 	    LOG("Mesh of object named " + object3D->GetName() + " are error ! or undefined ! nothing to load !");
 	}
@@ -113,12 +134,11 @@ void Mesh::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 tr
 		cptColor++;
 	}
 	int cptTexture =0;
-
-	
 	for(const Upp::String &mtStr : materialsTexture.GetKeys()){
-		
-		shader.SetMaterialTexture("texture"+ Upp::AsString(cptTexture),materialsTexture.Get(mtStr));
+				materialsTexture.Get(mtStr).diffuse = object3D->GetScene()->GetContext()->GetTextures().Get(mtStr).GetTextureIterator(); 
+		materialsTexture.Get(mtStr).specular= object3D->GetScene()->GetContext()->GetTextures().Get(mtStr).GetTextureIterator();
 		object3D->GetScene()->GetContext()->GetTextures().Get(mtStr).Use();
+		shader.SetMaterialTexture("texture"+ Upp::AsString(cptTexture),materialsTexture.Get(mtStr));
 		cptTexture++;
 	}
     for(const Upp::String& str : object3D->GetScene()->GetAllGameObject().GetKeys()){
@@ -142,11 +162,11 @@ void Mesh::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 tr
     	}
     }
     glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, indices.GetCount(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 
     // always good practice to set everything back to defaults once configured.
-    glActiveTexture(GL_TEXTURE0);
+	glActiveTexture(GL_TEXTURE0);
     shader.Unbind();
 	/*
 	// bind appropriate textures
@@ -319,7 +339,7 @@ void Mesh::GenerateAutoShader(int NbLightDir,int NbLightPoint,int NbLightSpot){
 	}
 	if(materialsTexture.GetCount() > 0){
 		//First we must had in Vertex Shader  all this thing : 
-		vertexShader.Replace("//LAYOUT_TEXTURE_COORD","layout (location = 2) in vec2 aTexCoord;");
+		vertexShader.Replace("//LAYOUT_TEXTURE_COORD","layout (location = 2) in vec2 aTexCoord;\nlayout (location =3) in vec3 aTangent;\nlayout (location =4) in vec3 aBiTangent;");
 		vertexShader.Replace("//OUT_VECTOR_TEXCOORDS","out vec2 TexCoords;");
 		vertexShader.Replace("//TEXTCOORDS_CALCULATION","TexCoords = aTexCoord;");
 		
@@ -396,10 +416,12 @@ void Mesh::GenerateAutoShader(int NbLightDir,int NbLightPoint,int NbLightSpot){
 		
 		if(all_VecMulti.GetCount()>12){
 			if((NbLightDir > 0 || NbLightPoint > 0 || NbLightSpot > 0) && LightAffected){
-				fragmentShader.Replace("//FRAG_COLOR_CALCULATION","FragColor = vec4(result,1.0);");
+			//	fragmentShader.Replace("//FRAG_COLOR_CALCULATION","FragColor = vec4(result,1.0);");
+				fragmentShader.Replace("//FRAG_COLOR_CALCULATION","FragColor = texture(texture0.diffuse,TexCoords);");
 			}else{
 				all_VecMulti << ";\n";
 				fragmentShader.Replace("//FRAG_COLOR_CALCULATION",all_VecMulti);
+			//	fragmentShader.Replace("//FRAG_COLOR_CALCULATION","FragColor = texture(texture0.diffuse,TexCoords);\n");
 			}
 		}
 	}
@@ -487,4 +509,5 @@ void Mesh::GenerateAutoShader(int NbLightDir,int NbLightPoint,int NbLightSpot){
 	if(!GetShader().AddShader(  "Vertex",VERTEX,vertexShader).AddShader("Fragment",FRAGMENT,fragmentShader).CompileShader(true)){
 		LOG("ERROR : GenerateAutoShader(int,int,int) ->Shader failled to compilate !");	
 	}
+
 }

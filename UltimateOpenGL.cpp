@@ -35,6 +35,9 @@ UltimateOpenGL_Context::UltimateOpenGL_Context(){
 	StartTimer();
 }
 UltimateOpenGL_Context::~UltimateOpenGL_Context(){
+	for(Texture& t : textures){
+		t.Remove();
+	}
 }
 
 
@@ -157,7 +160,7 @@ Texture UltimateOpenGL_Context::AddTexture(const Upp::String& TextureName,const 
 			LOG("Error : AddTextures(String,String,bool,bool) Loading error !\n");
 			return Texture();
 		}else{
-			LOG("Info : Texture " + TextureName +" Loaded with success !\n");
+			LOG("Info : Texture " + TextureName +"  number " + Upp::AsString( TextureCompteur) +" Loaded with success with ID of " + Upp::AsString(texture.GetId()) +"!\n");
 			TextureCompteur++;
 			return texture;
 		}
