@@ -27,8 +27,7 @@ http://www.assimp.org  (You must compile it by yourself on your computer, Howeve
 
 Glfw used to generate the screen and render the openGL Scene https://www.glfw.org
 
-
-
+You can find all libs compiled by myself for W10 Mingw here (it's working with V13684 of Upp) : https://we.tl/t-Q5vDvyhBz3
 
 ## Getting Started and Showing a cube 
 
