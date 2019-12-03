@@ -8,9 +8,9 @@ here is the Ultimate++ post : https://www.ultimatepp.org/forums/index.php?t=msg&
 At this time, UOGL allow Scene creation, insertion of  multiple 'GameObject'(Shapes, Lights), insertion of multiple camera per scene. 
 
 Things are coming : 
-	Insertion of 3D Models using Assimp librairie
-	Gestion of physics using Bullets3
-	(Maybe) Création of sound object 
+	Support of animation and FBX file
+	Gestion of physics
+	Sound
 
 ## Prerequisites 
 
@@ -61,106 +61,121 @@ You also need to add GLFW lib to linker setting of the project. To do this, righ
 here we go, we are now ready to do some code, first of all we need to set up all the glfw window setup. (I won't dig the process, if you want to know more about glfw window and is initialisation, you must go here :https://learnopengl.com/Getting-started/Hello-Window )
 ```
 #include <Core/Core.h>
-#include <UltimateOpenGL_V2/UltimateOpenGL.h>
+#include <UltimateOpenGL_V3/UltimateOpenGL.h>
 #include <GLFW/glfw3.h>
 
 using namespace Upp;
+
+const float screenWidth = 800.0f;
+const float screenHeight = 600.0f;
+
 
 UltimateOpenGL_Context context; //Context carrying all scene and object (Basicly context is a game)
 
 CONSOLE_APP_MAIN
 {
+	/*****GLFW INITIALISATION AND OPENGL INITIALISATION USING GLAD ***/
+	StdLogSetup(LOG_COUT|LOG_FILE);
 	glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	
-    context.SetSceneSize(800.0f,600.0f); // tel the context size of our window
-	
-    GLFWwindow* window = glfwCreateWindow(800.0f, 600.0f,"Hello UltimateOpenGL", NULL, NULL);
-    if (window == NULL)
+    glfwWindowHint(GLFW_SAMPLES, 4); // Anti alliasing 
+    context.SetScreenSize(screenHeight,screenWidth);
+    GLFWwindow* window = glfwCreateWindow(screenWidth, screenHeight,"Hello UltimateOpenGL V3", NULL, NULL);
+    
+    if (window == nullptr)
     {
         Cout() << "Failed to create GLFW window" << "\n";
         glfwTerminate();
         Exit(-1);
     }
     glfwMakeContextCurrent(window);
-	
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)){
+
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)){
         Cout()  << "Failed to initialize GLAD" << "\n";;
         Exit(-1);
     }
-    while(!glfwWindowShouldClose(window)) {
-        glClearColor(0.4f,0.5f,0.8f, 1.0f); //Set background color of our window
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Clear all pixel on the window
-		
-	    glfwSwapBuffers(window); 
-	    glfwPollEvents();
-	}
-	
-	glfwTerminate();
-	
-}
-```
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_MULTISAMPLE);   // Anti alliasing 
 
-If you now try the code, you should see a blue window :
-![BlueWindow](https://i.imgur.com/ARVgBCC.png)
-
-Let's now add A simple cube to this window :
-
-```
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)){
-        Cout()  << "Failed to initialize GLAD" << "\n";;
-        Exit(-1);
-    }
-    
-    
-    //************New code ***********//
-    Scene& presentation = context.AddScene("presentation"); //Create Scene 
-    unsigned int camera = presentation.AddCamera(); //Adding camera to the scene
-    Object3D& cube = presentation.CreateGameObject<Object3D>("cube",CubeVertices); //Adding the cube
-    cube.GetTransform().SetNewPosition(glm::vec3(0.0f,0.0f,-1.0f)); // move the cube forward the camera
-
-    presentation.Load(); //Loading the scene
-    
-
-    while(!glfwWindowShouldClose(window)) {
-        
-        glClearColor(0.4f,0.5f,0.8f, 1.0f); //Set background color of our window
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Clear all pixel on the window
-		
-		context.Draw(); //Drawing the context (active scene)
-	
-	    glfwSwapBuffers(window); 
+        while(!glfwWindowShouldClose(window)) {
+   
+	    glfwSwapBuffers(window);
 	    glfwPollEvents(); 
 	}
-	
 	glfwTerminate();
 ```
 
-Well, it's not that's graphic, we must make an even to let him rotate every frame !
+If you now try the code, you should see a black window :
+![BlueWindow](https://i.imgur.com/ARVgBCC.png)
+
+Let's now add A simple model to this window :
 
 ```
-    presentation.Load(); //Loading the scene
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)){
+        Cout()  << "Failed to initialize GLAD" << "\n";;
+        Exit(-1);
+    }
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_MULTISAMPLE);   // Anti alliasing 
+	
+  //***All basic code to set Up glwf is coming before see my exemple or Readme of my GITHUB**/// 
+    Scene& myScene = context.AddScene("main");
+    myScene.AddCamera("main");
+    myScene.SetBackGroundColor(context.TransformRGBToFloatColor(40,180,200));
     
-    
-    //***Adding event on Draw to the cube
-    cube.SetOnDrawFunction([](GameObject& myGameObject){
-    	myGameObject.GetTransform().RotateFromEulerAngles(0.001f,glm::vec3(1.0f,1.0f,1.0f)); // rotating of 0.001 degree every frame
-    });
+	Object3D& modele =  myScene.CreateGameObject<Object3D>("modele");
+	modele.LoadModel("C:\\Upp\\myapps\\ExempleUltimateOpenGL_V3\\obj upp\\upp.obj"); //Loading of model
+	
+	modele.GetTransform().SetNewPosition(glm::vec3(0,0,-5)); //Set new position 
+	modele.GetTransform().ScaleNewValue(glm::vec3(0.05f,0.05f,0.05f)); //Scale the model
+	
+	myScene.Load();
+    while(!glfwWindowShouldClose(window)) {
+        
+		glfwSetWindowTitle(window, "UltimateOpenGL V3 - " +AsString(context.GetFPS()) +" FPS");
+		try{
+			context.Draw();  //Draw the context
+		}catch(UGLException& e){
+			LOG(e.what());	
+		}
+	
+	    glfwSwapBuffers(window);
+	    glfwPollEvents(); 
+	}
+	glfwTerminate();
+```
+
+Well, it's not that's graphic :
+![modeleLoaded](https://i.imgur.com/KqJDOvU.png)
+Let's make it rotate every frame !
+
+```
+	modele.GetTransform().SetNewPosition(glm::vec3(0,0,-5)); //Set new position 
+	modele.GetTransform().ScaleNewValue(glm::vec3(0.05f,0.05f,0.05f)); //Scale the model
+	
+	//NEW CODE : 
+	modele.SetOnDrawFunction([](GameObject& gm){ //Bind event on draw
+		double rotation = glm::cos(context.GetEllapsedTime())/100;
+		gm.GetTransform().RotateFromEulerAngles(context.GetDeltaTime() * 2,glm::vec3(0,1,0) );
+	});
+	
+	myScene.Load();
     
 ```
 
-now, you should see a rotating cube on the screen !
+now, you should see a rotating the model on the screen !
 
-![Rotating](https://i.imgur.com/3hBANRs.png)
+![Rotating](https://i.imgur.com/jhoMNRe.png)
 
 This exemple is available here : https://github.com/Xemuth/SimpleExampleUltimateOpenGL
 
-You can find another exemple of working code here : https://github.com/Xemuth/ExempleUltimateOpenGL_V2
+You can find another exemple of working code here : https://github.com/Xemuth/ExempleUltimateOpenGL_V3
 
 ![Ex1](https://i.imgur.com/bI2kepS.png)
 ![Ex2](https://i.imgur.com/KL2ixM6.png)
+![Ex3](https://i.imgur.com/BxMIgiL.png)
 
 ## Documentation and deep example 
 
