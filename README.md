@@ -107,10 +107,7 @@ CONSOLE_APP_MAIN
 	glfwTerminate();
 ```
 
-If you now try the code, you should see a black window :
-![BlueWindow](https://i.imgur.com/ARVgBCC.png)
-
-Let's now add A simple model to this window :
+If you now try the code, you should see a black window? Let's now add A simple model to this window and change the background color :
 
 ```
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)){
