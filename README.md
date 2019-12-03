@@ -27,7 +27,6 @@ http://www.assimp.org  (You must compile it by yourself on your computer, Howeve
 
 Glfw used to generate the screen and render the openGL Scene https://www.glfw.org
 
-Bullet3 used for physique engine. https://github.com/bulletphysics/bullet3 (you must compile it by yourself as well)
 
 
 
