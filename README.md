@@ -29,7 +29,7 @@ Glfw used to generate the screen and render the openGL Scene https://www.glfw.or
 
 You can find all libs compiled by myself for W10 Mingw here (it's working with V13684 of Upp) : https://we.tl/t-Q5vDvyhBz3
 
-## Getting Started and Showing a cube 
+## Getting Started and Showing a 3D model 
 
 Here you can find a look of what it should look in your Builder setting (based on TheIDE)
 ![how my lib is setting](https://i.imgur.com/KfHdK6N.png)
