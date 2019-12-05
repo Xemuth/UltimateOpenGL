@@ -30,7 +30,7 @@ class Object3D : public GameObject, Upp::Moveable<Object3D>
         void Load();
         void Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform,Camera& camera);	
         
-        Object3D& BindTexture(const Upp::String& TextureName);
+        Object3D& BindTexture(const Upp::String& TextureName,float mixValue = 1.0, float textureShininess = 0.64f,const Upp::String& TextureSpecularName ="", const Upp::String& NormalMappingTextureName="");
    
 };
 

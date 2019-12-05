@@ -3,8 +3,53 @@ Mesh::Mesh(const Upp::Vector<Vertex>& vertices, Upp::Vector<unsigned int>& indic
 {
     this->vertices.Append(vertices);
     this->indices.Append(indices);
-    this->textures.Append(textures);
     
+    // this->textures.Append(textures);
+	
+	Texture lastDiffuse;
+	Texture lastHeight;
+	Texture lastNormal;
+	Texture lastAmbient;
+	Texture lastSpecular;
+	
+	for(Texture& t :   textures){
+		if(t.GetType() == DIFFUSE && lastDiffuse.IsLoaded()){
+			MaterialTexture& m =  materialsTexture.Add(lastDiffuse.GetName());
+			m.SetDiffuse(lastDiffuse.GetTextureIterator());
+			if(lastSpecular.IsLoaded());
+			m.SetSpecular(lastSpecular.GetId());
+			if(lastNormal.IsLoaded());
+			m.SetNormal(lastNormal.GetId());
+			
+			lastNormal =Texture();
+			lastSpecular =Texture();
+			lastDiffuse = Texture();
+		}else{
+			if(t.GetType() == DIFFUSE){
+				lastDiffuse = t;
+			}else if(t.GetType() == NORMAL){
+				lastNormal = t;
+			}else if(t.GetType() == HEIGHT){
+				lastHeight = t;
+			}else if(t.GetType() == AMBIENT){
+				lastAmbient = t;
+			}else if(t.GetType() == SPECULAR){
+				lastSpecular = t;
+			}
+		}
+	}
+	if(lastDiffuse.IsLoaded()){
+		MaterialTexture& m =  materialsTexture.Add(lastDiffuse.GetName());
+		m.SetDiffuse(lastDiffuse.GetTextureIterator());
+		if(lastSpecular.IsLoaded());
+		m.SetSpecular(lastSpecular.GetId());
+		if(lastNormal.IsLoaded());
+		m.SetNormal(lastNormal.GetId());
+	}
+
+	for(MaterialTexture& mt : materialsTexture){
+		mt.SetMix((float) (1.0f / materialsTexture.GetCount()));
+	}
 
 	
    //Load();
@@ -18,7 +63,7 @@ Mesh::Mesh(Mesh& _mesh){
         
     vertices.Append(_mesh.GetVertices());
     indices.Append(_mesh.GetIndices());
-    textures.Append(_mesh.GetTextures());
+ //   textures.Append(_mesh.GetTextures());
     
     shader = _mesh.GetShader();
     
@@ -44,13 +89,19 @@ void Mesh::LoadDefaultIndices(){
 
 void Mesh::Load(){
 	if(indices.size() != 0 || vertices.size() != 0){
-		if(textures.GetCount() > 0 && materialsTexture.GetCount() == 0){
+		/*if(textures.GetCount() > 0 && materialsTexture.GetCount() == 0){
 			for(Texture& t : textures){
 			//	Upp::Cout() << "Texture of mesh is " + t.GetName() + " with ID of " +  Upp::AsString(t.GetId()) + "\n";
 				MaterialTexture& m =  materialsTexture.Add(t.GetName());
 				m.SetDiffuse(t.GetTextureIterator());
 			}
+		}*/
+		
+		//Juste un test,ne doit pas rester en létat
+		for(MaterialTexture& mt : materialsTexture){
+			mt.SetMix((float) (1.0f / materialsTexture.GetCount()));
 		}
+		
 		if(!shader.IsCompiled() && object3D != nullptr && object3D->GetScene() != nullptr){
 			LOG("Shader not compiled !, Default shaders loaded !\n");
 			GenerateAutoShader(object3D->GetScene() ->GetNumberOfDirLight(),  object3D->GetScene() ->GetNumberOfPointLight(),object3D->GetScene()->GetNumberOfSpotLight());
@@ -246,7 +297,48 @@ Upp::Vector<unsigned int>& Mesh::GetIndices(){
 }
 
 /* Texture Gestion */
-Mesh& Mesh::BindTexture(const Upp::String& TextureName){
+Mesh& Mesh::BindTexture(const Upp::String& TextureName,float mixValue, float textureShininess,const Upp::String& TextureSpecularName, const Upp::String& NormalMappingTextureName){
+	if(object3D != nullptr && object3D->GetScene() != nullptr && object3D->GetScene()->GetContext() !=nullptr){	
+		Texture t =object3D->GetScene()->GetContext()->GetTexture(TextureName);
+		if(t.IsLoaded()){
+			MaterialTexture& m =  materialsTexture.Add(t.GetName());
+			m.SetDiffuse(t.GetTextureIterator()).SetMix(mixValue).SetShininess(textureShininess);
+			if(TextureSpecularName.GetCount() > 0){
+				Texture tSpeculare =object3D->GetScene()->GetContext()->GetTexture(TextureName);
+				if(tSpeculare.IsLoaded()){
+					/*** Here I add the texture to material ***/
+					m.SetSpecular(tSpeculare.GetId());
+					if(tSpeculare.GetType() != SPECULAR)
+						LOG("Warning : Mesh& Mesh::BindTexture(...) You are binding as speculare a texture wich is not a speculare type !");
+				}else{
+					LOG("Error : Mesh& Mesh::BindTexture(...) Specular texture of " + object3D->GetName() +" named " + tSpeculare.GetName() +" is not loaded !" );
+				}
+			}
+			if(NormalMappingTextureName.GetCount() > 0){
+				Texture tNormal = object3D->GetScene()->GetContext()->GetTexture(TextureName);
+				if(tNormal.IsLoaded()){
+					/**Here I add the texture to material ***/
+					m.SetNormal(tNormal.GetId());
+					if(tNormal.GetType() != NORMAL)
+						LOG("Warning : Mesh& Mesh::BindTexture(...) You are binding as Normal a texture wich is not a Normal type !");
+				}else{
+					LOG("Error : Mesh& Mesh::BindTexture(...) Normal texture of " + object3D->GetName() +" named " + tNormal.GetName() +" is not loaded !" );
+				}
+			}
+			if(t.GetType() != DIFFUSE)
+				LOG("Warning : Mesh& Mesh::BindTexture(...) You are binding as Diffuse a texture wich is not a Diffuse type !");
+
+			//textures.Add(t);
+			return *this;
+		}
+		else{
+			LOG("Error : " + TextureName + " texture don't existe in context, you must add it before getting it !");
+			return *this;
+		}
+	}
+	LOG("Error : Mesh is not bind to GameObject or GameObject is not bind to Scene or Scene is not bind to Context wich is carrying texture");
+	return *this;
+	/*
 	if(object3D != nullptr && object3D->GetScene() != nullptr && object3D->GetScene()->GetContext() !=nullptr){
 		Texture t =object3D->GetScene()->GetContext()->GetTexture(TextureName);
 		if(t.IsLoaded()){
@@ -259,8 +351,10 @@ Mesh& Mesh::BindTexture(const Upp::String& TextureName){
 		}
 	}
 	LOG("Mesh is not bind to GameObject or GameObject is not bind to Scene or Scene is not bind to Context wich is carrying texture");
-	return *this;
+	return *this;*/
 }
+
+/*
 bool Mesh::RemoveTexture(const Texture& _texture){
 	int cpt = 0;
 	for(Texture& t : textures){
@@ -274,7 +368,7 @@ bool Mesh::RemoveTexture(const Texture& _texture){
 }
 Upp::Vector<Texture>& Mesh::GetTextures(){
 	return textures;
-}
+}*/
 
 /* Transform */
 Transform& Mesh::GetTransform(){

@@ -98,7 +98,53 @@ void Object3D::ManageTextures(Upp::Vector<Texture>& vectorToFile, aiMaterial *ma
     }
 }
 
-Object3D& Object3D::BindTexture(const Upp::String& TextureName){
+Object3D& Object3D::BindTexture(const Upp::String& TextureName,float mixValue, float textureShininess,const Upp::String& TextureSpecularName, const Upp::String& NormalMappingTextureName){
+	//you may ask "why the hell you dont just call Mesh.BindTexture Method   ?? symply because
+	//I dont want to resolve same texture again and again on each mesh.
+	if(GetScene() != nullptr && GetScene()->GetContext() !=nullptr){	
+		Texture t =GetScene()->GetContext()->GetTexture(TextureName);
+		if(t.IsLoaded()){
+			MaterialTexture m;
+			m.SetDiffuse(t.GetTextureIterator()).SetMix(mixValue).SetShininess(textureShininess);
+			if(TextureSpecularName.GetCount() > 0){
+				Texture tSpeculare =GetScene()->GetContext()->GetTexture(TextureName);
+				if(tSpeculare.IsLoaded()){
+					/*** Here I add the texture to material ***/
+					m.SetSpecular(tSpeculare.GetId());
+					if(tSpeculare.GetType() != SPECULAR)
+						LOG("Warning : Mesh& Mesh::BindTexture(...) You are binding as speculare a texture wich is not a speculare type !");
+				}else{
+					LOG("Error : Mesh& Mesh::BindTexture(...) Specular texture of " + name +" named " + tSpeculare.GetName() +" is not loaded !" );
+				}
+			}
+			if(NormalMappingTextureName.GetCount() > 0){
+				Texture tNormal = GetScene()->GetContext()->GetTexture(TextureName);
+				if(tNormal.IsLoaded()){
+					/**Here I add the texture to material ***/
+					m.SetNormal(tNormal.GetId());
+					if(tNormal.GetType() != NORMAL)
+						LOG("Warning : Mesh& Mesh::BindTexture(...) You are binding as Normal a texture wich is not a Normal type !");
+				}else{
+					LOG("Error : Mesh& Mesh::BindTexture(...) Normal texture of " + name +" named " + tNormal.GetName() +" is not loaded !" );
+				}
+			}
+			if(t.GetType() != DIFFUSE)
+				LOG("Warning : Mesh& Mesh::BindTexture(...) You are binding as Diffuse a texture wich is not a Diffuse type !");
+
+			for(Mesh& mes : meshes){
+				mes.GetMaterialTextures().Put(t.GetName(),m);
+			}
+			return *this;
+		}
+		else{
+			LOG("Error : " +TextureName + " texture don't existe in context, you must add it before getting it !");
+			return *this;
+		}
+	}
+	LOG("Error : Object3D" + name +" is not bind to Scene or Scene is not bind to Context wich is carrying texture");
+	return *this;
+
+/*
 	if( scene != nullptr && scene->GetContext() !=nullptr){
 		Texture t = scene->GetContext()->GetTexture(TextureName);
 		if(t.IsLoaded()){
@@ -113,7 +159,7 @@ Object3D& Object3D::BindTexture(const Upp::String& TextureName){
 		}
 	}
 	LOG("Error : Object3D" + name +" is not bind to Scene or Scene is not bind to Context wich is carrying texture");
-	return *this;
+	return *this;*/
 }
 
 
@@ -183,10 +229,15 @@ void Object3D::ProcessMesh(aiMesh *mesh, const aiScene *scene){
     // 1. diffuse maps
     if(this->scene != nullptr && this->scene->GetContext() != nullptr){
      	ManageTextures(textures,material,aiTextureType_DIFFUSE);
+     	Upp::Cout() << "Nb diffuse " << Upp::AsString(textures.GetCount()) << Upp::EOL;
      	ManageTextures(textures,material,aiTextureType_SPECULAR);
+     	Upp::Cout() << "Nb speculare + diffuse " << Upp::AsString(textures.GetCount()) << Upp::EOL;
      	ManageTextures(textures,material,aiTextureType_HEIGHT);
+     	Upp::Cout() << "Nb Height +  speculare + diffuse " << Upp::AsString(textures.GetCount()) << Upp::EOL;
      	ManageTextures(textures,material,aiTextureType_AMBIENT);
-     
+     	Upp::Cout() << "Nb  AMBIENT + Height +  speculare + diffuse " << Upp::AsString(textures.GetCount()) << Upp::EOL;
+     	ManageTextures(textures,material,aiTextureType_NORMALS);
+     	Upp::Cout() << "Nb  NORMAL  + AMBIENT + Height +  speculare + diffuse " << Upp::AsString(textures.GetCount()) << Upp::EOL;
     }else{
         LOG("Warning : cant load and Bind texture since no context is linked to object3D : " + name );
     }

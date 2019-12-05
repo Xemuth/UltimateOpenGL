@@ -6,6 +6,9 @@ Upp::String& IncludeShader(Upp::String& shader);
 //*****************Material***********//
 struct Material {
 	float shininess=32.0f;
+	float mix = 1.0f; //Used to mix texture or color if needed , Determine the % of this color or texture in the result can't be higher than 1 and lower than 0
+	
+	Material& SetMix(float _mix){if(_mix > 1) mix =1; else if(_mix <0) mix = 0; else mix = _mix; return *this;}
 	Material& SetShininess(float _shininess){shininess = _shininess; return *this;}
 };
 struct MaterialTexture: public Material,Upp::Moveable<MaterialTexture> {
@@ -24,11 +27,18 @@ struct MaterialTexture: public Material,Upp::Moveable<MaterialTexture> {
 	}
 	MaterialTexture& UseSpecular(bool _useSpecular){useSpecular = (_useSpecular)?1:-1; return *this;}
 	MaterialTexture& SetDiffuse(int _diffuse){diffuse = _diffuse; return *this;}
-	MaterialTexture& SetSpecular(int _specular){specular = _specular; return *this;}
+	MaterialTexture& SetSpecular(int _specular){if(useSpecular== -1)useSpecular =1; specular = _specular; return *this;}
 	MaterialTexture& SetShininess(float _shininess){shininess = _shininess; return *this;}
-	int useSpecular=0; //If this one is set to One then we use Shininess, UltimateOpenGL will set it to one before sending material to the shader if Specular is different of -1
-	int diffuse = -1;  //You can prevent this automatique value change
-	int specular = -1;
+	MaterialTexture& UseNormal(bool _useNormal){useNormal = (_useNormal)?1:-1; return *this;}
+	MaterialTexture& SetNormal(int _Normal){if(useNormal== -1)useNormal =1; normal = _Normal; return *this;}
+	int diffuse = 0.64f;//You can prevent this automatique value change
+	
+	int useSpecular=-1; //If this one is set to One then we use Shininess, UltimateOpenGL will set it to one before sending material to the shader if Specular is different of -1
+	int specular = -1; // Id of speculare used for normal Mapping
+	
+	int useNormal=-1; //If this use normal mapping it have to be set to one 
+	int normal =-1; // Id of texture used for normal Mapping
+	
 };
 struct MaterialColor: public Material,Upp::Moveable<MaterialColor> {
 	MaterialColor(){}

@@ -30,7 +30,7 @@ enum GameObjectType{LIGHT,SOUND,OBJECT3D,OBJECT2D,OBJECTUI};
 enum TranslationType{TRANSLATION, ROTATION,SECOND_ROTATION, SCALE};
 enum Camera_Movement {FORWARD,BACKWARD,LEFT,RIGHT};// Defines several possible options for camera movement. Used as abstraction to stay away from window-system specific input methods
 enum TextureColorSample{SAMPLE_RGB,SAMPLE_RGBA}; //Allow to define type of color the texture you want load is
-enum TextureType{DIFFUSE,SPECULAR,NORMAL,HEIGHT};
+enum TextureType{DIFFUSE,SPECULAR,NORMAL,HEIGHT, AMBIENT};
 enum ShaderType{PROGRAMM,VERTEX,FRAGMENT}; //Define type of shader we want 
 
 

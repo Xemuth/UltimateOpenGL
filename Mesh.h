@@ -59,7 +59,7 @@ class Mesh : public Upp::Moveable<Mesh> {
         /*  Mesh Data  */
         Upp::Vector<Vertex> vertices;
         Upp::Vector<unsigned int> indices;
-        Upp::Vector<Texture> textures;
+        //Upp::Vector<Texture> textures;
         
         Shader shader;
         
@@ -92,9 +92,9 @@ class Mesh : public Upp::Moveable<Mesh> {
 		Upp::Vector<unsigned int>& GetIndices();
 
 		/* Texture Gestion */
-		Mesh& BindTexture(const Upp::String& TextureName);
-		bool RemoveTexture(const Texture& _texture);
-		Upp::Vector<Texture>& GetTextures();
+		Mesh& BindTexture(const Upp::String& TextureName,float mixValue = 1.0, float textureShininess = 0.64f,const Upp::String& TextureSpecularName ="", const Upp::String& NormalMappingTextureName="");
+	/*	bool RemoveTexture(const Texture& _texture);
+		Upp::Vector<Texture>& GetTextures();*/
 
 		/* Transform */
 		Transform& GetTransform();
