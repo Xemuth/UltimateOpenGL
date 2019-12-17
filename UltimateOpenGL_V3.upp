@@ -7,6 +7,9 @@ library
 file
 	README.md,
 	LICENSES.txt,
+	Docs readonly separator,
+	app.tpp,
+	Src readonly separator,
 	Definition.h,
 	UltimateOpenGL.h,
 	UltimateOpenGL.cpp,
