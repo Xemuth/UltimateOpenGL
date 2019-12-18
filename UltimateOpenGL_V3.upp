@@ -41,5 +41,7 @@ file
 	Simps\MaterialTexture.glsl,
 	Simps\DirLight.glsl,
 	Simps\PointLight.glsl,
-	Simps\SpotLight.glsl;
+	Simps\SpotLight.glsl,
+	srcimp.tpp,
+	src.tpp;
 

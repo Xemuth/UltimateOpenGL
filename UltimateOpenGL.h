@@ -19,7 +19,6 @@
 
 Upp::String& IncludeShader(Upp::String& shader);
 
-
 class UltimateOpenGL_Context{
 	private:
 		Upp::ArrayMap<Upp::String,Scene> AllScenes;
