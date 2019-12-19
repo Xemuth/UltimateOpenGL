@@ -43,6 +43,7 @@ class UltimateOpenGL_Context{
 		//textures
 		inline static int TextureCompteur=0;
 		Upp::VectorMap<Upp::String,Texture> textures;
+		
 	
 	public:
 		UltimateOpenGL_Context();
@@ -57,6 +58,7 @@ class UltimateOpenGL_Context{
 		void SetScreenSize(float ScreenHeight,float ScreenWidth);
 		Upp::Sizef GetScreenSize();
 		
+		void Trace(bool b = true);//Log all OpenGL Error
 		
 		//scenes
 		Scene& AddScene(const Upp::String& name);

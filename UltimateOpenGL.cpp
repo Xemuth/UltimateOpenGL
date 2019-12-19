@@ -6,6 +6,8 @@
 #include "Simps/SpotLight.glsl"
 #include "Simps/DirLight.glsl"
 
+
+
 Upp::String& IncludeShader(Upp::String& shader){
 	shader.Replace("MATERIAL_TEXTURE_STRUCT()",MATERIAL_TEXTURE_STRUCT());
 	shader.Replace("MATERIAL_COLOR_STRUCT()",MATERIAL_COLOR_STRUCT());
@@ -77,6 +79,19 @@ Upp::String UltimateOpenGL_Context::TransformFilePath(const Upp::String& FilePat
 	return FilePathBuffer;
 }
 
+void GLAPIENTRY MessageCallback( GLenum source,GLenum type,GLuint id,GLenum severity,GLsizei length,const GLchar* message, void* userParam ){
+	LOG("GL CALLBACK: " + Upp::String( (type == GL_DEBUG_TYPE_ERROR) ? "** GL ERROR **" : "" ) +" type = 0x" + type +", severity = 0x"+ severity +", message = " + message);
+ // fprintf( stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",( type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : "" ), type, severity, message );
+}
+
+void UltimateOpenGL_Context::Trace(bool b){
+	if(b){
+		glEnable( GL_DEBUG_OUTPUT );
+		glDebugMessageCallback(static_cast<GLDEBUGPROC>(&MessageCallback), 0 );		
+	}else{
+		glDisable( GL_DEBUG_OUTPUT );
+	}
+}
 
 //time management
 void UltimateOpenGL_Context::StartTimer(){

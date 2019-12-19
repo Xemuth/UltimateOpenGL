@@ -166,13 +166,15 @@ void Mesh::Load(){
 	}
 }
 
+
+
 void Mesh::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform,Camera& camera){
 
 	shader.Use();
 	//Cout() << "x: " << Position.x << ", y: " << Position.y << ", z: " << Position.z << "\n";
 	model = glm::translate(model,GetTransform().GetPosition())*glm::mat4_cast(GetTransform().GetQuaterion())*GetTransform().GetModelMatrixScaller();
 
-	//if(ClearOnDraw)transformations.Clear();S
+	//if(ClearOnDraw)transformations.Clear();
     shader.SetMat4("model",model);
     shader.SetMat4("transform", transform);
     shader.SetMat4("view",view);
@@ -212,10 +214,10 @@ void Mesh::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 tr
 			}
     	}
     }
+  
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, indices.GetCount(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
-
     // always good practice to set everything back to defaults once configured.
 	glActiveTexture(GL_TEXTURE0);
     shader.Unbind();
