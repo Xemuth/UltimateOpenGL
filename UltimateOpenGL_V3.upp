@@ -9,6 +9,7 @@ file
 	LICENSES.txt,
 	Docs readonly separator,
 	app.tpp,
+	src.tpp,
 	Src readonly separator,
 	Definition.h,
 	UltimateOpenGL.h,
@@ -26,10 +27,10 @@ file
 	GameObject.cpp,
 	Transform.h,
 	Transform.cpp,
-	Mesh.h,
-	Mesh.cpp,
 	Object3D.h,
 	Object3D.cpp,
+	Mesh.h,
+	Mesh.cpp,
 	Libs readonly separator,
 	glad.c,
 	stb_image.cpp,
@@ -41,7 +42,5 @@ file
 	Simps\MaterialTexture.glsl,
 	Simps\DirLight.glsl,
 	Simps\PointLight.glsl,
-	Simps\SpotLight.glsl,
-	srcimp.tpp,
-	src.tpp;
+	Simps\SpotLight.glsl;
 

@@ -229,15 +229,15 @@ void Object3D::ProcessMesh(aiMesh *mesh, const aiScene *scene){
     // 1. diffuse maps
     if(this->scene != nullptr && this->scene->GetContext() != nullptr){
      	ManageTextures(textures,material,aiTextureType_DIFFUSE);
-     	Upp::Cout() << "Nb diffuse " << Upp::AsString(textures.GetCount()) << Upp::EOL;
+     //	Upp::Cout() << "Nb diffuse " << Upp::AsString(textures.GetCount()) << Upp::EOL;
      	ManageTextures(textures,material,aiTextureType_SPECULAR);
-     	Upp::Cout() << "Nb speculare + diffuse " << Upp::AsString(textures.GetCount()) << Upp::EOL;
+     //	Upp::Cout() << "Nb speculare + diffuse " << Upp::AsString(textures.GetCount()) << Upp::EOL;
      	ManageTextures(textures,material,aiTextureType_HEIGHT);
-     	Upp::Cout() << "Nb Height +  speculare + diffuse " << Upp::AsString(textures.GetCount()) << Upp::EOL;
+     //	Upp::Cout() << "Nb Height +  speculare + diffuse " << Upp::AsString(textures.GetCount()) << Upp::EOL;
      	ManageTextures(textures,material,aiTextureType_AMBIENT);
-     	Upp::Cout() << "Nb  AMBIENT + Height +  speculare + diffuse " << Upp::AsString(textures.GetCount()) << Upp::EOL;
+    // 	Upp::Cout() << "Nb  AMBIENT + Height +  speculare + diffuse " << Upp::AsString(textures.GetCount()) << Upp::EOL;
      	ManageTextures(textures,material,aiTextureType_NORMALS);
-     	Upp::Cout() << "Nb  NORMAL  + AMBIENT + Height +  speculare + diffuse " << Upp::AsString(textures.GetCount()) << Upp::EOL;
+     //	Upp::Cout() << "Nb  NORMAL  + AMBIENT + Height +  speculare + diffuse " << Upp::AsString(textures.GetCount()) << Upp::EOL;
     }else{
         LOG("Warning : cant load and Bind texture since no context is linked to object3D : " + name );
     }
