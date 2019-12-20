@@ -32,7 +32,6 @@ file
 	Mesh.h,
 	Mesh.cpp,
 	Libs readonly separator,
-	glad.c,
 	stb_image.cpp,
 	stb_image.h,
 	Simps readonly separator,

@@ -8,12 +8,11 @@
 #include "stb_image.h"//Stb is used to easily load different image type 
 
 #ifndef flagUPPGL
-	#include <glad/glad.h> //Glad is used to init OpenGL
+//	#include <glad/glad.h> //Glad is used to init OpenGL
+	//glad's no longer in UOGL. IMO the window manager should load open
 #else
 	#include <GLCtrl/GLCtrl.h>
 #endif
-//YOu can use NO_GL_INIT flag to prevent glad to init it
-//however glad is require to get GL def
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
