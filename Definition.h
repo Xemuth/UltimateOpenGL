@@ -13,12 +13,12 @@
 #else
 	#include <GLCtrl/GLCtrl.h>
 #endif
-
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtx/quaternion.hpp>
-#include <glm/gtx/norm.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <plugin/glm/glm.hpp>
+#include <plugin/glm/gtc/matrix_transform.hpp>
+#include <plugin/glm/gtc/type_ptr.hpp>
+#include <plugin/glm/gtx/quaternion.hpp>
+#include <plugin/glm/gtx/norm.hpp>
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
