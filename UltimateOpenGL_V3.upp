@@ -1,8 +1,5 @@
 description "\377B28,0,200";
 
-uses
-	plugin/glm;
-
 library
 	zlibstatic,
 	assimp;
