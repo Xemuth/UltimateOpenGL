@@ -173,6 +173,7 @@ bool Texture::Load(unsigned int ActiveIterator,bool loadDefault,bool flipLoad){
 	if(FileExists(pathTexture)){
 		if(!loaded){
 			TextureIterator = ActiveIterator;
+			ID=0;
 			glGenTextures(1, &ID);
 			glActiveTexture(GL_TEXTURE0 + TextureIterator);
 			glBindTexture(GL_TEXTURE_2D, ID);

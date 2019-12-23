@@ -6,13 +6,16 @@
 #define SHADER(version, shader) "#version " #version "\n" STRINGIFY(shader)
 
 #include "stb_image.h"//Stb is used to easily load different image type 
-
+#ifndef flagNOUPPGL
+	#include <GLCtrl/GLCtrl.h>
+#endif
+/*z
 #ifndef flagUPPGL
 //	#include <glad/glad.h> //Glad is used to init OpenGL
 	//glad's no longer in UOGL. IMO the window manager should load open
 #else
 	#include <GLCtrl/GLCtrl.h>
-#endif
+#endif*/
 #define GLM_ENABLE_EXPERIMENTAL
 #include <plugin/glm/glm.hpp>
 #include <plugin/glm/gtc/matrix_transform.hpp>
@@ -20,9 +23,9 @@
 #include <plugin/glm/gtx/quaternion.hpp>
 #include <plugin/glm/gtx/norm.hpp>
 
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
+#include <plugin/assimp/Importer.hpp>
+#include <plugin/assimp/scene.h>
+#include <plugin/assimp/postprocess.h>
 
 
 enum GameObjectType{LIGHT,SOUND,OBJECT3D,OBJECT2D,OBJECTUI};
