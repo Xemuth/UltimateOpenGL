@@ -34,6 +34,8 @@ Upp::String& IncludeShader(Upp::String& shader){
 }
 
 UltimateOpenGL_Context::UltimateOpenGL_Context(){
+	ScreenSize.cx = 600;  //Default Size
+	ScreenSize.cy = 600;
 	StartTimer();
 }
 UltimateOpenGL_Context::~UltimateOpenGL_Context(){
