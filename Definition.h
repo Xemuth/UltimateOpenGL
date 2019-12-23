@@ -23,9 +23,9 @@
 #include <plugin/glm/gtx/quaternion.hpp>
 #include <plugin/glm/gtx/norm.hpp>
 
-#include <plugin/assimp/Importer.hpp>
-#include <plugin/assimp/scene.h>
-#include <plugin/assimp/postprocess.h>
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 
 
 enum GameObjectType{LIGHT,SOUND,OBJECT3D,OBJECT2D,OBJECTUI};

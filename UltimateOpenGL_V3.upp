@@ -1,7 +1,8 @@
 description "\377B28,0,200";
 
-uses
-	plugin/assimp;
+library
+	zlibstatic,
+	assimp;
 
 file
 	README.md,
