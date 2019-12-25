@@ -8,7 +8,7 @@ struct Vertex : public Upp::Moveable<Vertex> {
     // normal
     glm::vec3 Normal=glm::vec3(0);
     // texCoords
-    glm::vec2 TexCoords=glm::vec3(0);
+    glm::vec2 TexCoords=glm::vec2(0);
     // tangent
     glm::vec3 Tangent=glm::vec3(0);
     // bitangent
@@ -46,6 +46,8 @@ struct Vertex : public Upp::Moveable<Vertex> {
     }
     
 };
+
+
 
 class Mesh : public Upp::Moveable<Mesh> {
 	private:
@@ -106,6 +108,8 @@ class Mesh : public Upp::Moveable<Mesh> {
 		
 		MaterialTexture& CreateMaterialTexture(const Upp::String& _name);
 		MaterialColor& CreateMaterialColor(const Upp::String& _name);
+		
+		bool ReadData(Upp::Vector<float>& data, ReaderParameters readerParameter);
 		
 	//	bool BindTexture(Upp::String textureName,float textureShininess,Upp::String TextureSpecularName);
 		

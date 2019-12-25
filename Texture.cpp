@@ -212,7 +212,7 @@ bool Texture::Load(unsigned int ActiveIterator,bool loadDefault,bool flipLoad){
 			return false;
 		}
 	}else{
-		Upp::Cout() << "FilePath of texutre is undefined  !\n";
+		Upp::Cout() << "FilePath of texture is undefined  !\n";
 		loaded =false;
 	}
 	return loaded;

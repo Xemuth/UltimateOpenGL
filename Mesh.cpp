@@ -298,6 +298,81 @@ Upp::Vector<unsigned int>& Mesh::GetIndices(){
 	return indices;
 }
 
+bool Mesh::ReadData(Upp::Vector<float>& data,ReaderParameters readerParameter){
+	//I thing this code is really bad.
+	if(readerParameter.verticesPosition> -1){
+		enum AllDataType{VERTICES,NORMAL,TEXTURE,TANGANT,BITANGANT};
+		Upp::ArrayMap<int,AllDataType> map;
+		int* iterateur =static_cast<int*>( &readerParameter.verticesPosition);
+		int cpt  = 0;
+		for(int e=0;e< 5; iterateur++, e++){
+			if(*iterateur == cpt){
+				switch(e){
+					case 0:
+						map.Add(cpt,VERTICES);
+					break;
+					case 1:
+						map.Add(cpt,NORMAL);
+					break;
+					case 2:
+						map.Add(cpt,TEXTURE);
+					break;
+					case 3:
+						map.Add(cpt,TANGANT);
+					break;
+					case 4:
+						map.Add(cpt,BITANGANT);
+					break;
+					default:
+						LOG("Warning : ReadData strange iterator is passed over the map !");
+				}
+				cpt++;	
+			}
+		}
+		float* fIterator =static_cast<float*>( &(data[0]));
+		int iteratorSize = 0;
+		while(iteratorSize < data.GetCount()){
+			Vertex& v =  vertices.Add();
+			for(const int& iterator  : map.GetKeys()){
+				switch( map.Get(iterator)){ 
+					case VERTICES:
+						v.Position = glm::vec3(*fIterator,*(fIterator++),*(fIterator++));
+						iteratorSize+=3;
+						fIterator++;
+					break;
+					case NORMAL:
+						v.Normal = glm::vec3(*fIterator,*(fIterator++),*(fIterator++));
+						iteratorSize+=3;
+						fIterator++;
+					break;
+					case TEXTURE:
+						v.TexCoords = glm::vec2(*fIterator,*(fIterator++));
+						iteratorSize+=2;
+						fIterator++;
+					break;
+					case TANGANT:
+						v.Tangent = glm::vec3(*fIterator,*(fIterator++),*(fIterator++));
+						iteratorSize+=3;
+						fIterator++;
+					break;
+					case BITANGANT:
+						v.Bitangent = glm::vec3(*fIterator,*(fIterator++),*(fIterator++));
+						iteratorSize+=3;
+						fIterator++;
+					break;
+					default:
+						LOG("Warning : ReadData strange value spotted on the map used to readData !");
+				}
+			}
+			Upp::Cout() << v.Position.x << ";" <<v.Position.y << ";" << v.Position.z << " | " << v.Normal.x << ";" << v.Normal.y << ";" << v.Normal.z << " | " << v.TexCoords.x << ";" << v.TexCoords.y << Upp::EOL;
+		}
+		return true;
+	}else{
+		LOG("Warning : ReadData no position of vertices set in readerParameters !");
+		return false;
+	}
+}
+
 /* Texture Gestion */
 Mesh& Mesh::BindTexture(const Upp::String& TextureName,float mixValue, float textureShininess,const Upp::String& TextureSpecularName, const Upp::String& NormalMappingTextureName){
 	if(object3D != nullptr && object3D->GetScene() != nullptr && object3D->GetScene()->GetContext() !=nullptr){	

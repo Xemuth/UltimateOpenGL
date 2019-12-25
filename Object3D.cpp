@@ -48,6 +48,31 @@ void Object3D::LoadModel(const Upp::String& path){
     // process ASSIMP's root node recursively
     ProcessNode(scene->mRootNode, scene);
 }
+
+void Object3D::ReadData(Upp::Vector<float>& data,ReaderParameters readerParameter){
+	Mesh& m = meshes.Add();
+	if(m.ReadData(data,readerParameter)){
+		m.SetObject3D(this);
+		transform.AddChild(&m.GetTransform());
+		LOG("ReadData : Data have been readed succesfully !");	
+	}else{
+		meshes.Remove(meshes.GetCount()-1);
+		LOG("ReadData : Error during process of data !");
+	}
+}
+
+void Object3D::ReadData(Upp::Vector<float>& data){
+	Mesh& m = meshes.Add();
+	if(m.ReadData(data,ReaderParameters() )){
+		m.SetObject3D(this);
+		transform.AddChild(&m.GetTransform());
+		LOG("ReadData : Data have been readed succesfully !");	
+	}else{
+		meshes.Remove(meshes.GetCount()-1);
+		LOG("ReadData : Error during process of data !");
+	}
+}
+
 void Object3D::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform,Camera& camera){
 	if(onDraw != nullptr){
 		onDraw(*this);	

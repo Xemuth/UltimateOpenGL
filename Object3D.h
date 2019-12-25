@@ -27,6 +27,10 @@ class Object3D : public GameObject, Upp::Moveable<Object3D>
         Object3D(Upp::Array<Mesh>& _meshes);
         Object3D(const Upp::String& pathOfModel);
         void LoadModel(const Upp::String& path);
+        
+        void ReadData(Upp::Vector<float>& data ,ReaderParameters readerParameter);
+        void ReadData(Upp::Vector<float>& data);
+        
         void Load();
         void Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform,Camera& camera);	
         

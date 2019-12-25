@@ -66,6 +66,28 @@ struct SpotLight;
 typedef int TRANSLATION_TYPE;
 typedef void (*ACTION_FUNCTION)(GameObject& myObject);
 
+struct ReaderParameters{
+	int verticesPosition = -1;
+	int normalPosition = -1;
+	int textureCoordinatePosition = -1;
+	int tangentPosition = -1;
+	int bitangentPosition = -1;
+
+	ReaderParameters(int vp=0,int np=1,int tcp=2,int tp=-1,int bp=-1){
+		verticesPosition=vp;
+		normalPosition=np;
+		textureCoordinatePosition=tcp;
+		tangentPosition=tp;
+		bitangentPosition=bp;
+	}
+
+	ReaderParameters& VerticesPosition(int vp){verticesPosition = vp;return *this;}
+	ReaderParameters& NormalPosition(int np){normalPosition = np;return *this;}
+	ReaderParameters& TextureCoordinatePosition(int tcp){textureCoordinatePosition = tcp;return *this;}
+	ReaderParameters& TangentPosition(int tp){tangentPosition = tp;return *this;}
+	ReaderParameters& BitangentPosition(int bp){bitangentPosition = bp;return *this;}
+};
+
 class UGLException : public std::exception { //classe to managed every exception
 	private:
 	    int m_numero;               //Id of Error
