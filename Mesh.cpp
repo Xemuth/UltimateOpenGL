@@ -305,30 +305,45 @@ bool Mesh::ReadData(Upp::Vector<float>& data,ReaderParameters readerParameter){
 		Upp::ArrayMap<int,AllDataType> map;
 		int* iterateur =static_cast<int*>( &readerParameter.verticesPosition);
 		int cpt  = 0;
-		for(int e=0;e< 5; iterateur++, e++){
-			if(*iterateur == cpt){
-				switch(e){
-					case 0:
-						map.Add(cpt,VERTICES);
-					break;
-					case 1:
-						map.Add(cpt,NORMAL);
-					break;
-					case 2:
-						map.Add(cpt,TEXTURE);
-					break;
-					case 3:
-						map.Add(cpt,TANGANT);
-					break;
-					case 4:
-						map.Add(cpt,BITANGANT);
-					break;
-					default:
-						LOG("Warning : ReadData strange iterator is passed over the map !");
+		for(int e=0;e< 5;iterateur++,e++){
+			if(*iterateur != -1){
+				for(int r = 0;r < 5; r++){
+					Upp::Cout() << *iterateur << " ;" << r << Upp::EOL;
+					if(*iterateur == r){
+						switch(cpt){
+							case 0:
+								map.Add(*iterateur,VERTICES);
+							break;
+							case 1:
+								map.Add(*iterateur,NORMAL);
+							break;
+							case 2:
+								map.Add(*iterateur,TEXTURE);
+							break;
+							case 3:
+								map.Add(*iterateur,TANGANT);
+							break;
+							case 4:
+								map.Add(*iterateur,BITANGANT);
+							break;
+							default:
+								LOG("Warning : ReadData strange iterator is passed over the map !");
+						}
+						break;
+					}
 				}
-				cpt++;	
 			}
+			cpt++;
 		}
+		
+		Upp::SortByKey(map,[](const int& a, const int& b) { return a<b; });
+	/*	auto sort = Upp::GetSortOrder(map.GetKeys(),[](const String& a, const String& b) { return atoi(a) < atoi(b); }); 
+		DUMP(sort);
+		for(int s= 0; s < sort.GetCount(); s++){
+			buffer.Add(sort[s], map.Get(sort[s]));
+		}*/
+
+		
 		float* fIterator =static_cast<float*>( &(data[0]));
 		int iteratorSize = 0;
 		while(iteratorSize < data.GetCount()){
