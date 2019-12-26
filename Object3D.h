@@ -24,18 +24,23 @@ class Object3D : public GameObject, Upp::Moveable<Object3D>
         Object3D();
         Object3D(Scene* _scene);
         Object3D(Mesh& _mesh);
+        Object3D(Upp::Vector<float>& Vertices, ReaderParameters readerParameter = ReaderParameters());
         Object3D(Upp::Array<Mesh>& _meshes);
-        Object3D(const Upp::String& pathOfModel);
+        Object3D(const Upp::String& pathOfModel, Scene*_scenePtr = nullptr);
         void LoadModel(const Upp::String& path);
         
-        void ReadData(Upp::Vector<float>& data ,ReaderParameters readerParameter);
-        void ReadData(Upp::Vector<float>& data);
+        void ReadData(Upp::Vector<float>& data ,ReaderParameters readerParameter = ReaderParameters());
+        //void ReadData(Upp::Vector<float>& data);
         
         void Load();
         void Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform,Camera& camera);	
         
+        Upp::Array<Mesh>& GetAllMeshes();
+        
+        
+        Object3D& SetLightAffected(bool b = false);
         Object3D& BindTexture(const Upp::String& TextureName,float mixValue = 1.0, float textureShininess = 0.64f,const Upp::String& TextureSpecularName ="", const Upp::String& NormalMappingTextureName="");
-   
+   		Object3D& AddMaterialColor(const Upp::String& ColorName,MaterialColor materialColor = MaterialColor());
 };
 
 

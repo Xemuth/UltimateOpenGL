@@ -13,8 +13,13 @@ Object3D::Object3D(Mesh& _mesh){
 Object3D::Object3D(Upp::Array<Mesh>& _meshes){
 }
 
-Object3D::Object3D(const Upp::String& pathOfModel){
-	
+Object3D::Object3D(Upp::Vector<float>& Vertices, ReaderParameters readerParameter){
+	ReadData(Vertices,readerParameter);
+}
+
+Object3D::Object3D(const Upp::String& pathOfModel, Scene*_scenePtr){
+	if(_scenePtr) scene = _scenePtr;
+	LoadModel(pathOfModel);
 }
 void Object3D::LoadModel(const Upp::String& path){
 	Upp::String realPath =UltimateOpenGL_Context::TransformFilePath(path);
@@ -52,18 +57,6 @@ void Object3D::LoadModel(const Upp::String& path){
 void Object3D::ReadData(Upp::Vector<float>& data,ReaderParameters readerParameter){
 	Mesh& m = meshes.Add();
 	if(m.ReadData(data,readerParameter)){
-		m.SetObject3D(this);
-		transform.AddChild(&m.GetTransform());
-		LOG("ReadData : Data have been readed succesfully !");	
-	}else{
-		meshes.Remove(meshes.GetCount()-1);
-		LOG("ReadData : Error during process of data !");
-	}
-}
-
-void Object3D::ReadData(Upp::Vector<float>& data){
-	Mesh& m = meshes.Add();
-	if(m.ReadData(data,ReaderParameters() )){
 		m.SetObject3D(this);
 		transform.AddChild(&m.GetTransform());
 		LOG("ReadData : Data have been readed succesfully !");	
@@ -168,25 +161,27 @@ Object3D& Object3D::BindTexture(const Upp::String& TextureName,float mixValue, f
 	}
 	LOG("Error : Object3D" + name +" is not bind to Scene or Scene is not bind to Context wich is carrying texture");
 	return *this;
-
-/*
-	if( scene != nullptr && scene->GetContext() !=nullptr){
-		Texture t = scene->GetContext()->GetTexture(TextureName);
-		if(t.IsLoaded()){
-			for(Mesh& m : meshes){
-				m.GetTextures().Add(t);
-			}
-			return *this;
-		}
-		else{
-			LOG(TextureName + " texture don't existe in context, you must add it before getting it !");
-			return *this;
-		}
-	}
-	LOG("Error : Object3D" + name +" is not bind to Scene or Scene is not bind to Context wich is carrying texture");
-	return *this;*/
 }
 
+Object3D& Object3D::AddMaterialColor(const Upp::String& ColorName,MaterialColor materialColor){
+	for(Mesh& mes : meshes){
+		if(mes.GetMaterialColor().Find(ColorName) ==-1){
+			mes.GetMaterialColor().Add(ColorName,materialColor);
+		}
+	}
+	return *this;
+}
+
+Object3D& Object3D::SetLightAffected(bool b){
+	for(Mesh& mes : meshes){
+		mes.SetLightAffected(b);
+	}
+	return *this;
+}
+
+Upp::Array<Mesh>& Object3D::GetAllMeshes(){
+	return meshes;
+}
 
 void Object3D::ProcessMesh(aiMesh *mesh, const aiScene *scene){
 	// data to fill

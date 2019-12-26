@@ -308,7 +308,6 @@ bool Mesh::ReadData(Upp::Vector<float>& data,ReaderParameters readerParameter){
 		for(int e=0;e< 5;iterateur++,e++){
 			if(*iterateur != -1){
 				for(int r = 0;r < 5; r++){
-					Upp::Cout() << *iterateur << " ;" << r << Upp::EOL;
 					if(*iterateur == r){
 						switch(cpt){
 							case 0:
@@ -327,7 +326,7 @@ bool Mesh::ReadData(Upp::Vector<float>& data,ReaderParameters readerParameter){
 								map.Add(*iterateur,BITANGANT);
 							break;
 							default:
-								LOG("Warning : ReadData strange iterator is passed over the map !");
+								LOG("Class Mesh:(Warning) bool Mesh::ReadData() strange iterator is passed over the map !");
 						}
 						break;
 					}
@@ -335,15 +334,7 @@ bool Mesh::ReadData(Upp::Vector<float>& data,ReaderParameters readerParameter){
 			}
 			cpt++;
 		}
-		
 		Upp::SortByKey(map,[](const int& a, const int& b) { return a<b; });
-	/*	auto sort = Upp::GetSortOrder(map.GetKeys(),[](const String& a, const String& b) { return atoi(a) < atoi(b); }); 
-		DUMP(sort);
-		for(int s= 0; s < sort.GetCount(); s++){
-			buffer.Add(sort[s], map.Get(sort[s]));
-		}*/
-
-		
 		float* fIterator =static_cast<float*>( &(data[0]));
 		int iteratorSize = 0;
 		while(iteratorSize < data.GetCount()){
@@ -376,14 +367,13 @@ bool Mesh::ReadData(Upp::Vector<float>& data,ReaderParameters readerParameter){
 						fIterator++;
 					break;
 					default:
-						LOG("Warning : ReadData strange value spotted on the map used to readData !");
+						LOG("Class Mesh:(Warning) bool Mesh::ReadData() strange value spotted on the map used to readData !");
 				}
 			}
-			Upp::Cout() << v.Position.x << ";" <<v.Position.y << ";" << v.Position.z << " | " << v.Normal.x << ";" << v.Normal.y << ";" << v.Normal.z << " | " << v.TexCoords.x << ";" << v.TexCoords.y << Upp::EOL;
 		}
 		return true;
 	}else{
-		LOG("Warning : ReadData no position of vertices set in readerParameters !");
+		LOG("Class Mesh:(Warning) bool Mesh::ReadData() no position of vertices set in readerParameters !");
 		return false;
 	}
 }
@@ -401,7 +391,7 @@ Mesh& Mesh::BindTexture(const Upp::String& TextureName,float mixValue, float tex
 					/*** Here I add the texture to material ***/
 					m.SetSpecular(tSpeculare.GetId());
 					if(tSpeculare.GetType() != SPECULAR)
-						LOG("Warning : Mesh& Mesh::BindTexture(...) You are binding as speculare a texture wich is not a speculare type !");
+						LOG("Class Mesh:(Warning) Mesh& Mesh::BindTexture(...) You are binding as speculare a texture wich is not a speculare type !");
 				}else{
 					LOG("Error : Mesh& Mesh::BindTexture(...) Specular texture of " + object3D->GetName() +" named " + tSpeculare.GetName() +" is not loaded !" );
 				}
@@ -412,55 +402,24 @@ Mesh& Mesh::BindTexture(const Upp::String& TextureName,float mixValue, float tex
 					/**Here I add the texture to material ***/
 					m.SetNormal(tNormal.GetId());
 					if(tNormal.GetType() != NORMAL)
-						LOG("Warning : Mesh& Mesh::BindTexture(...) You are binding as Normal a texture wich is not a Normal type !");
+						LOG("Class Mesh:(Warning) Mesh& Mesh::BindTexture(...) You are binding as Normal a texture wich is not a Normal type !");
 				}else{
-					LOG("Error : Mesh& Mesh::BindTexture(...) Normal texture of " + object3D->GetName() +" named " + tNormal.GetName() +" is not loaded !" );
+					LOG("Class Mesh:(Error) Mesh& Mesh::BindTexture(...) Normal texture of " + object3D->GetName() +" named " + tNormal.GetName() +" is not loaded !" );
 				}
 			}
 			if(t.GetType() != DIFFUSE)
-				LOG("Warning : Mesh& Mesh::BindTexture(...) You are binding as Diffuse a texture wich is not a Diffuse type !");
-
-			//textures.Add(t);
+				LOG("Class Mesh:(Warning) Mesh& Mesh::BindTexture(...) You are binding as Diffuse a texture wich is not a Diffuse type !");
+			
 			return *this;
 		}
 		else{
-			LOG("Error : " + TextureName + " texture don't existe in context, you must add it before getting it !");
+			LOG("Class Mesh:(Error) Mesh& Mesh::BindTexture(...) " + TextureName + " texture don't existe in context, you must add it before getting it !");
 			return *this;
 		}
 	}
-	LOG("Error : Mesh is not bind to GameObject or GameObject is not bind to Scene or Scene is not bind to Context wich is carrying texture");
+	LOG("Class Mesh:(Error) Mesh& Mesh::BindTexture(...) Mesh is not bind to GameObject or GameObject is not bind to Scene or Scene is not bind to Context wich is carrying texture");
 	return *this;
-	/*
-	if(object3D != nullptr && object3D->GetScene() != nullptr && object3D->GetScene()->GetContext() !=nullptr){
-		Texture t =object3D->GetScene()->GetContext()->GetTexture(TextureName);
-		if(t.IsLoaded()){
-			textures.Add(t);
-			return *this;
-		}
-		else{
-			LOG(TextureName + " texture don't existe in context, you must add it before getting it !");
-			return *this;
-		}
-	}
-	LOG("Mesh is not bind to GameObject or GameObject is not bind to Scene or Scene is not bind to Context wich is carrying texture");
-	return *this;*/
 }
-
-/*
-bool Mesh::RemoveTexture(const Texture& _texture){
-	int cpt = 0;
-	for(Texture& t : textures){
-		if(t.GetId() == _texture.GetId()){
-			textures.Remove(cpt);
-			return true;
-		}
-		cpt++;
-	}
-	return false;
-}
-Upp::Vector<Texture>& Mesh::GetTextures(){
-	return textures;
-}*/
 
 /* Transform */
 Transform& Mesh::GetTransform(){
@@ -521,7 +480,7 @@ void Mesh::GenerateAutoShader(int NbLightDir,int NbLightPoint,int NbLightSpot){
 		float r =Upp::Randomf() ;float g =Upp::Randomf() ;float b =Upp::Randomf() ;
 		MaterialColor& m = CreateMaterialColor("defaultColor");
 		m.SetDiffuse(glm::vec3( r,g,b));
-		LOG("INFO : GenerateAutoShader(int,int,int) -> static color set for " + object3D->GetName() + " object !");	
+		LOG("Class Mesh:(INFO) void Mesh::GenerateAutoShader(int,int,int) -> static color set for " + object3D->GetName() + " object !");	
 	}
 	if(materialsTexture.GetCount() > 0){
 		//First we must had in Vertex Shader  all this thing : 
@@ -693,7 +652,7 @@ void Mesh::GenerateAutoShader(int NbLightDir,int NbLightPoint,int NbLightSpot){
 		fragmentShader.Replace("//LIGHT_STARTING_DATA","vec3 norm = normalize(Normal);\nvec3 viewDir = normalize(viewPos - FragPos);\nvec3 result = vec3(0.0,0.0,0.0);\n");
 	}
 	if(!GetShader().AddShader(  "Vertex",VERTEX,vertexShader).AddShader("Fragment",FRAGMENT,fragmentShader).CompileShader(true)){
-		LOG("ERROR : GenerateAutoShader(int,int,int) ->Shader failled to compilate !");	
+		LOG("Class Mesh:(ERROR) void Mesh::GenerateAutoShader(int,int,int) ->Shader failled to compilate !");	
 	}
 
 }

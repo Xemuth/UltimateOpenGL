@@ -45,8 +45,8 @@ class Scene : public Upp::Moveable<Scene>{
 			if(dynamic_cast<GameObject*>(&t)){
 				if(AllGamesObjects.Find(Name) ==-1){
 					T& myObject = AllGamesObjects.Create<T>(Name,std::forward<Args>(args)...);
+					if(!myObject.GetScene()) myObject.SetScene(this);
 					myObject.SetName(Name);
-					myObject.SetScene(this);
 					return myObject;
 				}else{
 					return static_cast<T&>(AllGamesObjects.Get(Name));

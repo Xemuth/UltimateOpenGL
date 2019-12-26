@@ -120,7 +120,7 @@ class Mesh : public Upp::Moveable<Mesh> {
 		void SetShader(Shader& _shader);
 		Shader& GetShader();
 		
-		void SetLightAffected(bool _light);
+		void SetLightAffected(bool _light =false);
 		bool IsLightAffected();
 
         /*  Functions  */
