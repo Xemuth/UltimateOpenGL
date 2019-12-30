@@ -193,6 +193,11 @@ bool Texture::Load(unsigned int ActiveIterator,bool loadDefault,bool flipLoad){
 		        else if (nrChannels == 4)
 		            format = GL_RGBA;
 		        
+		        if(format ==GL_RGBA){
+		         	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	
+					glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);     
+		        }
+		        
 				glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 			/*	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);

@@ -1,14 +1,15 @@
 #include "Camera.h"
 
-Camera::Camera(glm::vec3 position , glm::vec3 up , float yaw, float pitch ): Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM){
+Camera::Camera(glm::vec3 position , glm::vec3 up , float yaw, float pitch,float _fov ): Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY){
     Position = position;
     WorldUp = up;
     Yaw = yaw;
     Pitch = pitch;
+    fov = _fov;
     updateCameraVectors();
 }
 // Constructor with scalar values
-Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch): Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM){
+Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch, float _fov): Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), fov(_fov){
     Position = glm::vec3(posX, posY, posZ);
     WorldUp = glm::vec3(upX, upY, upZ);
     Yaw = yaw;
@@ -63,12 +64,12 @@ void Camera::ProcessMouseMovement(float xoffset, float yoffset, GLboolean constr
 }
 // Processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
 void Camera::ProcessMouseScroll(float yoffset){
-	if (Zoom >= 1.0f && Zoom <= 45.0f)
-	    Zoom -= yoffset;
-	if (Zoom <= 1.0f)
-	    Zoom = 1.0f;
-	if (Zoom >= 45.0f)
-	    Zoom = 45.0f;
+	if (fov >= 1.0f && fov <= 90.0f)
+	    fov -= yoffset;
+	if (fov <= 1.0f)
+	    fov = 1.0f;
+	if (fov >= 90.0f)
+	    fov = 90.0f;
 }
 void Camera::updateCameraVectors(){
 	// Calculate the new Front vector
@@ -117,7 +118,9 @@ float Camera::GetYaw(){return Yaw;}
 float Camera::GetPitch(){return Pitch;}
 float Camera::GetMovementSpeed(){return MovementSpeed;}
 float Camera::GetMouseSensitivity(){return MouseSensitivity;}
-float Camera::GetZoom(){return Zoom;}
+float Camera::GetFov(){return fov;}
+float Camera::GetDrawDisanceMax(){return DrawDisanceMax;}
+float Camera::GetDrawDisanceMin(){return DrawDistanceMin;}
 void Camera::SetPosition(glm::vec3 _Position){Position=_Position;}
 void Camera::SetFront(glm::vec3 _Front){Front=_Front;}
 void Camera::SetUp(glm::vec3 _Up){Up=_Up;}
@@ -127,7 +130,9 @@ void Camera::SetYaw(float _Yaw){Yaw=_Yaw;}
 void Camera::SetPitch(float _Pitch){Pitch=_Pitch;}
 void Camera::SetMovementSpeed(float _MovementSpeed){MovementSpeed=_MovementSpeed;}
 void Camera::SetMouseSensitivity(float _MouseSensitivity){MouseSensitivity=_MouseSensitivity;}
-void Camera::SetZoom(float _Zoom){Zoom=_Zoom;}
+void Camera::SetFov(float _fov){fov= _fov;}
+void Camera::SetDrawDisanceMax(float distance){DrawDisanceMax = distance;}
+void Camera::SetDrawDisanceMin(float distance){if(distance <= 0) distance=0.01f; DrawDistanceMin = distance;}
 void Camera::SetScene(Scene* _scene){scene=_scene;}
 Scene* Camera::GetScene(){return scene;}
 Upp::String Camera::GetName(){return name;}

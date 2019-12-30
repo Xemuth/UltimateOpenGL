@@ -39,9 +39,9 @@ enum ShaderType{PROGRAMM,VERTEX,FRAGMENT}; //Define type of shader we want
 // Default camera values
 const float YAW         = -90.0f;
 const float PITCH       =  0.0f;
-const float SPEED       =  5.5f;
+const float SPEED       = 15.0f;
 const float SENSITIVITY =  0.1f;
-const float ZOOM        =  45.0f;
+const float FOV        =  90.0f;
 
 class UltimateOpenGL_Context;
 class Scene;

@@ -1,3 +1,4 @@
+#include "UltimateOpenGL.h"
 #include "Scene.h"
 #include "GameObject.h"
 #include "Camera.h"
@@ -136,10 +137,46 @@ void Scene::Load(){
 bool Scene::IsLoaded(){
 	return loaded;
 }
-void  Scene::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform){      
-	glClearColor(BackGroundColor.x,BackGroundColor.y,BackGroundColor.z, 1.0f); //définie la couleur de fond dans la fenetre graphique 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //nétoie la fenetre graphique et la regénère Scene::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform){
-	for(GameObject& object : AllGamesObjects){
-		object.Draw(model,view,projection,transform,GetActiveCamera());
+void Scene::Draw(const Upp::String& CameraToUse){
+	if(ActiveCamera){
+		Camera* camera = ActiveCamera;
+		if(CameraToUse.GetCount() > 0){
+			if( AllCameras.Find(CameraToUse) != -1){
+				camera = &AllCameras.Get(CameraToUse);
+			}
+		}
+		glm::mat4 model = glm::mat4(1.0f);
+		glm::mat4 transform = glm::mat4(1.0f);
+		glm::mat4 view = glm::mat4(1.0f);
+		view = camera->GetViewMatrix();
+		glm::mat4 projection = glm::mat4(1.0f);
+		float screenSizeX = 800.0f;
+		float screenSizeY = 600.0f;	
+		if(GetContext()){
+			screenSizeX=(float) GetContext()->GetScreenSize().cx;
+			screenSizeY=(float) GetContext()->GetScreenSize().cy;	
+		}else{
+			LOG("Warning : void Scene::Draw(...) No context defined, default size for context have been set to 800 * 600");
+		}
+
+		projection = glm::perspective(glm::radians(camera->GetFov()),(float)( screenSizeX / screenSizeY),camera->GetDrawDisanceMin(),camera->GetDrawDisanceMax());//We calculate Projection here since multiple camera can have different FOV
+																																							      //I will also provide différent camera parameter in futurs
+												
+		glClearColor(BackGroundColor.x,BackGroundColor.y,BackGroundColor.z, 1.0f); //définie la couleur de fond dans la fenetre graphique 
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //nétoie la fenetre graphique et la regénère Scene::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform){
+		
+		
+		//we must render all game object by distance To do proper blending (gestion of alpha)
+		Upp::ArrayMap<float,GameObject*> sorted;
+		for (GameObject& object : AllGamesObjects){
+		    float distance = glm::length(camera->GetPosition() - object.GetTransform().GetPosition());
+		    sorted.Add(distance,&object);
+		}
+		Upp::SortByKey(sorted,[](const float& a, const float& b) { return a>b; });
+		for(GameObject* object : sorted.GetValues()){
+			object->Draw(model,view,projection,transform,*camera);
+		}
+	}else{
+		LOG("Error :void Scene::Draw(...) No camera defined ! Use Scene.AddCamera(\"MyCamera\"); to create one !"); 	
 	}
 }

@@ -69,7 +69,7 @@ SHADER(330 core,
 		// phase 3: Spot lights
 		/*for(int i = 0; i < NR_SPOT_LIGHTS; i++)
 	    	result += CalcSpotLight(pyramide,spotLights[i], norm, FragPos, viewDir);  */
-
+		
 		@FRAG_COLOR_CALCULATION\n 
 	}\n
 	

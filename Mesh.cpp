@@ -169,7 +169,7 @@ void Mesh::Load(){
 
 
 void Mesh::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform,Camera& camera){
-
+	
 	shader.Use();
 	//Cout() << "x: " << Position.x << ", y: " << Position.y << ", z: " << Position.z << "\n";
 	model = glm::translate(model,GetTransform().GetPosition())*glm::mat4_cast(GetTransform().GetQuaterion())*GetTransform().GetModelMatrixScaller();
@@ -466,12 +466,23 @@ bool Mesh::IsLightAffected(){
 	return LightAffected;
 }
 
+void Mesh::UseAlpha(bool _alpha ){
+	AlphaAffected = _alpha;
+}
+bool Mesh::IsAlpha(){
+	return AlphaAffected;
+}
+
 void Mesh::GenerateAutoShader(int NbLightDir,int NbLightPoint,int NbLightSpot){
 	Upp::String vertexShader = BasicShaders.Get("Default_Vertex_Shader");
 	Upp::String fragmentShader = BasicShaders.Get("Default_Fragment_Shader");
 		
 	Upp::String all_uniform="";
-	Upp::String all_VecMulti="FragColor = ";
+	Upp::String all_VecMulti= "";
+	if(AlphaAffected) 
+		all_VecMulti ="vec4 texColor =";
+	else 
+		all_VecMulti= "FragColor = ";
 	
 	Upp::String AllDirLights="";
 	Upp::String AllPointLights="";
@@ -562,12 +573,18 @@ void Mesh::GenerateAutoShader(int NbLightDir,int NbLightPoint,int NbLightSpot){
 		if(all_VecMulti.GetCount()>12){
 			if((NbLightDir > 0 || NbLightPoint > 0 || NbLightSpot > 0) && LightAffected){
 			//	fragmentShader.Replace("//FRAG_COLOR_CALCULATION","FragColor = vec4(result,1.0);");
-				fragmentShader.Replace("//FRAG_COLOR_CALCULATION","FragColor = texture(texture0.diffuse,TexCoords);");
+				if(true)fragmentShader.Replace("//FRAG_COLOR_CALCULATION","vec4 texColor = texture(texture0.diffuse,TexCoords);\nif(texColor.a < 0.1)\n\tdiscard;\nFragColor =texColor;\n");
+				else fragmentShader.Replace("//FRAG_COLOR_CALCULATION","FragColor =texture(texture0.diffuse,TexCoords);\n");
 			}else{
-				all_VecMulti << ";\n";
+				if(AlphaAffected)
+					//all_VecMulti << ";\nif(texColor.a < 0.1)\n\tdiscard;\nFragColor=texColor;\n";
+					all_VecMulti << ";\nFragColor=texColor;\n";
+				else
+					all_VecMulti << ";\n";
+					
 				fragmentShader.Replace("//FRAG_COLOR_CALCULATION",all_VecMulti);
-			//	fragmentShader.Replace("//FRAG_COLOR_CALCULATION","FragColor = texture(texture0.diffuse,TexCoords);\n");
 			}
+
 		}
 	}
 	if(materialsColor.GetCount() > 0){
@@ -578,7 +595,7 @@ void Mesh::GenerateAutoShader(int NbLightDir,int NbLightPoint,int NbLightSpot){
 		for(const Upp::String& key : materialsColor.GetKeys()){
 			Upp::String colorIdentifier = "color" + Upp::AsString(cpt) ;
 			all_uniform << "uniform MaterialColor " <<  colorIdentifier << ";\n";
-			all_VecMulti << ((cpt > 0)?"*":"") <<  "vec4(" + colorIdentifier + ".diffuse,1.0)"; 
+			all_VecMulti << ((cpt > 0)?"*":"") <<  "vec4(" + colorIdentifier + ".diffuse,0.02)"; 
 			cpt++;
 		}
 		if(all_uniform.GetCount()>0) fragmentShader.Replace("//UNIFORM_MATERIAL_COLOR_NAME",all_uniform);

@@ -196,8 +196,14 @@ Upp::VectorMap<Upp::String,Texture>& UltimateOpenGL_Context::GetTextures(){
 }
 
 //Logique
-void UltimateOpenGL_Context::Draw(){
+void UltimateOpenGL_Context::Draw(const Upp::String& SceneToDraw,const Upp::String& CameraToUse){
 	try{
+		Scene* scene = &GetActiveScene();
+		if(SceneToDraw.GetCount() > 0){
+			if(AllScenes.Find(SceneToDraw) != -1){
+				scene = &AllScenes.Get(SceneToDraw);
+			}
+		}
 		//HEre I must do DeltaTime Calculation
 		float currentFrame = GetTime(); //Calcules le nombre de frames par seconde
 		DeltaTime = currentFrame - lastFrame;//Calcules le nombre de frames par seconde
@@ -211,16 +217,18 @@ void UltimateOpenGL_Context::Draw(){
 			LastTime = currentFrame;
 		}
 		
-		glm::mat4 model = glm::mat4(1.0f);
-		glm::mat4 view = glm::mat4(1.0f);
-		glm::mat4 projection = glm::mat4(1.0f);
-		glm::mat4 transform = glm::mat4(1.0f);
-		view = GetActiveScene().GetActiveCamera().GetViewMatrix();
-		projection = glm::perspective(glm::radians(90.0f),(float)( ScreenSize.cx / ScreenSize.cy), 0.1f, 100.0f);
-		GetActiveScene().Draw(model,view,projection,transform);
+		scene->Draw(CameraToUse);
 	}catch(UGLException exception){
-		LOG("Error, context don't have anyScene to Draw ! " + Upp::AsString(exception.what()));
+		LOG("Error, void UltimateOpenGL_Context::Draw(...) context don't have any Scene to Draw ! " + Upp::AsString(exception.what()));
 		exit(1);
 	}
+}
+
+void UltimateOpenGL_Context::Initialise(){
+	glEnable(GL_DEPTH_TEST);
+    glEnable(GL_MULTISAMPLE); 
+    glEnable(GL_BLEND);//Gestion of alpha
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //Gestion de l'alpha sur les textures 
+    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO); //Gestion pour le RGB uniquement
 }
 

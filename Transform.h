@@ -73,14 +73,14 @@ class Transform{
 		//Rotation transformation
 		Transform& RotateFrom(glm::quat quaterion,bool updateChilds = true);
 		Transform& SetNewRotation(glm::quat quaterion,bool updateChilds = true);
-		Transform& RotateFromEulerAngles(float angle,glm::vec3 EulerAngles,bool updateChilds = true);
-		Transform& SetNewRotationEulerAngles(float angle,glm::vec3 EulerAngles,bool updateChilds = true);
+		Transform& RotateFromEulerAngles(float angleInRadian,glm::vec3 EulerAngles,bool updateChilds = true);
+		Transform& SetNewRotationEulerAngles(float angleInRadian,glm::vec3 EulerAngles,bool updateChilds = true);
 		
 		//Rotation trnasformation buffer
 		Transform& SecondRotateFrom(glm::quat quaterion,bool updateChilds = true);
 		Transform& SecondSetNewRotation(glm::quat quaterion,bool updateChilds = true);
-		Transform& SecondRotateFromEulerAngles(float angle,glm::vec3 EulerAngles,bool updateChilds = true);
-		Transform& SecondSetNewRotationEulerAngles(float angle,glm::vec3 EulerAngles,bool updateChilds = true);
+		Transform& SecondRotateFromEulerAngles(float angleInRadian,glm::vec3 EulerAngles,bool updateChilds = true);
+		Transform& SecondSetNewRotationEulerAngles(float angleInRadian,glm::vec3 EulerAngles,bool updateChilds = true);
 		
 		Transform& LookAt(glm::vec3 direction,bool updateChilds = true);
 		

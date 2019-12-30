@@ -179,6 +179,13 @@ Object3D& Object3D::SetLightAffected(bool b){
 	return *this;
 }
 
+Object3D& Object3D::SetAlaphaAffected(bool b){
+	for(Mesh& mes : meshes){
+		mes.UseAlpha(b);
+	}
+	return *this;
+}
+
 Upp::Array<Mesh>& Object3D::GetAllMeshes(){
 	return meshes;
 }

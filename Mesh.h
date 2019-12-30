@@ -70,6 +70,7 @@ class Mesh : public Upp::Moveable<Mesh> {
         Upp::VectorMap<Upp::String,MaterialColor> materialsColor; //Properties materialColor of the object
 		Upp::VectorMap<Upp::String,MaterialTexture> materialsTexture; //Properties materialTexture of the object //Basicly you only have one of both Material to set
     
+    	bool AlphaAffected = true;
     	bool LightAffected = true;
     public:
 		
@@ -122,6 +123,9 @@ class Mesh : public Upp::Moveable<Mesh> {
 		
 		void SetLightAffected(bool _light =false);
 		bool IsLightAffected();
+		
+		void UseAlpha(bool _alpha =false);
+		bool IsAlpha();
 
         /*  Functions  */
         void Load();

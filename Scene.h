@@ -91,6 +91,6 @@ class Scene : public Upp::Moveable<Scene>{
 		//Logique
 		void Load();
 		bool IsLoaded();
-		void Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform);
+		void Draw(const Upp::String& CameraToUse = "");
 };
 #endif

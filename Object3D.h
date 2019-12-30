@@ -39,6 +39,7 @@ class Object3D : public GameObject, Upp::Moveable<Object3D>
         
         
         Object3D& SetLightAffected(bool b = false);
+        Object3D& SetAlaphaAffected(bool b = false);
         Object3D& BindTexture(const Upp::String& TextureName,float mixValue = 1.0, float textureShininess = 0.64f,const Upp::String& TextureSpecularName ="", const Upp::String& NormalMappingTextureName="");
    		Object3D& AddMaterialColor(const Upp::String& ColorName,MaterialColor materialColor = MaterialColor());
 };

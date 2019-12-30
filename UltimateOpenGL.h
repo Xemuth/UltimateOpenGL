@@ -73,8 +73,8 @@ class UltimateOpenGL_Context{
 		Texture GetTexture(const Upp::String& TextureName);
 		Upp::VectorMap<Upp::String,Texture>& GetTextures();
 		
-		void Draw();
-		
+		void Draw(const Upp::String& SceneToDraw="",const Upp::String& CameraToUse="");
+		void Initialise();
 		
 		//****************Static part **************************
 		static Upp::Vector<int> TransformGlmColorToRGB(glm::vec3 FloatColor);

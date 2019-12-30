@@ -28,7 +28,9 @@ class Camera : Upp::Moveable<Camera>{
 	    // Camera options
 	    float MovementSpeed;
 	    float MouseSensitivity;
-	    float Zoom;
+	    float fov =90.0f;
+		float DrawDisanceMax = 300.0f;
+		float DrawDistanceMin = 0.1f; 
 		
 		glm::quat ActualQuaterionRoation;
 		
@@ -37,9 +39,9 @@ class Camera : Upp::Moveable<Camera>{
 		Object3D *binded = nullptr;
 	public:
 	    // Constructor with vectors
-	    Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH);
+	    Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH, float _fov=FOV );
 	    // Constructor with scalar values
-	    Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch);
+	    Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch, float _fov);
 	    
 	    // Returns the view matrix calculated using Euler Angles and the LookAt Matrix
 	    glm::mat4 GetViewMatrix();
@@ -67,7 +69,9 @@ class Camera : Upp::Moveable<Camera>{
 	    float GetPitch();
 	    float GetMovementSpeed();
 	    float GetMouseSensitivity();
-	    float GetZoom();
+	    float GetFov();
+	    float GetDrawDisanceMax();
+	    float GetDrawDisanceMin();
 	    
 	    void SetPosition(glm::vec3 _Position);
 	    void SetFront(glm::vec3 _Front);
@@ -78,7 +82,9 @@ class Camera : Upp::Moveable<Camera>{
 	    void SetPitch(float _Pitch);
 	    void SetMovementSpeed(float _MovementSpeed);
 	    void SetMouseSensitivity(float _MouseSensitivity);
-	    void SetZoom(float _Zoom);
+	    void SetFov(float _fov);
+	   	void SetDrawDisanceMax(float distance);
+	   	void SetDrawDisanceMin(float distance);
 	    
 	    //Scene
 	    void SetScene(Scene* _scene);
