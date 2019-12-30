@@ -16,10 +16,10 @@ Mesh::Mesh(const Upp::Vector<Vertex>& vertices, Upp::Vector<unsigned int>& indic
 		if(t.GetType() == DIFFUSE && lastDiffuse.IsLoaded()){
 			MaterialTexture& m =  materialsTexture.Add(lastDiffuse.GetName());
 			m.SetDiffuse(lastDiffuse.GetTextureIterator());
-			if(lastSpecular.IsLoaded());
-			m.SetSpecular(lastSpecular.GetId());
-			if(lastNormal.IsLoaded());
-			m.SetNormal(lastNormal.GetId());
+			if(lastSpecular.IsLoaded())
+				m.SetSpecular(lastSpecular.GetId());//Changement made by Iñaki
+			if(lastNormal.IsLoaded())
+				m.SetNormal(lastNormal.GetId());//Changement made by Iñaki
 			
 			lastNormal =Texture();
 			lastSpecular =Texture();
@@ -41,10 +41,10 @@ Mesh::Mesh(const Upp::Vector<Vertex>& vertices, Upp::Vector<unsigned int>& indic
 	if(lastDiffuse.IsLoaded()){
 		MaterialTexture& m =  materialsTexture.Add(lastDiffuse.GetName());
 		m.SetDiffuse(lastDiffuse.GetTextureIterator());
-		if(lastSpecular.IsLoaded());
-		m.SetSpecular(lastSpecular.GetId());
-		if(lastNormal.IsLoaded());
-		m.SetNormal(lastNormal.GetId());
+		if(lastSpecular.IsLoaded())
+			m.SetSpecular(lastSpecular.GetId());//Changement made by Iñaki
+		if(lastNormal.IsLoaded())
+			m.SetNormal(lastNormal.GetId());//Changement made by Iñaki
 	}
 
 	for(MaterialTexture& mt : materialsTexture){
@@ -488,7 +488,7 @@ void Mesh::GenerateAutoShader(int NbLightDir,int NbLightPoint,int NbLightSpot){
 	Upp::String AllPointLights="";
 	Upp::String AllSpotLights="";	
 	if(materialsTexture.GetCount()== 0 && materialsColor.GetCount() == 0){
-		float r =Upp::Randomf() ;float g =Upp::Randomf() ;float b =Upp::Randomf() ;
+		float r = float(Upp::Randomf());	float g = float(Upp::Randomf());	float b = float(Upp::Randomf()); //Changement made by Iñaki
 		MaterialColor& m = CreateMaterialColor("defaultColor");
 		m.SetDiffuse(glm::vec3( r,g,b));
 		LOG("Class Mesh:(INFO) void Mesh::GenerateAutoShader(int,int,int) -> static color set for " + object3D->GetName() + " object !");	
