@@ -23,7 +23,7 @@
 #include <plugin/glm/gtx/quaternion.hpp>
 #include <plugin/glm/gtx/norm.hpp>
 
-#include <plugin/assimp/assimp.h>
+#include <plugin/Assimp/assimp.h>
 
 
 enum GameObjectType{LIGHT,SOUND,OBJECT3D,OBJECT2D,OBJECTUI};
