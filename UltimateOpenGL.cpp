@@ -205,7 +205,7 @@ void UltimateOpenGL_Context::Draw(const Upp::String& SceneToDraw,const Upp::Stri
 			}
 		}
 		//HEre I must do DeltaTime Calculation
-		double currentFrame = GetTime(); //Calcules le nombre de frames par seconde //Changement made by Iñaki
+		double currentFrame = GetTime(); //Calcules le nombre de frames par seconde //Changement made by cd 
 		DeltaTime = currentFrame - lastFrame;//Calcules le nombre de frames par seconde 
 		lastFrame = currentFrame;//Calcules le nombre de frames par seconde
 		

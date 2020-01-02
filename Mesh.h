@@ -64,6 +64,7 @@ class Mesh : public Upp::Moveable<Mesh> {
         //Upp::Vector<Texture> textures;
         
         Shader shader;
+		DrawMethod drawMethod = UOGL_TRIANGLES;        
         
         Transform transform;
         
@@ -111,6 +112,9 @@ class Mesh : public Upp::Moveable<Mesh> {
 		MaterialColor& CreateMaterialColor(const Upp::String& _name);
 		
 		bool ReadData(Upp::Vector<float>& data, ReaderParameters readerParameter);
+		
+		Mesh& SetDrawMethod(DrawMethod dm);
+		DrawMethod GetDrawMethod();
 		
 	//	bool BindTexture(Upp::String textureName,float textureShininess,Upp::String TextureSpecularName);
 		

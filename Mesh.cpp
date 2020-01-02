@@ -216,46 +216,47 @@ void Mesh::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 tr
     }
   
     glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, indices.GetCount(), GL_UNSIGNED_INT, 0);
+    //Draw method can be setted with SetDrawMethod
+    switch(drawMethod){
+    	case UOGL_POINTS:
+    		glDrawElements(GL_POINTS, indices.GetCount(), GL_UNSIGNED_INT, 0);
+    	break;
+    	case UOGL_LINES:
+    		glDrawElements(GL_LINES, indices.GetCount(), GL_UNSIGNED_INT, 0);
+    	break;
+    	case UOGL_LINE_STRIP:
+    		glDrawElements(GL_LINE_STRIP, indices.GetCount(), GL_UNSIGNED_INT, 0);
+    	break;
+    	case UOGL_LINE_LOOP:
+    		glDrawElements(GL_LINE_LOOP, indices.GetCount(), GL_UNSIGNED_INT, 0);
+    	break;
+    	case UOGL_TRIANGLES:
+    		glDrawElements(GL_TRIANGLES, indices.GetCount(), GL_UNSIGNED_INT, 0);
+    	break;
+    	case UOGL_TRIANGLE_STRIP:
+    		glDrawElements(GL_TRIANGLE_STRIP, indices.GetCount(), GL_UNSIGNED_INT, 0);
+    	break;
+    	case UOGL_TRIANGLE_FAN:
+    		glDrawElements(GL_TRIANGLE_FAN, indices.GetCount(), GL_UNSIGNED_INT, 0);
+    	break;
+    	case UOGL_QUADS:
+    		glDrawElements(GL_QUADS, indices.GetCount(), GL_UNSIGNED_INT, 0);
+    	break;
+    	case UOGL_QUAD_STRIP:
+    		glDrawElements(GL_QUAD_STRIP, indices.GetCount(), GL_UNSIGNED_INT, 0);
+    	break;
+    	case UOGL_POLYGON:
+    		glDrawElements(GL_POLYGON, indices.GetCount(), GL_UNSIGNED_INT, 0);
+    	break;
+    	default:
+    		LOG("Error : void Mesh::Draw(...) DrawMethod is unknow !");
+    }
+    
+    
     glBindVertexArray(0);
     // always good practice to set everything back to defaults once configured.
 	glActiveTexture(GL_TEXTURE0);
     shader.Unbind();
-	/*
-	// bind appropriate textures
-    unsigned int diffuseNr  = 1;
-    unsigned int specularNr = 1;
-    unsigned int normalNr   = 1;
-    unsigned int heightNr   = 1;
-    for(unsigned int i = 0; i < textures.size(); i++)
-    {
-        glActiveTexture(GL_TEXTURE0 + i); // active proper texture unit before binding
-        // retrieve texture number (the N in diffuse_textureN)
-        Upp::String number;
-        TextureType name = textures[i].GetType();
-        if(name == DIFFUSE)
-			number = std::to_string(diffuseNr++);
-		else if(name == SPECULAR)
-			number = std::to_string(specularNr++); // transfer unsigned int to stream
-        else if(name == NORMAL)
-			number = std::to_string(normalNr++); // transfer unsigned int to stream
-         else if(name == HEIGHT)
-		    number = std::to_string(heightNr++); // transfer unsigned int to stream
-
-												 // now set the sampler to the correct texture unit
-       // glUniform1i(glGetUniformLocation(shader.GetId(), (name + number).c_str()), i);
-        // and finally bind the texture
-        glBindTexture(GL_TEXTURE_2D, textures[i].GetId());
-    }
-    
-    // draw mesh
-    glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
-    glBindVertexArray(0);
-
-    // always good practice to set everything back to defaults once configured.
-    glActiveTexture(GL_TEXTURE0);
-    */
 }
 
 /*
@@ -300,10 +301,10 @@ Upp::Vector<unsigned int>& Mesh::GetIndices(){
 
 bool Mesh::ReadData(Upp::Vector<float>& data,ReaderParameters readerParameter){
 	//I thing this code is really bad.
-	if(readerParameter.verticesPosition> -1){
+	if(readerParameter.coordinatesPosition> -1){
 		enum AllDataType{VERTICES,NORMAL,TEXTURE,TANGANT,BITANGANT};
 		Upp::ArrayMap<int,AllDataType> map;
-		int* iterateur =static_cast<int*>( &readerParameter.verticesPosition);
+		int* iterateur =static_cast<int*>( &readerParameter.coordinatesPosition);
 		int cpt  = 0;
 		for(int e=0;e< 5;iterateur++,e++){
 			if(*iterateur != -1){
@@ -471,6 +472,14 @@ void Mesh::UseAlpha(bool _alpha ){
 }
 bool Mesh::IsAlpha(){
 	return AlphaAffected;
+}
+
+Mesh& Mesh::SetDrawMethod(DrawMethod dm){
+	drawMethod = dm;
+	return *this;
+}
+DrawMethod Mesh::GetDrawMethod(){
+	return drawMethod;
 }
 
 void Mesh::GenerateAutoShader(int NbLightDir,int NbLightPoint,int NbLightSpot){

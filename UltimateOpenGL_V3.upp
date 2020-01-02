@@ -1,11 +1,12 @@
-description "\377B28,0,200";
+description "Engine to render 3D object into scene\377B28,0,200";
 
 uses
-	plugin/glm;
+	plugin/glm,
+	plugin/assimp;
 
-library
-	zlibstatic,
-	assimp;
+options(GCC WIN32) -std=c++17;
+
+options(MSC) /std:c++latest;
 
 file
 	README.md,

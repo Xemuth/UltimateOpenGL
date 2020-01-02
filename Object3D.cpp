@@ -13,8 +13,8 @@ Object3D::Object3D(Mesh& _mesh){
 Object3D::Object3D(Upp::Array<Mesh>& _meshes){
 }
 
-Object3D::Object3D(Upp::Vector<float>& Vertices, ReaderParameters readerParameter){
-	ReadData(Vertices,readerParameter);
+Object3D::Object3D(Upp::Vector<float>& Vertices, ReaderParameters readerParameter,ReaderRoutine readerRoutine){
+	ReadData(Vertices,readerParameter,readerRoutine);
 }
 
 Object3D::Object3D(const Upp::String& pathOfModel, Scene*_scenePtr){
@@ -54,7 +54,81 @@ void Object3D::LoadModel(const Upp::String& path){
     ProcessNode(scene->mRootNode, scene);
 }
 
-void Object3D::ReadData(Upp::Vector<float>& data,ReaderParameters readerParameter){
+void Object3D::ReadData(Upp::Vector<float>& data,ReaderParameters readerParameter,ReaderRoutine readerRoutine){
+	Mesh* m =nullptr;
+	int start = readerRoutine.startMesh;
+	Upp::Vector<float> Copie;
+	Copie.Append(data);
+	Upp::Vector<float> dataBuffer;
+	bool stop = false;
+	bool created = false;	
+	
+	int NumberOfFloatByLine = 0;
+	if(readerParameter.coordinatesPosition !=-1) NumberOfFloatByLine+=3;
+	if(readerParameter.normalPosition != -1)NumberOfFloatByLine+=3;
+	if(readerParameter.textureCoordinatePosition != -1)NumberOfFloatByLine+=2;
+	if(readerParameter.tangentPosition != -1)NumberOfFloatByLine+=3;
+	if(readerParameter.bitangentPosition != -1)	NumberOfFloatByLine+=3;
+	
+	while(!stop){
+		if(readerRoutine.verticesPerMesh != -1){
+			if(Copie.GetCount() >= NumberOfFloatByLine*readerRoutine.verticesPerMesh){
+				for(int r = 0; r < NumberOfFloatByLine*readerRoutine.verticesPerMesh;r++){
+					dataBuffer.Add(Copie[r]);
+				}
+				Copie.Remove(0,NumberOfFloatByLine*readerRoutine.verticesPerMesh);
+			}
+			if(dataBuffer.GetCount()<NumberOfFloatByLine*readerRoutine.verticesPerMesh)stop=true;
+		}else{
+			dataBuffer.Append(Copie);
+			stop=true;
+		}
+		
+		if(start != -1){
+			for(int e = 0; e < meshes.GetCount();e++){
+				if(e == readerRoutine.startMesh){
+					m = &meshes[e];
+					start++;					
+					break;
+				}
+			}
+		}else{
+			if(readerRoutine.allowCreation){
+				if(dataBuffer.GetCount() > 0){
+					m = &meshes.Add();
+				}
+				created=true;
+			}else{
+				LOG("Warning : void Object3D::ReadData(...) No starting mesh defined in readerRoutine and allowCreation set to false... First Mesh is mesh selected by default");
+				if(meshes.GetCount()>0) m = &meshes[0];
+			}
+		}
+		if(m){
+			if(dataBuffer.GetCount() > 0){
+				if(m->ReadData(dataBuffer,readerParameter)){
+					m->SetObject3D(this);
+					transform.AddChild(&(m->GetTransform()));
+					LOG("Log : void Object3D::ReadData(...) Data have been readed succesfully !");	
+				}else{
+					if(created){
+						meshes.Remove(meshes.GetCount()-1);
+						created=false;
+					}
+					LOG("Error : void Object3D::ReadData(...) Error during process of data !");
+				}
+				dataBuffer.Clear();
+			}
+			m = nullptr;
+		}else if(created){
+			//Useless
+		}else{
+			LOG("Error : void Object3D::ReadData(...) Error during resolution of mesh to affect !");
+		}
+	}
+	
+	
+	
+	/*
 	Mesh& m = meshes.Add();
 	if(m.ReadData(data,readerParameter)){
 		m.SetObject3D(this);
@@ -64,6 +138,7 @@ void Object3D::ReadData(Upp::Vector<float>& data,ReaderParameters readerParamete
 		meshes.Remove(meshes.GetCount()-1);
 		LOG("ReadData : Error during process of data !");
 	}
+	*/
 }
 
 void Object3D::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform,Camera& camera){
@@ -182,6 +257,13 @@ Object3D& Object3D::SetLightAffected(bool b){
 Object3D& Object3D::SetAlaphaAffected(bool b){
 	for(Mesh& mes : meshes){
 		mes.UseAlpha(b);
+	}
+	return *this;
+}
+
+Object3D& Object3D::SetDrawMethod(DrawMethod dm){
+	for(Mesh& mes : meshes){
+		mes.SetDrawMethod(dm);
 	}
 	return *this;
 }
