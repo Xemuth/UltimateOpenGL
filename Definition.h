@@ -33,7 +33,7 @@ enum TextureColorSample{SAMPLE_RGB,SAMPLE_RGBA}; //Allow to define type of color
 enum TextureType{DIFFUSE,SPECULAR,NORMAL,HEIGHT, AMBIENT};
 enum ShaderType{PROGRAMM,VERTEX,FRAGMENT}; //Define type of shader we want 
 enum DrawMethod{UOGL_POINTS,UOGL_LINES,UOGL_LINE_STRIP,UOGL_LINE_LOOP,UOGL_TRIANGLES,UOGL_TRIANGLE_STRIP,UOGL_TRIANGLE_FAN,UOGL_QUADS,UOGL_QUAD_STRIP,UOGL_POLYGON};
-
+enum LightType{LT_DIRLIGHT,LT_SPOTLIGHT,LT_POINTLIGHT};
 /*
 PROGRAMM -> GL_POINTS
 Treats each vertex as a single point. Vertex n defines point n. N points are drawn.

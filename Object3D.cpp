@@ -108,7 +108,7 @@ void Object3D::ReadData(Upp::Vector<float>& data,ReaderParameters readerParamete
 				if(m->ReadData(dataBuffer,readerParameter)){
 					m->SetObject3D(this);
 					transform.AddChild(&(m->GetTransform()));
-					LOG("Log : void Object3D::ReadData(...) Data have been readed succesfully !");	
+				//	LOG("Log : void Object3D::ReadData(...) Data have been readed succesfully !");	
 				}else{
 					if(created){
 						meshes.Remove(meshes.GetCount()-1);
@@ -131,28 +131,39 @@ void Object3D::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat
 	if(onDraw != nullptr){
 		onDraw(*this);	
 	}
-	for(int i = 0; i < meshes.size(); i++)//Changement made by Iñaki
+	for(int i = 0; i < meshes.size(); i++) // meshes.size(); i++)//Changement made by Iñaki
         meshes[i].Draw(model,view,projection,transform,camera);
 }
 void Object3D::Load(){
+	bool loopStartZero =true;
+	Shader* shad = nullptr;
+	Upp::Vector<unsigned int> ind;
+	
 	if(ShaderToUse){
-		for(int i = 0; i < meshes.size(); i++){
-        	meshes[i].SetShader(*ShaderToUse);
-        	meshes[i].Load();
-		}	
+		shad = ShaderToUse;
 	}else if(MeshShaderToUse != -1){
 		if(meshes.GetCount() > 0){
 			meshes[0].Load();
-			for(int i = 1; i < meshes.size(); i++){
-	        	meshes[i].SetShader(meshes[0].GetShader());
-	        	meshes[i].Load();
-			}		
-		}
-	}else{
-		for(int i = 0; i < meshes.size(); i++){//Changement made by Iñaki
-        	meshes[i].Load();
+			shad = &(meshes[0].GetShader());
+			loopStartZero =false;
 		}
 	}
+	if(IndicesToUse.GetCount()> 0){
+		ind.Append(IndicesToUse);
+	}else if(MeshIndiceToUse != -1){
+		if(meshes.GetCount() > 0){
+			if(meshes[0].GetIndices().GetCount() == 0){
+				meshes[0].LoadDefaultIndices();
+			}
+			ind.Append(meshes[0].GetIndices());
+		}
+	}
+	for(int i = ((loopStartZero)?0:1) ; i < meshes.size(); i++){//Changement made by Iñaki
+		if(shad)meshes[i].SetShader(*shad);
+		if(ind.GetCount()>0) meshes[i].SetIndices(ind);
+    	meshes[i].Load();
+	}
+	
 }
 
 void Object3D::ProcessNode(aiNode *node, const aiScene *scene){
@@ -199,6 +210,14 @@ Object3D& Object3D::UseOneShader(int _MeshShaderToUse){
 Object3D& Object3D::UseOneShader(Shader* MeshShaderToUse){ //Define if the object should use one shader to all is mesh
 	ShaderToUse = MeshShaderToUse;
 }
+
+Object3D& Object3D::UseSameIndices(int _MeshIndicestoUse){
+	MeshIndiceToUse = _MeshIndicestoUse;
+}
+Object3D& Object3D::UseSameIndices(const Upp::Vector<unsigned int>& _indicesToUse){
+	IndicesToUse.Append(_indicesToUse);
+}
+
 
 Object3D& Object3D::BindTexture(const Upp::String& TextureName,float mixValue, float textureShininess,const Upp::String& TextureSpecularName, const Upp::String& NormalMappingTextureName){
 	//you may ask "why the hell you dont just call Mesh.BindTexture Method   ?? symply because

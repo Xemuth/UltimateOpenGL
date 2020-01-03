@@ -43,8 +43,6 @@ class UltimateOpenGL_Context{
 		//textures
 		inline static int TextureCompteur=0;
 		Upp::VectorMap<Upp::String,Texture> textures;
-		
-	
 	public:
 		UltimateOpenGL_Context();
 		~UltimateOpenGL_Context();

@@ -20,6 +20,9 @@ class Scene : public Upp::Moveable<Scene>{
 		//Load Default light 
 		void prepareDefaultLight();
 		
+		Upp::Array<Light*> AllLights; //Array contening ptr to everylight on scene. (intended to allow faster draw of scene)
+		
+		
 	public:
 		Scene();
 		Scene(UltimateOpenGL_Context* _context_);
@@ -87,6 +90,7 @@ class Scene : public Upp::Moveable<Scene>{
 		int GetNumberOfDirLight();
 		int GetNumberOfSpotLight();
 		int GetNumberOfPointLight();
+		Upp::Array<Light*>& GetAllLights();
 		
 		//Logique
 		void Load();

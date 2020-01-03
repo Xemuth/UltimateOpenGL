@@ -27,8 +27,22 @@ GameObject::GameObject(GameObject& object){
 	for(const Upp::String& light : object.spotLights.GetKeys()){
 		spotLights.Add(light,object.spotLights.Get(light));
 	}
+	ThisObjectCarryLight();
 }
-GameObject::~GameObject(){}
+GameObject::~GameObject(){
+	if(scene){
+		int cpt = 0;
+		for(Light* ptr : scene->GetAllLights()){
+			for(Light* myLight : GetAllLightsOftheObject()){
+				if(ptr == myLight){
+					scene->GetAllLights().Remove(cpt,1);
+					break;
+				}
+			}
+			cpt++;
+		}
+	}
+}
 
 void GameObject::operator=(GameObject& object){
 	name=object.GetName();
@@ -45,7 +59,8 @@ void GameObject::operator=(GameObject& object){
 	}
 	for(const Upp::String& light : object.spotLights.GetKeys()){
 		spotLights.Add(light,object.spotLights.Get(light));
-	}	
+	}
+	ThisObjectCarryLight();
 }
 
 Scene* GameObject::GetScene()const{
@@ -53,6 +68,7 @@ Scene* GameObject::GetScene()const{
 }
 GameObject& GameObject::SetScene(Scene* _scene){
 	scene = _scene;
+	ThisObjectCarryLight();
 	return *this;
 }
 
@@ -79,11 +95,21 @@ ACTION_FUNCTION GameObject::GetOnTransformFunction(){
 	return onTransform;
 }
 
-void GameObject::DisableDrawForNextFrame(){
+void GameObject::DisableDraw(){
 	DontDraw=true;
+	for(Light* ptr : GetAllLightsOftheObject()){
+		ptr->IsDrawable();
+	}
 }
-bool GameObject::IsDrawableDuringThisFrame(){
-	return DontDraw;
+void GameObject::EnableDraw(){
+	DontDraw=false;
+	for(Light* ptr : GetAllLightsOftheObject()){
+		ptr->IsDrawable(true);
+	}
+}
+
+bool GameObject::IsDrawable(){
+	return !DontDraw;
 }
 
 //******************Transform part**************************
@@ -95,32 +121,91 @@ void GameObject::SetTransform(const Transform& _transform){
 }
 
 //******************Light part******************************
-Upp::VectorMap<Upp::String,DirLight>& GameObject::GetDirLights(){
-	return dirLights;
+
+Upp::Array<Light*> GameObject::GetAllLightsOftheObject(){
+	Upp::Array<Light*> AL;
+	for(const Upp::String& Str : dirLights.GetKeys()){
+		AL.Add(&dirLights.Get(Str));
+	}
+	for(const Upp::String& Str : spotLights.GetKeys()){
+		AL.Add(&spotLights.Get(Str));
+	}
+	for(const Upp::String& Str : pointLights.GetKeys()){
+		AL.Add(&pointLights.Get(Str));
+	}
+	return AL;
+}
+
+void GameObject::ThisObjectCarryLight(){
+	if(scene && (dirLights.GetCount()> 0 || spotLights.GetCount() > 0 || pointLights.GetCount() > 0)){
+		bool trouver = false;
+		for(Light* myLight : GetAllLightsOftheObject()){
+			for(Light* ptr : scene->GetAllLights()){
+				if(ptr == myLight){
+					trouver=true;
+					break;
+				}
+			}
+			if(!trouver)scene->GetAllLights().Add(myLight);
+			else trouver = false;
+		}
+	}
+}
+const Upp::Vector<Upp::String>& GameObject::GetAllDirLightsKeys(){
+	return dirLights.GetKeys();
+}
+DirLight& GameObject::GetDirLight(const Upp::String& _name){
+	if(dirLights.Find(_name) !=-1){
+		return dirLights.Get(_name);
+	}
+	throw UGLException(15,"PointLight& GameObject::GetPointLights(...) => DirLight named "+ _name +" Do not exists",1);
 }
 DirLight& GameObject::AddDirLight(const Upp::String& _name){
 	if(dirLights.Find(_name) ==-1){
-		return dirLights.Add(_name);
+		auto& e = dirLights.Add(_name);
+		e.SetName(_name);
+		ThisObjectCarryLight();
+		return e;
 	}else{
 		return dirLights.Get(_name);
 	}
 }
-Upp::VectorMap<Upp::String,SpotLight>& GameObject::GetSpotLights(){
-	return spotLights;
+
+const Upp::Vector<Upp::String>& GameObject::GetAllSpotLightsKeys(){
+	return spotLights.GetKeys();
+}
+SpotLight& GameObject::GetSpotLight(const Upp::String& _name){
+	if(spotLights.Find(_name) !=-1){
+		return spotLights.Get(_name);
+	}
+	throw UGLException(16,"PointLight& GameObject::GetPointLights(...) => SpotLight named "+ _name +" Do not exists",1);
 }
 SpotLight& GameObject::AddSpotLight(const Upp::String& _name){
 	if(spotLights.Find(_name) ==-1){
-		return spotLights.Add(_name);
+		auto& e =spotLights.Add(_name);
+		e.SetName(_name);
+		ThisObjectCarryLight();
+		return e;
 	}else{
 		return spotLights.Get(_name);
 	}	
 }
-Upp::VectorMap<Upp::String,PointLight>& GameObject::GetPointLights(){
-	return pointLights;
+		
+const Upp::Vector<Upp::String>& GameObject::GetAllPointLightsKeys(){
+	return pointLights.GetKeys();
+}
+PointLight& GameObject::GetPointLight(const Upp::String& _name){
+	if(pointLights.Find(_name) !=-1){
+		return pointLights.Get(_name);
+	}
+	throw UGLException(17,"PointLight& GameObject::GetPointLights(...) => PointLight named "+ _name +" Do not exists",1);
 }
 PointLight& GameObject::AddPointLight(const Upp::String& _name){
 	if(pointLights.Find(_name) ==-1){
-		return pointLights.Add(_name);
+		auto& e = pointLights.Add(_name);
+		e.SetName(_name);
+		ThisObjectCarryLight();
+		return e;
 	}else{
 		return pointLights.Get(_name);
 	}	

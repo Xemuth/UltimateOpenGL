@@ -23,6 +23,9 @@ class Object3D : public GameObject, Upp::Moveable<Object3D>
  		int MeshShaderToUse=-1;
  		Shader* ShaderToUse=nullptr;
  		
+ 		int MeshIndiceToUse=-1;
+ 		Upp::Vector<unsigned int> IndicesToUse;
+ 		
     public:
         /*  Functions   */
         Object3D();
@@ -49,6 +52,8 @@ class Object3D : public GameObject, Upp::Moveable<Object3D>
    		Object3D& SetDrawMethod(DrawMethod dm);
    		Object3D& UseOneShader(int _MeshShaderToUse =0); //Define if the object should use one shader to all is mesh
    		Object3D& UseOneShader(Shader* MeshShaderToUse); //Define if the object should use one shader to all is mesh
+   		Object3D& UseSameIndices(int _MeshIndicestoUse =0);
+		Object3D& UseSameIndices(const Upp::Vector<unsigned int>& _indicesToUse);
 };
 
 

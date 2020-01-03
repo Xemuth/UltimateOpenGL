@@ -180,13 +180,7 @@ void Mesh::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 tr
     shader.SetMat4("view",view);
     shader.SetMat4("projection", projection);
     shader.SetVec3("viewPos",GetTransform().GetPosition());
-    int cptColor= 0;
-    for(const Upp::String &mcStr : materialsColor.GetKeys()){
-        
-		shader.SetMaterialColor("color"+ Upp::AsString(cptColor),materialsColor.Get(mcStr));
-		cptColor++;
-	}
-	int cptTexture =0;
+    int cptTexture =0;
 	for(const Upp::String &mtStr : materialsTexture.GetKeys()){
 				materialsTexture.Get(mtStr).diffuse = object3D->GetScene()->GetContext()->GetTextures().Get(mtStr).GetTextureIterator(); 
 		materialsTexture.Get(mtStr).specular= object3D->GetScene()->GetContext()->GetTextures().Get(mtStr).GetTextureIterator();
@@ -194,7 +188,39 @@ void Mesh::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 tr
 		shader.SetMaterialTexture("texture"+ Upp::AsString(cptTexture),materialsTexture.Get(mtStr));
 		cptTexture++;
 	}
-    for(const Upp::String& str : object3D->GetScene()->GetAllGameObject().GetKeys()){
+	if(cptTexture==0){
+	    int cptColor= 0;
+	    for(const Upp::String &mcStr : materialsColor.GetKeys()){
+	        
+			shader.SetMaterialColor("color"+ Upp::AsString(cptColor),materialsColor.Get(mcStr));
+			cptColor++;
+		}
+	}
+	
+
+
+	
+	if(object3D && object3D->GetScene()){
+		for(Light* obj : object3D->GetScene()->GetAllLights()){
+			int cptDirLight=0;
+			int cptPointLight=0;
+			int cptSpotLight=0;
+			if(obj->drawable){
+				if(obj->lightType == LT_DIRLIGHT){
+					shader.SetDirLight(obj->name,* static_cast<DirLight*>(obj),cptDirLight);
+					cptDirLight++;
+				}else if(obj->lightType == LT_POINTLIGHT){
+					shader.SetPointLight(obj->name,* static_cast<PointLight*>(obj),cptPointLight);
+					cptPointLight++;
+				}else if(obj->lightType == LT_SPOTLIGHT){
+					shader.SetSpotLight(obj->name,* static_cast<SpotLight*>(obj),cptSpotLight);
+					cptSpotLight++;
+				}
+			}	
+		}
+	}
+
+   /* for(const Upp::String& str : object3D->GetScene()->GetAllGameObject().GetKeys()){
 		int cptObject = 0;
     	GameObject& obj =  object3D->GetScene()->GetAllGameObject().Get(str);
     	if(!obj.IsDrawableDuringThisFrame()){
@@ -213,7 +239,7 @@ void Mesh::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 tr
 				cptObject++;
 			}
     	}
-    }
+    }*/
   
     glBindVertexArray(VAO);
     //Draw method can be setted with SetDrawMethod
@@ -295,9 +321,14 @@ unsigned int Mesh::GetEBO(){
 Upp::Vector<Vertex>& Mesh::GetVertices(){
 	return vertices;
 }
+void Mesh::SetIndices(Upp::Vector<unsigned int>& _indices){
+	indices.Clear();
+	indices.Append(_indices);
+}
 Upp::Vector<unsigned int>& Mesh::GetIndices(){
 	return indices;
 }
+
 
 bool Mesh::ReadData(Upp::Vector<float>& data,ReaderParameters readerParameter){
 	//I thing this code is really bad.

@@ -21,6 +21,7 @@ UltimateOpenGL_Context* Scene::GetContext(){
 }
 void Scene::SetContext(UltimateOpenGL_Context* _context_){
 	if(context)LOG("Warning : redefinition of context");
+	
 	context = _context_;
 }
 Upp::String Scene::GetName(){
@@ -98,7 +99,7 @@ int Scene::GetNumberOfDirLight(){
 	int number = 0;
 	for(const Upp::String& objectName : AllGamesObjects.GetKeys()){
 		GameObject& myObject = AllGamesObjects.Get(objectName);
-		number +=myObject.GetDirLights().GetCount();
+		number +=myObject.GetAllDirLightsKeys().GetCount();
 	}
 	return number;
 }
@@ -106,7 +107,7 @@ int Scene::GetNumberOfSpotLight(){
 	int number = 0;
 	for(const Upp::String& objectName : AllGamesObjects.GetKeys()){
 		GameObject& myObject = AllGamesObjects.Get(objectName);
-		number +=myObject.GetSpotLights().GetCount();
+		number +=myObject.GetAllSpotLightsKeys().GetCount();
 	}
 	return number;
 }
@@ -114,12 +115,12 @@ int Scene::GetNumberOfPointLight(){
 	int number = 0;
 	for(const Upp::String& objectName : AllGamesObjects.GetKeys()){
 		GameObject& myObject = AllGamesObjects.Get(objectName);
-		number +=myObject.GetPointLights().GetCount();
+		number +=myObject.GetAllPointLightsKeys().GetCount();
 	}
 	return number;
 }
 void Scene::prepareDefaultLight(){
-	GameObject& go=	AllGamesObjects.Add("defaultDirLight");
+	GameObject& go=	 CreateGameObject<GameObject>("defaultDirLight",this);
 	go.AddDirLight("defaultDirLight").SetDirection(glm::vec3(0.0f,-1.0f,0.0f)).SetAmbient(glm::vec3( 0.4f, 0.4f, 0.4f)).SetDiffuse(glm::vec3(0.9,0.9,0.9)).SetSpecular(glm::vec3( 0.04f, 0.04f, 0.04f));
 }
 
@@ -137,6 +138,11 @@ void Scene::Load(){
 bool Scene::IsLoaded(){
 	return loaded;
 }
+
+Upp::Array<Light*>& Scene::GetAllLights(){
+	return AllLights;
+}
+
 void Scene::Draw(const Upp::String& CameraToUse){
 	if(ActiveCamera){
 		Camera* camera = ActiveCamera;

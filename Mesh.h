@@ -34,6 +34,7 @@ struct Vertex : public Upp::Moveable<Vertex> {
     }
     Vertex& SetBitangent(glm::vec3 _bitangent){
         Bitangent = _bitangent;
+        Bitangent = _bitangent;
         return *this;
     }
     
@@ -93,6 +94,8 @@ class Mesh : public Upp::Moveable<Mesh> {
 		unsigned int GetEBO();
 		
 		Upp::Vector<Vertex>& GetVertices();
+		
+		void SetIndices(Upp::Vector<unsigned int>& _indices);
 		Upp::Vector<unsigned int>& GetIndices();
 
 		/* Texture Gestion */
@@ -135,6 +138,7 @@ class Mesh : public Upp::Moveable<Mesh> {
         void Load();
         void LoadDefaultIndices();
         void GenerateAutoShader(int NbLightDir,int NbLightPoint,int NbLightSpot);
+        
         Mesh() = default;
         Mesh(const Upp::Vector<Vertex>& vertices, Upp::Vector<unsigned int>& indices, Upp::Vector<Texture>& textures);
         Mesh(Mesh& _mesh);

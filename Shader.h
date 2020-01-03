@@ -70,19 +70,29 @@ struct Light{
     glm::vec3 diffuse=glm::vec3(0.8f, 0.8f, 0.8f);
     glm::vec3 specular=glm::vec3(1.0f,1.0f,1.0f);
     
+	LightType lightType =LT_DIRLIGHT;
+	bool drawable = true; //Set if light is drawable
+	Upp::String name="";
+
 	Light& SetAmbient(glm::vec3 _ambient){ambient = _ambient;return *this;}
 	Light& SetDiffuse(glm::vec3 _diffuse){diffuse = _diffuse;return *this;}
 	Light& SetSpecular(glm::vec3 _specular){specular = _specular;return *this;}
+	
+	Light& IsDrawable(bool b=false){drawable = b; return *this;}	
+	Light& SetLightType(LightType _lt){lightType = _lt;return *this;}
+	Light& SetName(const Upp::String& _name){name = _name;return *this;}
 };
 struct DirLight : public Light ,Upp::Moveable<DirLight> {
-	DirLight(){}
+	DirLight(){lightType = LT_DIRLIGHT;}
 	DirLight(glm::vec3 _direction, glm::vec3 _ambient, glm::vec3 _diffuse , glm::vec3 _specular){
+		lightType = LT_DIRLIGHT;
 		direction = _direction;
 		ambient = _ambient;
 		diffuse = _diffuse;
 		specular = _specular;
 	}
 	DirLight& operator=(const DirLight& _dirLight){
+		lightType = LT_DIRLIGHT;
 		direction = _dirLight.direction;
 		ambient = _dirLight.ambient;
 		diffuse = _dirLight.diffuse;
@@ -97,8 +107,9 @@ struct DirLight : public Light ,Upp::Moveable<DirLight> {
     glm::vec3 direction=glm::vec3(0.0f);
 };
 struct PointLight : public Light,Upp::Moveable<PointLight> {
-	PointLight(){}
+	PointLight(){lightType = LT_POINTLIGHT;}
 	PointLight(glm::vec3 _position, float _constant,float _linear, float _quadratic,glm::vec3 _ambient, glm::vec3 _diffuse , glm::vec3 _specular){
+		lightType = LT_POINTLIGHT;
 		ambient = _ambient;
 		diffuse = _diffuse;
 		position = _position;
@@ -108,6 +119,7 @@ struct PointLight : public Light,Upp::Moveable<PointLight> {
 		quadratic = _quadratic;
 	}
 	PointLight& operator=(const PointLight& _pointLight){
+		lightType = LT_POINTLIGHT;
 		ambient = _pointLight.ambient;
 		diffuse = _pointLight.diffuse;
 		position = _pointLight.position;
@@ -130,8 +142,9 @@ struct PointLight : public Light,Upp::Moveable<PointLight> {
     float quadratic=0.032f;
 };
 struct SpotLight : public Light,Upp::Moveable<SpotLight> {
-	SpotLight(){}
+	SpotLight(){lightType = LT_SPOTLIGHT;}
 	SpotLight(glm::vec3 _position,glm::vec3 _direction, float _cutOff,float _outerCutOff, float _constant,float _linear,float _quadratic, glm::vec3 _ambient, glm::vec3 _diffuse , glm::vec3 _specular){
+		lightType = LT_SPOTLIGHT;
 		ambient = _ambient;
 		diffuse = _diffuse;
 		position = _position;
@@ -144,6 +157,7 @@ struct SpotLight : public Light,Upp::Moveable<SpotLight> {
 		quadratic = _quadratic;
 	}
 	SpotLight& operator=(const SpotLight& _spotLight){
+		lightType = LT_SPOTLIGHT;
 		ambient = _spotLight.ambient;
 		diffuse = _spotLight.diffuse;
 		position = _spotLight.position;
