@@ -65,7 +65,7 @@ class Mesh : public Upp::Moveable<Mesh> {
         //Upp::Vector<Texture> textures;
         
         Shader shader;
-		DrawMethod drawMethod = UOGL_TRIANGLES;        
+		DrawMethod drawMethod = DM_TRIANGLES;        
         
         Transform transform;
         

@@ -26,13 +26,13 @@
 #include <plugin/Assimp/assimp.h>
 
 
-enum GameObjectType{LIGHT,SOUND,OBJECT3D,OBJECT2D,OBJECTUI};
-enum TranslationType{TRANSLATION, ROTATION,SECOND_ROTATION, SCALE};
-enum Camera_Movement {UOGL_FORWARD,UOGL_BACKWARD,UOGL_LEFT,UOGL_RIGHT};// Defines several possible options for camera movement. Used as abstraction to stay away from window-system specific input methods
-enum TextureColorSample{SAMPLE_RGB,SAMPLE_RGBA}; //Allow to define type of color the texture you want load is
-enum TextureType{DIFFUSE,SPECULAR,NORMAL,HEIGHT, AMBIENT};
-enum ShaderType{PROGRAMM,VERTEX,FRAGMENT}; //Define type of shader we want 
-enum DrawMethod{UOGL_POINTS,UOGL_LINES,UOGL_LINE_STRIP,UOGL_LINE_LOOP,UOGL_TRIANGLES,UOGL_TRIANGLE_STRIP,UOGL_TRIANGLE_FAN,UOGL_QUADS,UOGL_QUAD_STRIP,UOGL_POLYGON};
+enum GameObjectType{GOT_LIGHT,GOT_SOUND,GOT_OBJECT3D,GOT_OBJECT2D,GOT_OBJECTUI};
+enum TranslationType{TT_TRANSLATION, TT_ROTATION,TT_SECOND_ROTATION, TT_SCALE};
+enum Camera_Movement {CM_FORWARD,CM_BACKWARD,CM_LEFT,CM_RIGHT};// Defines several possible options for camera movement. Used as abstraction to stay away from window-system specific input methods
+enum TextureColorSample{TCS_SAMPLE_RGB,TCS_SAMPLE_RGBA}; //Allow to define type of color the texture you want load is
+enum TextureType{TT_DIFFUSE,TT_SPECULAR,TT_NORMAL,TT_HEIGHT,TT_AMBIENT};
+enum ShaderType{ST_PROGRAMM,ST_VERTEX,ST_FRAGMENT}; //Define type of shader we want 
+enum DrawMethod{DM_POINTS,DM_LINES,DM_LINE_STRIP,DM_LINE_LOOP,DM_TRIANGLES,DM_TRIANGLE_STRIP,DM_TRIANGLE_FAN,DM_QUADS,DM_QUAD_STRIP,DM_POLYGON};
 enum LightType{LT_DIRLIGHT,LT_SPOTLIGHT,LT_POINTLIGHT};
 /*
 PROGRAMM -> GL_POINTS

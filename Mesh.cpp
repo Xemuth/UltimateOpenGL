@@ -13,7 +13,7 @@ Mesh::Mesh(const Upp::Vector<Vertex>& vertices, Upp::Vector<unsigned int>& indic
 	Texture lastSpecular;
 	
 	for(Texture& t :   textures){
-		if(t.GetType() == DIFFUSE && lastDiffuse.IsLoaded()){
+		if(t.GetType() == TT_DIFFUSE && lastDiffuse.IsLoaded()){
 			MaterialTexture& m =  materialsTexture.Add(lastDiffuse.GetName());
 			m.SetDiffuse(lastDiffuse.GetTextureIterator());
 			if(lastSpecular.IsLoaded())
@@ -25,15 +25,15 @@ Mesh::Mesh(const Upp::Vector<Vertex>& vertices, Upp::Vector<unsigned int>& indic
 			lastSpecular =Texture();
 			lastDiffuse = Texture();
 		}else{
-			if(t.GetType() == DIFFUSE){
+			if(t.GetType() == TT_DIFFUSE){
 				lastDiffuse = t;
-			}else if(t.GetType() == NORMAL){
+			}else if(t.GetType() == TT_NORMAL){
 				lastNormal = t;
-			}else if(t.GetType() == HEIGHT){
+			}else if(t.GetType() == TT_HEIGHT){
 				lastHeight = t;
-			}else if(t.GetType() == AMBIENT){
+			}else if(t.GetType() == TT_AMBIENT){
 				lastAmbient = t;
-			}else if(t.GetType() == SPECULAR){
+			}else if(t.GetType() == TT_SPECULAR){
 				lastSpecular = t;
 			}
 		}
@@ -242,34 +242,34 @@ void Mesh::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 tr
     glBindVertexArray(VAO);
     //Draw method can be setted with SetDrawMethod
     switch(drawMethod){
-    	case UOGL_POINTS:
+    	case DM_POINTS:
     		glDrawElements(GL_POINTS, indices.GetCount(), GL_UNSIGNED_INT, 0);
     	break;
-    	case UOGL_LINES:
+    	case DM_LINES:
     		glDrawElements(GL_LINES, indices.GetCount(), GL_UNSIGNED_INT, 0);
     	break;
-    	case UOGL_LINE_STRIP:
+    	case DM_LINE_STRIP:
     		glDrawElements(GL_LINE_STRIP, indices.GetCount(), GL_UNSIGNED_INT, 0);
     	break;
-    	case UOGL_LINE_LOOP:
+    	case DM_LINE_LOOP:
     		glDrawElements(GL_LINE_LOOP, indices.GetCount(), GL_UNSIGNED_INT, 0);
     	break;
-    	case UOGL_TRIANGLES:
+    	case DM_TRIANGLES:
     		glDrawElements(GL_TRIANGLES, indices.GetCount(), GL_UNSIGNED_INT, 0);
     	break;
-    	case UOGL_TRIANGLE_STRIP:
+    	case DM_TRIANGLE_STRIP:
     		glDrawElements(GL_TRIANGLE_STRIP, indices.GetCount(), GL_UNSIGNED_INT, 0);
     	break;
-    	case UOGL_TRIANGLE_FAN:
+    	case DM_TRIANGLE_FAN:
     		glDrawElements(GL_TRIANGLE_FAN, indices.GetCount(), GL_UNSIGNED_INT, 0);
     	break;
-    	case UOGL_QUADS:
+    	case DM_QUADS:
     		glDrawElements(GL_QUADS, indices.GetCount(), GL_UNSIGNED_INT, 0);
     	break;
-    	case UOGL_QUAD_STRIP:
+    	case DM_QUAD_STRIP:
     		glDrawElements(GL_QUAD_STRIP, indices.GetCount(), GL_UNSIGNED_INT, 0);
     	break;
-    	case UOGL_POLYGON:
+    	case DM_POLYGON:
     		glDrawElements(GL_POLYGON, indices.GetCount(), GL_UNSIGNED_INT, 0);
     	break;
     	default:
@@ -420,7 +420,7 @@ Mesh& Mesh::BindTexture(const Upp::String& TextureName,float mixValue, float tex
 				if(tSpeculare.IsLoaded()){
 					/*** Here I add the texture to material ***/
 					m.SetSpecular(tSpeculare.GetId());
-					if(tSpeculare.GetType() != SPECULAR)
+					if(tSpeculare.GetType() != TT_SPECULAR)
 						LOG("Class Mesh:(Warning) Mesh& Mesh::BindTexture(...) You are binding as speculare a texture wich is not a speculare type !");
 				}else{
 					LOG("Error : Mesh& Mesh::BindTexture(...) Specular texture of " + object3D->GetName() +" named " + tSpeculare.GetName() +" is not loaded !" );
@@ -431,13 +431,13 @@ Mesh& Mesh::BindTexture(const Upp::String& TextureName,float mixValue, float tex
 				if(tNormal.IsLoaded()){
 					/**Here I add the texture to material ***/
 					m.SetNormal(tNormal.GetId());
-					if(tNormal.GetType() != NORMAL)
+					if(tNormal.GetType() != TT_NORMAL)
 						LOG("Class Mesh:(Warning) Mesh& Mesh::BindTexture(...) You are binding as Normal a texture wich is not a Normal type !");
 				}else{
 					LOG("Class Mesh:(Error) Mesh& Mesh::BindTexture(...) Normal texture of " + object3D->GetName() +" named " + tNormal.GetName() +" is not loaded !" );
 				}
 			}
-			if(t.GetType() != DIFFUSE)
+			if(t.GetType() != TT_DIFFUSE)
 				LOG("Class Mesh:(Warning) Mesh& Mesh::BindTexture(...) You are binding as Diffuse a texture wich is not a Diffuse type !");
 			
 			return *this;
@@ -706,7 +706,7 @@ void Mesh::GenerateAutoShader(int NbLightDir,int NbLightPoint,int NbLightSpot){
 		//HEre we ensure to put everything to start lightcalculation
 		fragmentShader.Replace("//LIGHT_STARTING_DATA","vec3 norm = normalize(Normal);\nvec3 viewDir = normalize(viewPos - FragPos);\nvec3 result = vec3(0.0,0.0,0.0);\n");
 	}
-	if(!GetShader().AddShader(  "Vertex",VERTEX,vertexShader).AddShader("Fragment",FRAGMENT,fragmentShader).CompileShader(true)){
+	if(!GetShader().AddShader(  "Vertex",ST_VERTEX,vertexShader).AddShader("Fragment",ST_FRAGMENT,fragmentShader).CompileShader(true)){
 		LOG("Class Mesh:(ERROR) void Mesh::GenerateAutoShader(int,int,int) ->Shader failled to compilate !");	
 	}
 

@@ -67,7 +67,7 @@ class UltimateOpenGL_Context{
 		bool RemoveScene(const Upp::String& nameOfScene);
 		
 		//Texture Management
-		Texture AddTexture(const Upp::String& TextureName,const Upp::String& textureFilePath,TextureType  _type = DIFFUSE ,bool loadDefault=false, bool flipLoad=true);
+		Texture AddTexture(const Upp::String& TextureName,const Upp::String& textureFilePath,TextureType  _type = TT_DIFFUSE ,bool loadDefault=false, bool flipLoad=true);
 		Texture GetTexture(const Upp::String& TextureName);
 		Upp::VectorMap<Upp::String,Texture>& GetTextures();
 		

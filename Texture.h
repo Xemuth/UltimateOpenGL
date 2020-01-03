@@ -20,7 +20,7 @@ class Texture : Upp::Moveable<Texture>{ //only support 2D textures actually //Do
 		Upp::String pathTexture = "";
 		Upp::String textureName = "";
 		GLenum format=GL_RGB;
-		TextureType type =DIFFUSE;
+		TextureType type =TT_DIFFUSE;
 		
 		
 		int width=-1;

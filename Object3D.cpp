@@ -207,15 +207,15 @@ void Object3D::ManageTextures(Upp::Vector<Texture>& vectorToFile, aiMaterial *ma
         if(this->scene->GetContext()->GetTexture(Upp::String(str.C_Str())).IsLoaded()){
             vectorToFile.Add(this->scene->GetContext()->GetTexture(Upp::String(str.C_Str())));
         }else{
-            TextureType t = DIFFUSE;
+            TextureType t = TT_DIFFUSE;
             if(type == aiTextureType_DIFFUSE)
-            	t=DIFFUSE;
+            	t=TT_DIFFUSE;
             else if(type == aiTextureType_SPECULAR)
-                t=SPECULAR;
+                t=TT_SPECULAR;
             else if(type == aiTextureType_HEIGHT)
-                t=HEIGHT;
+                t=TT_HEIGHT;
             else if(type == aiTextureType_NORMALS)
-                t=NORMAL;
+                t=TT_NORMAL;
             
             vectorToFile.Add(GetScene()->GetContext()->AddTexture(Upp::String(str.C_Str()),directory+"/"+ Upp::String(str.C_Str()),t,false,false));      
         }
@@ -254,7 +254,7 @@ Object3D& Object3D::BindTexture(const Upp::String& TextureName,float mixValue, f
 				if(tSpeculare.IsLoaded()){
 					/*** Here I add the texture to material ***/
 					m.SetSpecular(tSpeculare.GetId());
-					if(tSpeculare.GetType() != SPECULAR)
+					if(tSpeculare.GetType() != TT_SPECULAR)
 						LOG("Warning : Mesh& Mesh::BindTexture(...) You are binding as speculare a texture wich is not a speculare type !");
 				}else{
 					LOG("Error : Mesh& Mesh::BindTexture(...) Specular texture of " + name +" named " + tSpeculare.GetName() +" is not loaded !" );
@@ -265,13 +265,13 @@ Object3D& Object3D::BindTexture(const Upp::String& TextureName,float mixValue, f
 				if(tNormal.IsLoaded()){
 					/**Here I add the texture to material ***/
 					m.SetNormal(tNormal.GetId());
-					if(tNormal.GetType() != NORMAL)
+					if(tNormal.GetType() != TT_NORMAL)
 						LOG("Warning : Mesh& Mesh::BindTexture(...) You are binding as Normal a texture wich is not a Normal type !");
 				}else{
 					LOG("Error : Mesh& Mesh::BindTexture(...) Normal texture of " + name +" named " + tNormal.GetName() +" is not loaded !" );
 				}
 			}
-			if(t.GetType() != DIFFUSE)
+			if(t.GetType() != TT_DIFFUSE)
 				LOG("Warning : Mesh& Mesh::BindTexture(...) You are binding as Diffuse a texture wich is not a Diffuse type !");
 
 			for(Mesh& mes : meshes){
