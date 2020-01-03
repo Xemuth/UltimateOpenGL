@@ -51,8 +51,8 @@ struct Vertex : public Upp::Moveable<Vertex> {
 
 
 class Mesh : public Upp::Moveable<Mesh> {
-	private:
-			
+	protected:
+		
 		Object3D* object3D =nullptr;
 		
         /*  Render data  */
@@ -141,7 +141,7 @@ class Mesh : public Upp::Moveable<Mesh> {
         
         Mesh() = default;
         Mesh(const Upp::Vector<Vertex>& vertices, Upp::Vector<unsigned int>& indices, Upp::Vector<Texture>& textures);
-        Mesh(Mesh& _mesh);
+        Mesh(const Mesh& _mesh);
         void Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform,Camera& camera);
 };
 #endif

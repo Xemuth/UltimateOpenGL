@@ -21,6 +21,24 @@ Object3D::Object3D(const Upp::String& pathOfModel, Scene*_scenePtr){
 	if(_scenePtr) scene = _scenePtr;
 	LoadModel(pathOfModel);
 }
+
+Object3D::Object3D(Object3D& obj) : GameObject(obj){
+	textures_loaded.Append(obj.textures_loaded);	// stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
+    meshes.Append(obj.meshes);
+    directory= obj.directory;
+    gammaCorrection = obj.gammaCorrection;  
+	       
+	MeshShaderToUse=obj.MeshShaderToUse;
+	ShaderToUse=obj.ShaderToUse;
+	
+	MeshIndiceToUse=obj.MeshIndiceToUse;
+	IndicesToUse.Append(obj.IndicesToUse);
+}
+Object3D& Object3D::operator=(Object3D& obj){
+	
+	return *this;
+}
+
 void Object3D::LoadModel(const Upp::String& path){
 	Upp::String realPath =UltimateOpenGL_Context::TransformFilePath(path);
     // read file via ASSIMP
@@ -206,16 +224,20 @@ void Object3D::ManageTextures(Upp::Vector<Texture>& vectorToFile, aiMaterial *ma
 
 Object3D& Object3D::UseOneShader(int _MeshShaderToUse){
 	MeshShaderToUse = _MeshShaderToUse;
+	return *this;
 } //Define if the object should use one shader to all is mesh
 Object3D& Object3D::UseOneShader(Shader* MeshShaderToUse){ //Define if the object should use one shader to all is mesh
 	ShaderToUse = MeshShaderToUse;
+	return *this;
 }
 
 Object3D& Object3D::UseSameIndices(int _MeshIndicestoUse){
 	MeshIndiceToUse = _MeshIndicestoUse;
+	return *this;
 }
 Object3D& Object3D::UseSameIndices(const Upp::Vector<unsigned int>& _indicesToUse){
 	IndicesToUse.Append(_indicesToUse);
+	return *this;
 }
 
 

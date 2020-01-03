@@ -55,30 +55,28 @@ Mesh::Mesh(const Upp::Vector<Vertex>& vertices, Upp::Vector<unsigned int>& indic
    //Load();
 }
 
-Mesh::Mesh(Mesh& _mesh){
-	object3D = _mesh.GetObject3D();
-	VAO = _mesh.GetVAO();
-	VBO = _mesh.GetVBO();
-	EBO = _mesh.GetEBO();
+Mesh::Mesh(const  Mesh& _mesh){
+	object3D = _mesh.object3D;
+	VAO = _mesh.VAO;
+	VBO = _mesh.VBO;
+	EBO = _mesh.EBO;
         
-    vertices.Append(_mesh.GetVertices());
-    indices.Append(_mesh.GetIndices());
+    vertices.Append(_mesh.vertices);
+    indices.Append(_mesh.indices);
  //   textures.Append(_mesh.GetTextures());
     
-    shader = _mesh.GetShader();
+    shader = _mesh.shader;
     
-    transform = _mesh.GetTransform();
+    transform = _mesh.transform;
     
-    Upp::VectorMap<Upp::String,MaterialColor>& mc = _mesh.GetMaterialColor();
-    for(const Upp::String& str : mc.GetKeys()){
-        materialsColor.Add(str, mc.Get(str));
+    for(const Upp::String& str :_mesh.materialsColor.GetKeys()){
+        materialsColor.Add(str, _mesh.materialsColor.Get(str));
     }
-    Upp::VectorMap<Upp::String,MaterialTexture>& mt = _mesh.GetMaterialTextures();
-    for(const Upp::String& str : mt.GetKeys()){
-        materialsTexture.Add(str, mt.Get(str));
+    for(const Upp::String& str : _mesh.materialsTexture.GetKeys()){
+        materialsTexture.Add(str,_mesh.materialsTexture.Get(str));
     }
 
-	LightAffected = _mesh.IsLightAffected();
+	LightAffected = _mesh.LightAffected;
 }
 void Mesh::LoadDefaultIndices(){
     int cpt= vertices.GetCount();

@@ -4,7 +4,8 @@
 
 class Object3D : public GameObject, Upp::Moveable<Object3D>
 {
-	 private:	     
+	 protected:	     
+		
         /*  Model Data */
 	    Upp::Vector<Texture> textures_loaded;	// stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
 	    Upp::Array<Mesh> meshes;
@@ -34,6 +35,8 @@ class Object3D : public GameObject, Upp::Moveable<Object3D>
         Object3D(Upp::Vector<float>& Vertices, ReaderParameters readerParameter = ReaderParameters(), ReaderRoutine readerRoutine = ReaderRoutine());
         Object3D(Upp::Array<Mesh>& _meshes);
         Object3D(const Upp::String& pathOfModel, Scene*_scenePtr = nullptr);
+        Object3D(Object3D& obj);
+        Object3D& operator=(Object3D& obj);
         void LoadModel(const Upp::String& path);
         
         void ReadData(Upp::Vector<float>& data ,ReaderParameters readerParameter = ReaderParameters(),ReaderRoutine readerRoutine = ReaderRoutine());
