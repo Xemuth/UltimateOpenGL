@@ -10,6 +10,7 @@ class Object3D : public GameObject, Upp::Moveable<Object3D>
 	    Upp::Array<Mesh> meshes;
 	    Upp::String directory="";
 	    bool gammaCorrection;
+	    
         /*  Functions   */
         
         void ProcessNode(aiNode *node, const aiScene *scene);
@@ -18,7 +19,10 @@ class Object3D : public GameObject, Upp::Moveable<Object3D>
      	void ManageTextures(Upp::Vector<Texture>& vectorToFile, aiMaterial *mat, aiTextureType type);
      	
         Upp::Vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type,const Upp::String& typeName);
-        
+		       
+ 		int MeshShaderToUse=-1;
+ 		Shader* ShaderToUse=nullptr;
+ 		
     public:
         /*  Functions   */
         Object3D();
@@ -43,6 +47,8 @@ class Object3D : public GameObject, Upp::Moveable<Object3D>
         Object3D& BindTexture(const Upp::String& TextureName,float mixValue = 1.0, float textureShininess = 0.64f,const Upp::String& TextureSpecularName ="", const Upp::String& NormalMappingTextureName="");
    		Object3D& AddMaterialColor(const Upp::String& ColorName,MaterialColor materialColor = MaterialColor());
    		Object3D& SetDrawMethod(DrawMethod dm);
+   		Object3D& UseOneShader(int _MeshShaderToUse =0); //Define if the object should use one shader to all is mesh
+   		Object3D& UseOneShader(Shader* MeshShaderToUse); //Define if the object should use one shader to all is mesh
 };
 
 

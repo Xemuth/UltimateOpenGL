@@ -125,20 +125,6 @@ void Object3D::ReadData(Upp::Vector<float>& data,ReaderParameters readerParamete
 			LOG("Error : void Object3D::ReadData(...) Error during resolution of mesh to affect !");
 		}
 	}
-	
-	
-	
-	/*
-	Mesh& m = meshes.Add();
-	if(m.ReadData(data,readerParameter)){
-		m.SetObject3D(this);
-		transform.AddChild(&m.GetTransform());
-		LOG("ReadData : Data have been readed succesfully !");	
-	}else{
-		meshes.Remove(meshes.GetCount()-1);
-		LOG("ReadData : Error during process of data !");
-	}
-	*/
 }
 
 void Object3D::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform,Camera& camera){
@@ -149,8 +135,24 @@ void Object3D::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat
         meshes[i].Draw(model,view,projection,transform,camera);
 }
 void Object3D::Load(){
-	for(int i = 0; i < meshes.size(); i++)//Changement made by Iñaki
-        meshes[i].Load();
+	if(ShaderToUse){
+		for(int i = 0; i < meshes.size(); i++){
+        	meshes[i].SetShader(*ShaderToUse);
+        	meshes[i].Load();
+		}	
+	}else if(MeshShaderToUse != -1){
+		if(meshes.GetCount() > 0){
+			meshes[0].Load();
+			for(int i = 1; i < meshes.size(); i++){
+	        	meshes[i].SetShader(meshes[0].GetShader());
+	        	meshes[i].Load();
+			}		
+		}
+	}else{
+		for(int i = 0; i < meshes.size(); i++){//Changement made by Iñaki
+        	meshes[i].Load();
+		}
+	}
 }
 
 void Object3D::ProcessNode(aiNode *node, const aiScene *scene){
@@ -189,6 +191,13 @@ void Object3D::ManageTextures(Upp::Vector<Texture>& vectorToFile, aiMaterial *ma
             vectorToFile.Add(GetScene()->GetContext()->AddTexture(Upp::String(str.C_Str()),directory+"/"+ Upp::String(str.C_Str()),t,false,false));      
         }
     }
+}
+
+Object3D& Object3D::UseOneShader(int _MeshShaderToUse){
+	MeshShaderToUse = _MeshShaderToUse;
+} //Define if the object should use one shader to all is mesh
+Object3D& Object3D::UseOneShader(Shader* MeshShaderToUse){ //Define if the object should use one shader to all is mesh
+	ShaderToUse = MeshShaderToUse;
 }
 
 Object3D& Object3D::BindTexture(const Upp::String& TextureName,float mixValue, float textureShininess,const Upp::String& TextureSpecularName, const Upp::String& NormalMappingTextureName){
