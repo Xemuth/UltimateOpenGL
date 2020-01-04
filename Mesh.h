@@ -8,7 +8,7 @@ struct Vertex : public Upp::Moveable<Vertex> {
     // normal
     glm::vec3 Normal=glm::vec3(0);
     // texCoords
-    glm::vec2 TexCoords=glm::vec2(0);
+    glm::vec2 TexCoords=glm::vec2(0.0,0.0);
     // tangent
     glm::vec3 Tangent=glm::vec3(0);
     // bitangent
