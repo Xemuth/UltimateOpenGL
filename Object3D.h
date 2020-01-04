@@ -12,6 +12,28 @@ class Object3D : public GameObject, Upp::Moveable<Object3D>
 	    Upp::String directory="";
 	    bool gammaCorrection;
 	    
+	    bool loaded=false;
+	    
+	    
+	    /*
+	    	This part allow High performance multipleMesh rendering.
+	    */
+	    bool HighPerfomanceDrawing =false; //Used to know if hight perfomance draw is should be enable or not
+	    void GenerateHighPerfomanceShader(); //USed to generate hight performance shader. Ensure the boolean HighPerfomanceDrawing is set to true before loading
+	    /*
+	    glm::vec3* positionVector = nullptr; //Stock position of each mesh information
+	    glm::vec3* normalVector = nullptr; //Stock normal if it existe
+	    glm::vec2* textureCoordinateVector = nullptr; //Stock TC if it existe
+	    glm::vec3* tangeant = nullptr;
+	    glm::vec3* biTangeant =nullptr;
+	    glm::mat4* modelMatrices =nullptr; //Used to stock all model we have to draw (used for
+	    high perf)*/
+	    Shader HighPerfShader;
+	    //unsigned int HighPerformanceVAO;
+	  //  unsigned int HighPerformanceVBO;
+	    //unsigned int HighPerformanceEBO;
+	    ///////////////////////////////////////////////////////////////////
+	    
         /*  Functions   */
         
         void ProcessNode(aiNode *node, const aiScene *scene);
@@ -37,6 +59,7 @@ class Object3D : public GameObject, Upp::Moveable<Object3D>
         Object3D(const Upp::String& pathOfModel, Scene*_scenePtr = nullptr);
         Object3D(Object3D& obj);
         Object3D& operator=(Object3D& obj);
+        ~Object3D();
         void LoadModel(const Upp::String& path);
         
         void ReadData(Upp::Vector<float>& data ,ReaderParameters readerParameter = ReaderParameters(),ReaderRoutine readerRoutine = ReaderRoutine());
@@ -57,6 +80,8 @@ class Object3D : public GameObject, Upp::Moveable<Object3D>
    		Object3D& UseOneShader(Shader* MeshShaderToUse); //Define if the object should use one shader to all is mesh
    		Object3D& UseSameIndices(int _MeshIndicestoUse =0);
 		Object3D& UseSameIndices(const Upp::Vector<unsigned int>& _indicesToUse);
+		Object3D& ActivateHighPerfomance();
+		Object3D& DesactivateHighPerfomance();
 };
 
 

@@ -26,16 +26,53 @@ Object3D::Object3D(Object3D& obj) : GameObject(obj){
 	textures_loaded.Append(obj.textures_loaded);	// stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
     meshes.Append(obj.meshes);
     directory= obj.directory;
-    gammaCorrection = obj.gammaCorrection;  
-	       
+    gammaCorrection = obj.gammaCorrection; 
+    loaded = obj.loaded; 
+    HighPerfomanceDrawing = obj.HighPerfomanceDrawing;
+    HighPerfShader = obj.HighPerfShader;
+    
+	transform = obj.transform;
+	transform.ClearChilds();
+    for(Mesh& m : meshes){
+    	transform.AddChild(&m.GetTransform());
+    }
+    
+	
 	MeshShaderToUse=obj.MeshShaderToUse;
 	ShaderToUse=obj.ShaderToUse;
 	
 	MeshIndiceToUse=obj.MeshIndiceToUse;
 	IndicesToUse.Append(obj.IndicesToUse);
 }
+Object3D::~Object3D(){
+	/*if(modelMatrices) delete modelMatrices;
+	if(positionVector) delete positionVector; //Stock position of each mesh information
+	if(normalVector) delete normalVector; //Stock normal if it existe
+	if(textureCoordinateVector) delete textureCoordinateVector; //Stock TC if it existe
+	if(tangeant) delete tangeant;
+	if(biTangeant) delete biTangeant;*/
+}
 Object3D& Object3D::operator=(Object3D& obj){
+	textures_loaded.Append(obj.textures_loaded);	// stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
+    meshes.Append(obj.meshes);
+    directory= obj.directory;
+    gammaCorrection = obj.gammaCorrection; 
+    
+    transform = obj.transform;
+    transform.ClearChilds();
+    for(Mesh& m : meshes){
+    	transform.AddChild(&m.GetTransform());
+    }
+    
+    loaded = obj.loaded; 
+	HighPerfomanceDrawing = obj.HighPerfomanceDrawing;
+    HighPerfShader = obj.HighPerfShader;   
+       
+	MeshShaderToUse=obj.MeshShaderToUse;
+	ShaderToUse=obj.ShaderToUse;
 	
+	MeshIndiceToUse=obj.MeshIndiceToUse;
+	IndicesToUse.Append(obj.IndicesToUse);
 	return *this;
 }
 
@@ -145,43 +182,131 @@ void Object3D::ReadData(Upp::Vector<float>& data,ReaderParameters readerParamete
 	}
 }
 
+Object3D& Object3D::ActivateHighPerfomance(){
+	if(!loaded) HighPerfomanceDrawing = true;
+	else LOG("Error : Object3D& Object3D::ActivateHighPerfomance() Object3D is loaded so it can't be swap to high performance !");
+	return *this;
+}
+Object3D& Object3D::DesactivateHighPerfomance(){
+	if(!loaded) HighPerfomanceDrawing = false;
+	else LOG("Error : Object3D& Object3D::DesactivateHighPerfomance() Object3D is loaded so it can't be swap off to high performance !");
+	return *this;
+}
+
 void Object3D::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform,Camera& camera){
 	if(onDraw != nullptr){
 		onDraw(*this);	
 	}
-	for(int i = 0; i < meshes.size(); i++) // meshes.size(); i++)//Changement made by Iñaki
-        meshes[i].Draw(model,view,projection,transform,camera);
+	if(HighPerfomanceDrawing &&  (ShaderToUse ||MeshShaderToUse > -1)){
+		if(HighPerfShader.IsCompiled()){
+			HighPerfShader.Use();
+		    HighPerfShader.SetMat4("view",view);
+		    HighPerfShader.SetMat4("projection", projection);
+		    HighPerfShader.SetMat4("model", glm::translate(model,GetTransform().GetPosition())*glm::mat4_cast(GetTransform().GetQuaterion())*GetTransform().GetModelMatrixScaller());
+			//TODO
+			//Here we must set everything relative to the uniform of the shader
+			//HighPerfShader.SetMaterialColor()
+			//meshes[200].SetDrawMethod(DM_QUADS);
+			for(Mesh& mes : meshes){
+				glBindVertexArray(mes.GetVAO());
+		        glDrawElements(mes.ResolveDrawMethod(), mes.GetIndices().GetCount(), GL_UNSIGNED_INT, 0);
+		        glBindVertexArray(0);
+			}
+		}
+	}else{
+		for(int i = 0; i < meshes.size(); i++) // meshes.size(); i++)//Changement made by Iñaki
+        	meshes[i].Draw(model,view,projection,transform,camera);
+	}
 }
 void Object3D::Load(){
-	bool loopStartZero =true;
-	Shader* shad = nullptr;
-	Upp::Vector<unsigned int> ind;
-	
-	if(ShaderToUse){
-		shad = ShaderToUse;
-	}else if(MeshShaderToUse != -1){
-		if(meshes.GetCount() > 0){
-			meshes[0].Load();
-			shad = &(meshes[0].GetShader());
-			loopStartZero =false;
-		}
-	}
-	if(IndicesToUse.GetCount()> 0){
-		ind.Append(IndicesToUse);
-	}else if(MeshIndiceToUse != -1){
-		if(meshes.GetCount() > 0){
-			if(meshes[0].GetIndices().GetCount() == 0){
-				meshes[0].LoadDefaultIndices();
+	if(!loaded){
+		bool loopStartZero =true;
+		Shader* shad = nullptr;
+		Upp::Vector<unsigned int> ind;
+		
+		if(HighPerfomanceDrawing){
+			GenerateHighPerfomanceShader();
+			if(HighPerfShader.IsCompiled()){
+				if(IndicesToUse.GetCount()> 0){
+					ind.Append(IndicesToUse);
+				}else if(MeshIndiceToUse != -1){
+					if(meshes.GetCount() > 0){
+						if(meshes[0].GetIndices().GetCount() == 0){
+							meshes[0].LoadDefaultIndices();
+						}
+						ind.Append(meshes[0].GetIndices());
+					}
+				}
+				
+				
+				/*positionVector = new glm::vec3[meshes.size()];;
+			    normalVector = new glm::vec3[meshes.size()];;
+			    textureCoordinateVector = new glm::vec2[meshes.size()]; //Stock TC if it existe
+			    tangeant = new glm::vec3[meshes.size()];;
+			    biTangeant =new glm::vec3[meshes.size()];;
+				modelMatrices = new glm::mat4[meshes.size()];*/
+				
+				for(int i = 0; i < meshes.size(); i++){//Changement made by Iñaki
+					meshes[i].SetShader(HighPerfShader);
+					if(ind.GetCount()>0) meshes[i].SetIndices(ind);
+			    	meshes[i].Load(); 
+			    	/*
+			    	unsigned int buffer;
+				    glGenBuffers(1, &buffer);
+				    glBindBuffer(GL_ARRAY_BUFFER, buffer);
+				    glBufferData(GL_ARRAY_BUFFER, meshes.size() * sizeof(glm::mat4), &modelMatrices[0], GL_STATIC_DRAW);
+			    	
+			    	//glBindVertexArray(meshes[i].GetVAO());
+			    	// set attribute pointers for matrix (4 times vec4)
+			        glEnableVertexAttribArray(5);
+			        glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
+			        glEnableVertexAttribArray(6);
+			        glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4)));
+			        glEnableVertexAttribArray(7);
+			        glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(2 * sizeof(glm::vec4)));
+			        glEnableVertexAttribArray(8);
+			        glVertexAttribPointer(8, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(3 * sizeof(glm::vec4)));
+			
+			        glVertexAttribDivisor(5, 1);
+			        glVertexAttribDivisor(6, 1);
+			        glVertexAttribDivisor(7, 1);
+			        glVertexAttribDivisor(8, 1);
+			
+			        glBindVertexArray(0);*/
+			    	
+				}
 			}
-			ind.Append(meshes[0].GetIndices());
+			loaded =true;
+		}else{
+			if(ShaderToUse){
+				shad = ShaderToUse;
+			}else if(MeshShaderToUse != -1){
+				if(meshes.GetCount() > 0){
+					meshes[0].Load();
+					shad = &(meshes[0].GetShader());
+					loopStartZero =false;
+				}
+			}
+			if(IndicesToUse.GetCount()> 0){
+				ind.Append(IndicesToUse);
+			}else if(MeshIndiceToUse != -1){
+				if(meshes.GetCount() > 0){
+					if(meshes[0].GetIndices().GetCount() == 0){
+						meshes[0].LoadDefaultIndices();
+					}
+					ind.Append(meshes[0].GetIndices());
+				}
+			}
+			for(int i = ((loopStartZero)?0:1) ; i < meshes.size(); i++){//Changement made by Iñaki
+				if(shad)meshes[i].SetShader(*shad);
+				if(ind.GetCount()>0) meshes[i].SetIndices(ind);
+		    	meshes[i].Load();
+			}
+			loaded =true;
 		}
+	}else{
+		LOG("Error : void Object3D::Load() Object3D named : " + name + " is still loaded !");	
 	}
-	for(int i = ((loopStartZero)?0:1) ; i < meshes.size(); i++){//Changement made by Iñaki
-		if(shad)meshes[i].SetShader(*shad);
-		if(ind.GetCount()>0) meshes[i].SetIndices(ind);
-    	meshes[i].Load();
-	}
-	
 }
 
 void Object3D::ProcessNode(aiNode *node, const aiScene *scene){
@@ -405,4 +530,120 @@ void Object3D::ProcessMesh(aiMesh *mesh, const aiScene *scene){
     Mesh& m =  meshes.Create<Mesh>(vertices, indices, textures);
     m.SetObject3D(this);
    	GetTransform().AddChild(&m.GetTransform());
+}
+
+
+void Object3D::GenerateHighPerfomanceShader(){
+	Upp::String vertexShader = BasicShaders.Get("Default_Vertex_Shader");
+	Upp::String fragmentShader = BasicShaders.Get("Default_Fragment_Shader");
+	
+	Upp::String all_uniform="";
+	Upp::String all_VecMulti= "";
+	all_VecMulti= "FragColor = ";
+	
+	Upp::String AllDirLights="";
+	Upp::String AllPointLights="";
+	Upp::String AllSpotLights="";	
+	
+
+	vertexShader.Replace("//LAYOUT_POSITION","layout (location = 0) in vec3 aPos;");
+	vertexShader.Replace("//LAYOUT_NORMAL","layout (location = 1) in vec3 aNormal;");	
+	vertexShader.Replace("//LAYOUT_TEXTURE_COORD","layout (location = 2) in vec2 aTexCoord;");
+	vertexShader.Replace("//LAYOUT_TANGEANT","layout (location =3) in vec3 aTangent;");	
+	vertexShader.Replace("//LAYOUT_BITANGEANT","layout (location =4) in vec3 aBiTangent;");	
+	vertexShader.Replace("//LAYOUT_MODEL_MATRIX","layout (location = 5) in mat4 aInstanceMatrix;\n");
+	
+//	vertexShader.Replace("//NORMAL_CALCULATION","Normal = mat3(transpose(inverse(aInstanceMatrix))) * aNormal;\n");
+	vertexShader.Replace("//NORMAL_CALCULATION","Normal = mat3(transpose(inverse(model))) * aNormal;\n");
+	//vertexShader.Replace("//FRAGPOS_CALCULATION","FragPos = vec3(aInstanceMatrix * vec4(aPos, 1.0));\n");
+	vertexShader.Replace("//FRAGPOS_CALCULATION","FragPos = vec3(model * vec4(aPos, 1.0));\n");
+	//vertexShader.Replace("//POSITION_CALCULATION","gl_Position = projection * view * aInstanceMatrix * vec4(aPos, 1.0f);\n");
+	vertexShader.Replace("//POSITION_CALCULATION","gl_Position = projection * view * model * vec4(aPos, 1.0f);\n");
+	vertexShader.Replace("//UNIFORM_MODEL","uniform mat4 model;\n");
+	if(true){//materialsColor.GetCount() > 0){
+		//Vertex shader generation
+		fragmentShader.Replace("//STRUCT_MATERIAL_COLOR","MATERIAL_COLOR_STRUCT()");
+
+		fragmentShader.Replace("//STRUCT_MATERIAL_COLOR","MATERIAL_COLOR_STRUCT()");
+		fragmentShader.Replace("//OUT_FRAG_COLOR","out vec4 FragColor;");
+		 /*
+		int cpt = 0;
+		for(const Upp::String& key : materialsColor.GetKeys()){
+			Upp::String colorIdentifier = "color" + Upp::AsString(cpt) ;
+			all_uniform << "uniform MaterialColor " <<  colorIdentifier << ";\n";
+			all_VecMulti << ((cpt > 0)?"*":"") <<  "vec4(" + colorIdentifier + ".diffuse,1.0)"; 
+			cpt++;
+		}
+		if(all_uniform.GetCount()>0) fragmentShader.Replace("//UNIFORM_MATERIAL_COLOR_NAME",all_uniform);
+		
+		if( NbLightDir > 0 && LightAffected){
+			cpt = 0;
+			for(const Upp::String& key : materialsColor.GetKeys()){
+				Upp::String colorIdentifier = "color" + Upp::AsString(cpt) ;
+				if(cpt == 0){
+					AllDirLights << "for(int i = 0; i < " + Upp::AsString(NbLightDir) +"; i++){\n";
+					AllDirLights << "\tresult += CalcColorDirLight("+ colorIdentifier +",dirLights[i], norm, viewDir);\n";
+				}else{
+					AllDirLights << "\tresult += CalcColorDirLight("+ colorIdentifier +",dirLights[i], norm, viewDir);\n";
+				}
+			}
+			AllDirLights << "}";
+			fragmentShader.Replace("//STRUCT_DIR_LIGHT","LIGHT_DIR_STRUCT()");
+			fragmentShader.Replace("//IMPORT_DIR_LIGHT_COLOR_PROTOTYPE","LIGHT_DIR_COLOR_PROTOTYPE()");
+			fragmentShader.Replace("//DIR_LIGHT_COLOR_FUNCTION","LIGHT_DIR_COLOR_FUNCTION()");	
+			fragmentShader.Replace("//DIR_LIGHTS_ARRAY","uniform DirLight dirLights["+ Upp::AsString(NbLightDir) +"];");
+			fragmentShader.Replace("//DIRECTIONAL_LIGHTS",AllDirLights);
+		}
+		if( NbLightPoint > 0&& LightAffected){
+			cpt = 0;
+			for(const Upp::String& key : materialsColor.GetKeys()){
+				Upp::String colorIdentifier = "color" + Upp::AsString(cpt) ;
+				if(cpt == 0){
+					AllPointLights << "for(int i = 0; i < " + Upp::AsString(NbLightPoint) +"; i++){\n";
+					AllPointLights << "\tresult += CalcColorPointLight("+ colorIdentifier +",pointLights[i], norm, FragPos ,viewDir);\n";
+				}else{
+					AllPointLights << "\tresult += CalcColorPointLight("+ colorIdentifier +",pointLights[i], norm, FragPos ,viewDir);\n";
+				}
+			}
+			AllPointLights << "}";
+			fragmentShader.Replace("//STRUCT_POINT_LIGHT","LIGHT_POINT_STRUCT()");
+			fragmentShader.Replace("//IMPORT_POINT_LIGHT_COLOR_PROTOTYPE","LIGHT_POINT_COLOR_PROTOTYPE()");
+			fragmentShader.Replace("//POINT_LIGHT_COLOR_FUNCTION","LIGHT_POINT_COLOR_FUNCTION()");	
+			fragmentShader.Replace("//POINT_LIGHTS_ARRAY","uniform PointLight pointLights["+ Upp::AsString(NbLightPoint) +"];");
+			fragmentShader.Replace("//POINT_LIGHTS",AllPointLights);
+		}
+		if( NbLightSpot > 0&& LightAffected){
+			cpt = 0;
+			for(const Upp::String& key : materialsColor.GetKeys()){
+				Upp::String colorIdentifier = "color" + Upp::AsString(cpt) ;
+				if(cpt == 0){
+					AllSpotLights << "for(int i = 0; i < " + Upp::AsString(NbLightSpot) +"; i++){\n";
+					AllSpotLights << "\tresult += CalcColorSpotLight("+ colorIdentifier +",spotLights[i], norm, FragPos , viewDir);\n";
+				}else{
+					AllSpotLights << "\tresult += CalcColorSpotLight("+ colorIdentifier +",spotLights[i], norm, FragPos , viewDir);\n";
+				}
+			} 
+			AllSpotLights << "}";
+			fragmentShader.Replace("//STRUCT_SPOT_LIGHT","LIGHT_SPOT_STRUCT()");
+			fragmentShader.Replace("//IMPORT_SPOT_LIGHT_COLOR_PROTOTYPE","LIGHT_SPOT_COLOR_PROTOTYPE()");
+			fragmentShader.Replace("//SPOT_LIGHT_COLOR_FUNCTION","LIGHT_SPOT_COLOR_FUNCTION()");	
+			fragmentShader.Replace("//SPOT_LIGHTS_ARRAY","uniform SpotLight spotLights["+ Upp::AsString(NbLightSpot) +"];");
+			fragmentShader.Replace("//SPOT_LIGHTS",AllSpotLights);
+		}*/
+			fragmentShader.Replace("//FRAG_COLOR_CALCULATION","FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n");
+		
+		if(all_VecMulti.GetCount()>12){
+			all_VecMulti << ";\nFragColor =texColor;\n";
+			fragmentShader.Replace("//FRAG_COLOR_CALCULATION",all_VecMulti);
+		}
+		
+	}
+	/*
+	if( (NbLightDir > 0 || NbLightPoint > 0 || NbLightSpot > 0) && LightAffected){
+		//HEre we ensure to put everything to start lightcalculation
+		fragmentShader.Replace("//LIGHT_STARTING_DATA","vec3 norm = normalize(Normal);\nvec3 viewDir = normalize(viewPos - FragPos);\nvec3 result = vec3(0.0,0.0,0.0);\n");
+	} */
+	if(!HighPerfShader.AddShader(  "Vertex",ST_VERTEX,vertexShader).AddShader("Fragment",ST_FRAGMENT,fragmentShader).CompileShader(true)){
+		LOG("Class Mesh:(ERROR) void Mesh::GenerateAutoShader(int,int,int) ->Shader failled to compilate !");	
+	}
 }

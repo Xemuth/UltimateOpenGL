@@ -16,17 +16,34 @@ Transform::Transform(glm::vec3 _position,glm::quat _quaterion,glm::vec3 _scale){
 	scale = _scale;
 }
 Transform::Transform(const Transform& transform){
-	position = transform.GetPosition();
-	quaterion = transform.GetQuaterion();
-	scale = transform.GetScallabeMatrix();
-	childs.Append(transform.GetChilds());
+	gameObject = transform.gameObject;
+		
+	position = transform.position;
+	quaterion = transform.quaterion;
+	quaterionBuffer = transform.quaterionBuffer;
+	
+	scale= transform.scale;
+	modelMatrix = transform.modelMatrix; 
+	
+	Front = transform.Front;
+	Up =transform.Up;
+	Right = transform.Right;
+	WorldUp = transform.WorldUp;
 }
 Transform& Transform::operator=(const Transform& _transform){
-	position = _transform.GetPosition();
-	quaterion = _transform.GetQuaterion();
-	scale = _transform.GetScallabeMatrix();
-	childs.Clear();
-	childs.Append(_transform.GetChilds());
+	gameObject = _transform.gameObject;
+		
+	position = _transform.position;
+	quaterion = _transform.quaterion;
+	quaterionBuffer = _transform.quaterionBuffer;
+	
+	scale= _transform.scale;
+	modelMatrix = _transform.modelMatrix; 
+	
+	Front = _transform.Front;
+	Up =_transform.Up;
+	Right = _transform.Right;
+	WorldUp = _transform.WorldUp;
 	return *this;
 }
 

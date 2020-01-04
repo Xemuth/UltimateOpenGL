@@ -39,7 +39,7 @@ file
 	stb_image.cpp,
 	stb_image.h,
 	Simps readonly separator,
-	Simps\DefaultVertexShader.glsl,
+	Simps\DefaultVertexShader.glsl highlight cpp,
 	Simps\DefaultFragmentShader.glsl,
 	Simps\MaterialColor.glsl,
 	Simps\MaterialTexture.glsl,

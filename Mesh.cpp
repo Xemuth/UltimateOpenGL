@@ -85,6 +85,43 @@ void Mesh::LoadDefaultIndices(){
     }
 }
 
+GLint Mesh::ResolveDrawMethod(){
+	switch(drawMethod){
+    	case DM_POINTS:
+    		return GL_POINTS;
+    	break;
+    	case DM_LINES:
+    		return GL_LINES;
+    	break;
+    	case DM_LINE_STRIP:
+    		return GL_LINE_STRIP;
+    	break;
+    	case DM_LINE_LOOP:
+    		return GL_LINE_LOOP;
+    	break;
+    	case DM_TRIANGLES:
+    		return GL_TRIANGLES;
+    	break;
+    	case DM_TRIANGLE_STRIP:
+    		return GL_TRIANGLE_STRIP;
+    	break;
+    	case DM_TRIANGLE_FAN:
+    		return GL_TRIANGLE_FAN;
+    	break;
+    	case DM_QUADS:
+    		return GL_QUADS;
+    	break;
+    	case DM_QUAD_STRIP:
+    		return GL_QUAD_STRIP;
+    	break;
+    	case DM_POLYGON:
+    		return GL_POLYGON;
+    	break;
+    	default:
+    		return GL_TRIANGLES;
+    }
+}
+
 void Mesh::Load(){
 	if(indices.size() != 0 || vertices.size() != 0){
 		/*if(textures.GetCount() > 0 && materialsTexture.GetCount() == 0){
@@ -180,7 +217,7 @@ void Mesh::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 tr
     shader.SetVec3("viewPos",GetTransform().GetPosition());
     int cptTexture =0;
 	for(const Upp::String &mtStr : materialsTexture.GetKeys()){
-				materialsTexture.Get(mtStr).diffuse = object3D->GetScene()->GetContext()->GetTextures().Get(mtStr).GetTextureIterator(); 
+		materialsTexture.Get(mtStr).diffuse = object3D->GetScene()->GetContext()->GetTextures().Get(mtStr).GetTextureIterator(); 
 		materialsTexture.Get(mtStr).specular= object3D->GetScene()->GetContext()->GetTextures().Get(mtStr).GetTextureIterator();
 		object3D->GetScene()->GetContext()->GetTextures().Get(mtStr).Use();
 		shader.SetMaterialTexture("texture"+ Upp::AsString(cptTexture),materialsTexture.Get(mtStr));
@@ -189,16 +226,12 @@ void Mesh::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 tr
 	if(cptTexture==0){
 	    int cptColor= 0;
 	    for(const Upp::String &mcStr : materialsColor.GetKeys()){
-	        
 			shader.SetMaterialColor("color"+ Upp::AsString(cptColor),materialsColor.Get(mcStr));
 			cptColor++;
 		}
 	}
 	
-
-
-	
-	if(object3D && object3D->GetScene()){
+	if(LightAffected &&  object3D && object3D->GetScene()){
 		for(Light* obj : object3D->GetScene()->GetAllLights()){
 			int cptDirLight=0;
 			int cptPointLight=0;
@@ -238,7 +271,7 @@ void Mesh::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 tr
 			}
     	}
     }*/
-  
+  //	glLineWidth(2.5); //Allow user to change LineWidth
     glBindVertexArray(VAO);
     //Draw method can be setted with SetDrawMethod
     switch(drawMethod){
@@ -246,6 +279,7 @@ void Mesh::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 tr
     		glDrawElements(GL_POINTS, indices.GetCount(), GL_UNSIGNED_INT, 0);
     	break;
     	case DM_LINES:
+    		
     		glDrawElements(GL_LINES, indices.GetCount(), GL_UNSIGNED_INT, 0);
     	break;
     	case DM_LINE_STRIP:
@@ -522,6 +556,18 @@ void Mesh::GenerateAutoShader(int NbLightDir,int NbLightPoint,int NbLightSpot){
 	else 
 		all_VecMulti= "FragColor = ";
 	
+	vertexShader.Replace("//UNIFORM_MODEL","uniform mat4 model;\n");
+	vertexShader.Replace("//NORMAL_CALCULATION","Normal = mat3(transpose(inverse(model))) * aNormal;\n");
+
+	vertexShader.Replace("//FRAGPOS_CALCULATION","FragPos = vec3(model * vec4(aPos, 1.0));\n");
+	vertexShader.Replace("//POSITION_CALCULATION","gl_Position = projection * view * model * vec4(aPos, 1.0f);\n");
+	
+	vertexShader.Replace("//LAYOUT_POSITION","layout (location = 0) in vec3 aPos;");
+	vertexShader.Replace("//LAYOUT_NORMAL","layout (location = 1) in vec3 aNormal;");	
+	vertexShader.Replace("//LAYOUT_TEXTURE_COORD","layout (location = 2) in vec2 aTexCoord;");
+	vertexShader.Replace("//LAYOUT_TANGEANT","layout (location =3) in vec3 aTangent;");	
+	vertexShader.Replace("//LAYOUT_BITANGEANT","layout (location =4) in vec3 aBiTangent;");	
+	
 	Upp::String AllDirLights="";
 	Upp::String AllPointLights="";
 	Upp::String AllSpotLights="";	
@@ -533,7 +579,6 @@ void Mesh::GenerateAutoShader(int NbLightDir,int NbLightPoint,int NbLightSpot){
 	}
 	if(materialsTexture.GetCount() > 0){
 		//First we must had in Vertex Shader  all this thing : 
-		vertexShader.Replace("//LAYOUT_TEXTURE_COORD","layout (location = 2) in vec2 aTexCoord;\nlayout (location =3) in vec3 aTangent;\nlayout (location =4) in vec3 aBiTangent;");
 		vertexShader.Replace("//OUT_VECTOR_TEXCOORDS","out vec2 TexCoords;");
 		vertexShader.Replace("//TEXTCOORDS_CALCULATION","TexCoords = aTexCoord;");
 		
@@ -633,7 +678,7 @@ void Mesh::GenerateAutoShader(int NbLightDir,int NbLightPoint,int NbLightSpot){
 		for(const Upp::String& key : materialsColor.GetKeys()){
 			Upp::String colorIdentifier = "color" + Upp::AsString(cpt) ;
 			all_uniform << "uniform MaterialColor " <<  colorIdentifier << ";\n";
-			all_VecMulti << ((cpt > 0)?"*":"") <<  "vec4(" + colorIdentifier + ".diffuse,0.02)"; 
+			all_VecMulti << ((cpt > 0)?"*":"") <<  "vec4(" + colorIdentifier + ".diffuse,1.0)"; 
 			cpt++;
 		}
 		if(all_uniform.GetCount()>0) fragmentShader.Replace("//UNIFORM_MATERIAL_COLOR_NAME",all_uniform);
@@ -694,10 +739,11 @@ void Mesh::GenerateAutoShader(int NbLightDir,int NbLightPoint,int NbLightSpot){
 		}
 		
 		if(all_VecMulti.GetCount()>12){
+			//True represent "if alpha is enable" 
 			if((NbLightDir > 0 || NbLightPoint > 0 || NbLightSpot > 0) && LightAffected){
 				fragmentShader.Replace("//FRAG_COLOR_CALCULATION","FragColor = vec4(result,1.0);");
 			}else{
-				all_VecMulti << ";\n";
+				all_VecMulti << ";\nFragColor =texColor;\n";
 				fragmentShader.Replace("//FRAG_COLOR_CALCULATION",all_VecMulti);
 			}
 		}
@@ -709,5 +755,4 @@ void Mesh::GenerateAutoShader(int NbLightDir,int NbLightPoint,int NbLightSpot){
 	if(!GetShader().AddShader(  "Vertex",ST_VERTEX,vertexShader).AddShader("Fragment",ST_FRAGMENT,fragmentShader).CompileShader(true)){
 		LOG("Class Mesh:(ERROR) void Mesh::GenerateAutoShader(int,int,int) ->Shader failled to compilate !");	
 	}
-
 }

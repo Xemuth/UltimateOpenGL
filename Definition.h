@@ -153,6 +153,17 @@ class UGLException : public std::exception { //classe to managed every exception
 		}
 };
 
-
+	inline Upp::VectorMap<Upp::String,Upp::String> BasicShaders{
+		{"Default_Vertex_Shader",
+			Replace(
+			#include "Simps/DefaultVertexShader.glsl"
+			,Upp::Vector<Upp::String>{R"(@)"},Upp::Vector<Upp::String>{"//"})
+		},
+		{"Default_Fragment_Shader",
+		Replace(
+			#include "Simps/DefaultFragmentShader.glsl"
+			,Upp::Vector<Upp::String>{R"(@)"},Upp::Vector<Upp::String>{"//"})
+		}
+	};
 
 #endif

@@ -71,24 +71,13 @@ class Mesh : public Upp::Moveable<Mesh> {
         
         Upp::VectorMap<Upp::String,MaterialColor> materialsColor; //Properties materialColor of the object
 		Upp::VectorMap<Upp::String,MaterialTexture> materialsTexture; //Properties materialTexture of the object //Basicly you only have one of both Material to set
+    	
+    	
     
     	bool AlphaAffected = true;
     	bool LightAffected = true;
     public:
-		
-		inline static Upp::VectorMap<Upp::String,Upp::String> BasicShaders{
-			{"Default_Vertex_Shader",
-				Replace(
-				#include "Simps/DefaultVertexShader.glsl"
-				,Upp::Vector<Upp::String>{R"(@)"},Upp::Vector<Upp::String>{"//"})
-			},
-			{"Default_Fragment_Shader",
-			Replace(
-				#include "Simps/DefaultFragmentShader.glsl"
-				,Upp::Vector<Upp::String>{R"(@)"},Upp::Vector<Upp::String>{"//"})
-			}
-		};
-	
+        
 		unsigned int GetVAO();
 		unsigned int GetVBO();
 		unsigned int GetEBO();
@@ -138,6 +127,7 @@ class Mesh : public Upp::Moveable<Mesh> {
         void Load();
         void LoadDefaultIndices();
         void GenerateAutoShader(int NbLightDir,int NbLightPoint,int NbLightSpot);
+        GLint ResolveDrawMethod();
         
         Mesh() = default;
         Mesh(const Upp::Vector<Vertex>& vertices, Upp::Vector<unsigned int>& indices, Upp::Vector<Texture>& textures);
