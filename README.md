@@ -1,6 +1,7 @@
 # UltimateOpenGL 
 UltimateOpenGL is a 3D engine intended to make 3D scenes. It's designed to be "code only". It means you don't have (at this time) any GUI to help you to create a scene with your mouse.
 Furthermore, it needs Ultimate++ Framework (A powerful C++ Framework) and the IDE used by it : [TheIDE](https://www.ultimatepp.org/index.html)
+
 Here it is the original Ultimate++ post : https://www.ultimatepp.org/forums/index.php?t=msg&goto=52755&#msg_52755
 
 At this time, Ultimate OpenGL allow :
@@ -17,7 +18,7 @@ Things are coming :
 
 ## Getting Started and Showing a 3D model 
 
- :warning: **Since 20/01/2020**: Ultimate OpenGL is on complete rewriting to Allow High performance and Smart gestion of High number of Mesh for a single shape !
+ :warning: **Since 20/01/2020**: Ultimate OpenGL is on complete rewriting to Allow High performance and Smart gestion of High number of Mesh for a single shape ! Getting started tutorial as well will be rewritten soon !
 
 ![Ex1](https://i.imgur.com/bI2kepS.png)
 ![Ex2](https://i.imgur.com/KL2ixM6.png)
