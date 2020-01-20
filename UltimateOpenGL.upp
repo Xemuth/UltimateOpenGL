@@ -9,6 +9,7 @@ options(GCC WIN32) -std=c++17;
 options(MSC) /std:c++latest;
 
 file
+	README.md,
 	Definition.h,
 	UltimateOpenGL.h,
 	UltimateOpenGL.cpp,
