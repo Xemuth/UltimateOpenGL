@@ -18,7 +18,9 @@ file
 	Transform.h,
 	Transform.cpp,
 	Shader.h,
-	Shader.cpp;
+	Shader.cpp,
+	Camera.h,
+	Camera.cpp;
 
 mainconfig
 	"" = "";

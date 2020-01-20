@@ -12,7 +12,7 @@ class Transform{
 		glm::vec3 scale= glm::vec3(1.0f);
 		glm::mat4 modelMatrix = glm::mat4(1.0f);
 
-		glm::vec3 Front = glm::vec3(0.0f, 0.0f, 1.0f);
+		glm::vec3 Front = glm::vec3(0.0f, 0.0f, -1.0f);
 		glm::vec3 Up = glm::vec3(0.0f, 1.0f, 0.0f);
 		glm::vec3 Right = glm::vec3(-1.0f, 0.0f, 0.0f);
 		glm::vec3 WorldUp = glm::vec3(0.0f, 1.0f, 0.0f);
