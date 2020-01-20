@@ -1,0 +1,24 @@
+description "UltimateOpenGL V4  3D Engine to be used with Ultimate++ Framework !\377";
+
+uses
+	Core,
+	plugin/assimp;
+
+options(GCC WIN32) -std=c++17;
+
+options(MSC) /std:c++latest;
+
+file
+	Definition.h,
+	UltimateOpenGL.h,
+	UltimateOpenGL.cpp,
+	Texture.h,
+	Texture.cpp,
+	Transform.h,
+	Transform.cpp,
+	Shader.h,
+	Shader.cpp;
+
+mainconfig
+	"" = "";
+
