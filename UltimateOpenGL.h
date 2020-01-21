@@ -12,11 +12,9 @@
 #include "Texture.h"
 #include "Transform.h"
 #include "Shader.h"
-
 #include "Camera.h"
 
 #include "Scene.h"
-
 #include "GameObject.h"
 #include "Object3D.h"
 #include "Mesh.h"

@@ -5,17 +5,17 @@ Furthermore, it needs Ultimate++ Framework (A powerful C++ Framework) and the ID
 Here it is the original Ultimate++ post : https://www.ultimatepp.org/forums/index.php?t=msg&goto=52755&#msg_52755
 
 At this time, Ultimate OpenGL allow :
-	Scene Creation
-	Shape and Object3D loading
-	Three differents type of Light
-	Smart Gestion of Multiple Camera
-	Auto Generation of Shaders
-
+	Scene Creation\n
+	Shape and Object3D loading\n
+	Three differents type of Light\n
+	Smart Gestion of Multiple Camera\n
+	Auto Generation of Shaders\n
+\n
 Things are coming :
-	Animation and FBX file
-	Physics
-	Sound
-
+	Animation and FBX file\n
+	Physics\n
+	Sound\n
+\n
 ## Getting Started and Showing a 3D model 
 
  :warning: **Since 20/01/2020**: Ultimate OpenGL is on complete rewriting to Allow High performance and Smart gestion of High number of Mesh for a single shape ! Getting started tutorial as well will be rewritten soon !
@@ -38,8 +38,8 @@ Read Licenses.txt
 
 ## Acknowledgments
 
-Special Thanks to Koldo for integrating Assimp package to Ultimate++ allowing people to use my package without having to setup external libs !
-
-Thanks to https://learnopengl.com
-Thanks to All external librairies owner 
-Thanks to the Upp Team
+Special Thanks to Koldo for integrating Assimp package to Ultimate++ allowing people to use my package without having to setup external libs !\n
+\n
+Thanks to https://learnopengl.com\n
+Thanks to All external librairies owner \n
+Thanks to the Upp Team\n

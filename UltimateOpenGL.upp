@@ -13,6 +13,7 @@ file
 	Definition.h,
 	UltimateOpenGL.h,
 	UltimateOpenGL.cpp,
+	UtilityObject readonly separator,
 	Texture.h,
 	Texture.cpp,
 	Transform.h,
@@ -20,7 +21,10 @@ file
 	Shader.h,
 	Shader.cpp,
 	Camera.h,
-	Camera.cpp;
+	Camera.cpp,
+	SceneObject readonly separator,
+	Scene.h,
+	Scene.cpp;
 
 mainconfig
 	"" = "";
