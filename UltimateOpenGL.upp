@@ -10,6 +10,7 @@ options(MSC) /std:c++latest;
 
 file
 	README.md,
+	LICENSES.txt,
 	Definition.h,
 	UltimateOpenGL.h,
 	UltimateOpenGL.cpp,
@@ -24,7 +25,18 @@ file
 	Camera.cpp,
 	SceneObject readonly separator,
 	Scene.h,
-	Scene.cpp;
+	Scene.cpp,
+	GameObject.h,
+	GameObject.cpp,
+	Light.h,
+	Light.cpp,
+	Object3D.h,
+	Object3D.cpp,
+	Mesh.h,
+	Mesh.cpp,
+	OtherLibs readonly separator,
+	stb_image.cpp,
+	stb_image.h;
 
 mainconfig
 	"" = "";
