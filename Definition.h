@@ -209,7 +209,7 @@ class UOGLException : public std::exception { //classe to managed every exceptio
 	    char* myChar=NULL;
 
 	public:
-	    UGLException(int numero=0, Upp::String phrase="", int niveau=0){
+	    UOGLException(int numero=0, Upp::String phrase="", int niveau=0){
 	        m_numero = numero;
 	        m_phrase = phrase;
 	        m_niveau = niveau;
@@ -223,7 +223,7 @@ class UOGLException : public std::exception { //classe to managed every exceptio
 	    int getNiveau() const throw(){
 			return m_niveau;
 	    }
-		virtual ~UGLException(){
+		virtual ~UOGLException(){
 			delete [] myChar;
 		}
 };

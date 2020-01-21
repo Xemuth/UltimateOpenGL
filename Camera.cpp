@@ -11,32 +11,32 @@ Camera& Camera::SetScene(Scene& _scene){
 	scene = &_scene;
 	return *this;
 }
-Camera& Camera::SetName(const Upp::String& value ="default"){
+Camera& Camera::SetName(const Upp::String& value){
 	name = value;
 	return *this;
 }
-Camera& Camera::SetMouvementSpeed(float value = 15.0f){
+Camera& Camera::SetMouvementSpeed(float value){
 	MouvementSpeed = value;
 	return *this;
 }
-Camera& Camera::SetMouseSensitivity(float value = 0.01f){
+Camera& Camera::SetMouseSensitivity(float value){
 	MouseSensitivity = value;
 	return *this;
 }
-Camera& Camera::SetFOV(float value = 90.0f){
+Camera& Camera::SetFOV(float value){
 	FOV = value;
 	return *this;
 }
-Camera& Camera::SetDrawDisanceMax(float value = 300.0f){
+Camera& Camera::SetDrawDisanceMax(float value){
 	DrawDisanceMax = value;
 	return *this;
 }
-Camera& Camera::SetDrawDistanceMin(float value = 0.1f){
+Camera& Camera::SetDrawDistanceMin(float value){
 	DrawDistanceMin = value;
 	return *this;
 }
 Scene& Camera::GetScene(){
-	if(!scene) ASSERT("Camera named \""+ name +"\" object have a nullptr Scene object !");
+	if(!scene) ASSERT("Camera named \"" + name + "\" object have a nullptr Scene object !");
 	return *scene;
 }
 Upp::String Camera::GetName(){
@@ -60,11 +60,11 @@ float Camera::GetDrawDisanceMax(){
 float Camera::GetDrawDistanceMin(){
 	return DrawDistanceMin;
 }
-Camera& Camera::SetMaxFOV(float value = 130.0f){
+Camera& Camera::SetMaxFOV(float value){
 	MaxFOV = value;
 	return *this;
 }
-Camera& Camera::SetMinFOV(float value = 10.0f){
+Camera& Camera::SetMinFOV(float value){
 	MinFOV = value;
 	return *this;
 }

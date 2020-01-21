@@ -36,8 +36,8 @@ void UltimateOpenGL_Context::Draw(const Upp::String& SceneToDraw,const Upp::Stri
 			LastTime = currentFrame;
 		}
 		//scene->Draw(CameraToUse);
-	}catch(UGLException exception){
-		ASSERT("Error have been raised to UltimateOpenGL_Context::Draw(...), " + exception.what());
+	}catch(UOGLException exception){
+	//	ASSERT("Error have been raised to UltimateOpenGL_Context::Draw(...), " + Upp::AsString(+ exception.what()));
 	}
 }
 Scene& UltimateOpenGL_Context::AddScene(const Upp::String& name){
@@ -126,7 +126,7 @@ Texture UltimateOpenGL_Context::AddTexture(const Upp::String& TextureName,const 
 		Texture& texture =textures.Add(TextureName);
 		texture.SetPath(textureFilePath);
 		texture.SetName(TextureName);
-		if(!texture.Load(TextureCompteur,loadDefault,flipLoad)){
+		if(!texture.Load(TextureCompteur)){
 			textures.RemoveKey(TextureName);
 			LOG("Error : UltimateOpenGL_Context::AddTexture(...) Loading error !\n");
 			return Texture();
@@ -138,7 +138,7 @@ Texture UltimateOpenGL_Context::AddTexture(const Upp::String& TextureName,const 
 		return Texture();
 	}
 	LOG("Warning : UltimateOpenGL_Context::AddTexture(...) texture named " +TextureName +" already existe and have been loaded !");
-	return textures.Find(TextureName);
+	return textures.Get(TextureName);
 }
 Texture UltimateOpenGL_Context::GetTexture(const Upp::String& TextureName){
 	if(textures.Find(TextureName)	!=-1)
@@ -146,7 +146,7 @@ Texture UltimateOpenGL_Context::GetTexture(const Upp::String& TextureName){
 	return Texture();
 }
 
-Upp::VectorMap<Upp::String,Texture>& UltimateOpenGL_Context::GetTextures(){
+Upp::ArrayMap<Upp::String,Texture>& UltimateOpenGL_Context::GetTextures(){
 	return textures;
 }
 //****************Static part **************************

@@ -87,7 +87,7 @@ class UltimateOpenGL_Context{
 		Texture AddTexture(const Upp::String& TextureName,const Upp::String& textureFilePath,TextureType  _type = TT_DIFFUSE ,bool loadDefault=false, bool flipLoad=true);
 		bool RemoveTexture(const Upp::String& TextureName);
 		Texture GetTexture(const Upp::String& TextureName);
-		Upp::VectorMap<Upp::String,Texture>& GetTextures();
+		Upp::ArrayMap<Upp::String,Texture>& GetTextures();
 		
 		void Trace(bool b = true);//Log all OpenGL Error
 		void Draw(const Upp::String& SceneToDraw="",const Upp::String& CameraToUse=""); //Draw active scene and active camera or specified Scene and camera to draw

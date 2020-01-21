@@ -20,8 +20,8 @@ class Texture : Upp::Moveable<Texture>{ //only support 2D textures actually //Do
 		Texture& LoadTextureParameter();
 	public:
 		Texture();
-		Texture(Upp::String _path);
-		Texture(Upp::String _path,Upp::String _Name);
+		Texture(const Upp::String& _path);
+		Texture(const Upp::String& _path,const Upp::String& _Name);
 		Texture(const Texture& texture);
 		Texture& operator=(const Texture& texture);
 		~Texture();
@@ -30,9 +30,9 @@ class Texture : Upp::Moveable<Texture>{ //only support 2D textures actually //Do
 		TextureParameter& AddTextureParameter(const TextureParameter& parameter);
 		Upp::Array<TextureParameter>& GetTextureParameters();
 
-		Texture& SetPath(Upp::String _path);
+		Texture& SetPath(const Upp::String& _path);
 		Upp::String GetPath();
-		Texture& SetName(Upp::String _name); //By Default the name of the texture gonna be is name from loading files
+		Texture& SetName(const Upp::String& _name); //By Default the name of the texture gonna be is name from loading files
 		Upp::String GetName();
 		Texture& SetType(TextureType _type);
 		TextureType GetType();

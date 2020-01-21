@@ -1,4 +1,4 @@
-#include "Definition.h"
+#include "Scene.h"
 Scene::Scene(){}
 Scene::Scene(UltimateOpenGL_Context& _context){
 	context = &_context;
@@ -45,19 +45,19 @@ Scene& Scene::SetSkyBox(Material& _skyBox){
 }
 Camera& Scene::AddCamera(const Upp::String& _CameraName){//if the Camera exists then it will remove it to create new one
 	if(AllCameras.Find(_CameraName) ==-1){
-		Camera& added = AllCameras.Add(*this,_CameraName);
+		Camera& added = AllCameras.Create<Camera>(_CameraName,*this,_CameraName);
 		if(!ActiveCamera) ActiveCamera = &added;
 		return added;
 	}else{
 		RemoveCamera(_CameraName);
-		Camera& added = AllCameras.Add(*this,_CameraName);
+		Camera& added = AllCameras.Create<Camera>(_CameraName,*this,_CameraName);
 		if(!ActiveCamera) ActiveCamera = &added;
 		return added;
 	}
 }
 Camera& Scene::GetCamera(const Upp::String& _CameraName){
 	if(AllCameras.Find(_CameraName) != -1){
-		return AllCameras.Get<Camera>(_CameraName);
+		return AllCameras.Get(_CameraName);
 	}
 	throw UOGLException(4,"Error : Camera& Scene::GetCamera(const Upp::String&) => No camera named \""+ _CameraName +"\" have been found !",1);
 }
@@ -67,13 +67,13 @@ Camera& Scene::GetActiveCamera(){ //Raise Assertion if active camera has not bee
 }
 Scene& Scene::SetActiveCamera(const Upp::String& _CameraName){//If name is incorrect then LOG will raise warning and active Camera will be set to the default one.If no camera exist then Default camera will be set to NullPtr raising Assertion error on next GetActiveCamera() Call
 	if(AllCameras.Find(_CameraName) != -1){
-		ActiveCamera = &AllCameras.Get<Camera>(_CameraName);
+		ActiveCamera = &AllCameras.Get(_CameraName);
 	}
 	return *this;
 }
 Scene& Scene::RemoveCamera(const Upp::String& _CameraName){//if the removed camera is the active one then activeCamera ptr will get the default camera.If no camera exist then Default camera will be set to NullPtr raising Assertion error on next GetActiveCamera() Call
 	if(AllCameras.Find(_CameraName) != -1){
-		if(& AllCameras.Get<Camera>(_CameraName) == ActiveCamera) ActiveCamera = nullptr;
+		if(& AllCameras.Get(_CameraName) == ActiveCamera) ActiveCamera = nullptr;
 		AllCameras.Remove(AllCameras.Find(_CameraName));
 	}
 	return *this;
@@ -114,7 +114,7 @@ template <class T>
 T& Scene::GetGameObject(const Upp::String& _ObjectName){//Throw exception if gameObject don't exists
 	if(AllGamesObjects.Find(_ObjectName) != -1){
 		try{
-			return dynamic_cast<T&>(AllGamesObjects.Get<T>(_ObjectName));
+			return dynamic_cast<T&>(AllGamesObjects.Get(_ObjectName));
 		}catch(...){
 			throw UOGLException(6,"Error : T& Scene::GetGameObject(...) => Error on convertion of the game Object !",1);
 		}
@@ -125,7 +125,7 @@ template <class T>
 bool Scene::IsGameObjectIsTypeOf(const Upp::String& _ObjectName){//Return true if the game object exits and is type of template, else return false
 	if(AllGamesObjects.Find(_ObjectName) != -1){
 		try{
-			return (typeid(dynamic_cast<T&>(AllGamesObjects.Get<T>(_ObjectName)))== typeid(T));
+			return (typeid(dynamic_cast<T&>(AllGamesObjects.Get(_ObjectName)))== typeid(T));
 		}catch(...){
 			return false;
 		}
@@ -142,6 +142,12 @@ Scene& Scene::RemoveGameObject(const Upp::String& _ObjectName){//Will remove gam
 	}
 	return *this;
 }
-Scene& Scene::Load(){}
-bool Scene::IsLoaded(){}
-Scene& Scene::Draw(const Upp::String& CameraToUse){}
+Scene& Scene::Load(){
+	return *this;
+}
+bool Scene::IsLoaded(){
+	return true;
+}
+Scene& Scene::Draw(const Upp::String& CameraToUse){
+	return *this;
+}

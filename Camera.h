@@ -1,6 +1,9 @@
 #ifndef _UltimateOpenGL_Camera_h_
 #define _UltimateOpenGL_Camera_h_
 #include "Definition.h"
+#include "Transform.h"
+#include "Scene.h"
+#include "UltimateOpenGL.h"
 
 class Camera{
 	private:

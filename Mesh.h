@@ -1,10 +1,7 @@
-#ifndef _UltimateOpenGL_V3_Mesh_h_
-#define _UltimateOpenGL_V3_Mesh_h_
+#ifndef __UltimateOpenGL_Mesh_h_
+#define _UltimateOpenGL_Mesh_h_
 #include "Definition.h"
-#include "Shader.h"
-#include "Texture.h"
-
-
+#include "Object3D.h"
 struct Vertex : public Upp::Moveable<Vertex> {
     // position
     glm::vec3 Position=glm::vec3(0);
@@ -139,5 +136,4 @@ class Mesh : public Upp::Moveable<Mesh> {
         Mesh(const Mesh& _mesh); //Dont forget to set z
         void Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform,Camera& camera);
 };
-#include "TransformMesh.h"
 #endif

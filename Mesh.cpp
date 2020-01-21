@@ -1,4 +1,4 @@
-#include "UltimateOpenGL.h"
+#include "Mesh.h"
 Mesh::Mesh(GameObject& gameObject,const Upp::Vector<Vertex>& vertices, Upp::Vector<unsigned int>& indices, Upp::Vector<Texture>& textures) : transform()
 {
     this->vertices.Append(vertices);
@@ -61,7 +61,6 @@ Mesh::Mesh(GameObject& gameObject,const Upp::Vector<Vertex>& vertices, Upp::Vect
 	
    //Load();
 }
-
 Mesh::Mesh(const Mesh& _mesh){
 	object3D = _mesh.object3D;
 	VAO = _mesh.VAO;
@@ -146,14 +145,14 @@ void Mesh::Load(){
 			mt.SetMix((float) (1.0f / materialsTexture.GetCount()));
 		}
 	*/
-		if(!shader.IsCompiled() && object3D != nullptr ){
+	/*	if(!shader.IsCompiled() && object3D != nullptr ){
 			LOG("Shader not compiled !, Default shaders loaded !\n");
 			GenerateAutoShader(object3D->GetScene().GetNumberOfDirLight(),  object3D->GetScene().GetNumberOfPointLight(),object3D->GetScene().GetNumberOfSpotLight());
 		}
 		if(indices.size() == 0 && vertices.size() > 0){
             LOG("No indice defined ! Auto generation of incices !");
             LoadDefaultIndices();
-        }
+        }*/
 
 
 		// create buffers/arrays

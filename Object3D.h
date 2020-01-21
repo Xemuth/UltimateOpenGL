@@ -1,6 +1,7 @@
-#ifndef _UltimateOpenGL_V3_Object3D_h_
-#define _UltimateOpenGL_V3_Object3D_h_
-#include "Definition.h"
+#ifndef _UltimateOpenGL_Object3D_h_
+#define _UltimateOpenGL_Object3D_h_
+#include "GameObject.h"
+#include "Texture.h"
 #include "Shader.h"
 class Object3D : public GameObject
 {

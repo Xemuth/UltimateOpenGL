@@ -1,6 +1,4 @@
 #include "GameObject.h"
-#include "Scene.h"
-
 GameObject::GameObject(GameObjectType got) : transform(){ //BeCarefull of setting up the scene;
 	type = got;
 }
@@ -29,7 +27,7 @@ GameObject& GameObject::operator=(const GameObject& gameObject){
 	scene=nullptr;//gameObject.scene;
 	transform=gameObject.transform;
 	transform.ClearChildrens();
-	transform.SetGameObject(*this);
+	//transform.SetGameObject(*this);
     
 	onDraw=gameObject.onDraw;
 	onDrawEventActivate=gameObject.onDrawEventActivate;

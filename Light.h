@@ -1,5 +1,5 @@
-#ifndef _UltimateOpenGL_V3_Light_h_
-#define _UltimateOpenGL_V3_Light_h_
+#ifndef _UltimateOpenGL_Light_h_
+#define _UltimateOpenGL_Light_h_
 #include "Definition.h"
 #include "GameObject.h"
 

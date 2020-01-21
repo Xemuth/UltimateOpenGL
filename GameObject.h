@@ -1,6 +1,7 @@
-#ifndef _UltimateOpenGL_V3_GameObject_h_
-#define _UltimateOpenGL_V3_GameObject_h_
+#ifndef _UltimateOpenGL_GameObject_h_
+#define _UltimateOpenGL_GameObject_h_
 #include "Definition.h"
+#include "Scene.h"
 #include "Transform.h"
 
 class GameObject{
