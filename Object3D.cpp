@@ -1,4 +1,4 @@
-#include "UltimateOpenGL.h"
+#include "Object3D.h"
 Object3D::Object3D(Scene& _scene) : GameObject(_scene,GOT_3D){}
 Object3D::Object3D(Scene& _scene, Mesh& _mesh) : GameObject(_scene,GOT_3D){
 	Mesh& m =meshes.Create<Mesh>(_mesh);

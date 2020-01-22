@@ -15,9 +15,10 @@
 #include "Camera.h"
 
 #include "Scene.h"
+/*
 #include "GameObject.h"
 #include "Object3D.h"
-#include "Mesh.h"
+#include "Mesh.h"*/
 
 class UltimateOpenGL_Context{
 	private:
