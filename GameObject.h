@@ -1,8 +1,6 @@
 #ifndef _UltimateOpenGL_GameObject_h_
 #define _UltimateOpenGL_GameObject_h_
-#include "Definition.h"
 #include "Scene.h"
-#include "Transform.h"
 
 class GameObject{
 	protected:

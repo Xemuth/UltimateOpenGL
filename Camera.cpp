@@ -36,7 +36,7 @@ Camera& Camera::SetDrawDistanceMin(float value){
 	return *this;
 }
 Scene& Camera::GetScene(){
-	if(!scene) ASSERT("Camera named \"" + name + "\" object have a nullptr Scene object !");
+	if(!scene) ASSERT("Camera named \""+ name +"\" object have a nullptr Scene object !");
 	return *scene;
 }
 Upp::String Camera::GetName(){

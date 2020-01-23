@@ -1,8 +1,8 @@
 #ifndef _UltimateOpenGL_Object3D_h_
 #define _UltimateOpenGL_Object3D_h_
 #include "GameObject.h"
-#include "Texture.h"
-#include "Shader.h"
+#include "Mesh.h"
+
 class Object3D : public GameObject
 {
 	protected:
