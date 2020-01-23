@@ -2,13 +2,10 @@
 #define _UltimateOpenGL_Camera_h_
 #include "Definition.h"
 #include "Transform.h"
-#include "Scene.h"
-#include "UltimateOpenGL.h"
-
 class Camera{
 	private:
 		Scene* scene = nullptr;
-		Upp::String name="default";
+		Upp::String Name="default";
 		
 		Transform transform; //The Camera Transform object
 

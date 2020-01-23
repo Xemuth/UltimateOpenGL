@@ -1,4 +1,7 @@
 #include "Mesh.h"
+#include "Object3D.h"
+#include "Scene.h"
+#include "UltimateOpenGL.h"
 Mesh::Mesh(GameObject& gameObject,const Upp::Vector<Vertex>& vertices, Upp::Vector<unsigned int>& indices, Upp::Vector<Texture>& textures) : transform()
 {
     this->vertices.Append(vertices);

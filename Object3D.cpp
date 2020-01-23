@@ -1,4 +1,4 @@
-#include "Object3D.h"
+#include "UltimateOpenGL.h"
 Object3D::Object3D(Scene& _scene) : GameObject(_scene,GOT_3D){}
 Object3D::Object3D(Scene& _scene, Mesh& _mesh) : GameObject(_scene,GOT_3D){
 	Mesh& m =meshes.Create<Mesh>(_mesh);
@@ -119,6 +119,7 @@ void Object3D::ProcessMesh(aiMesh *mesh, const aiScene *scene){
 
     // 1. diffuse maps
     if(this->scene != nullptr){
+        /*
 	    ManageTextures(textures,material,aiTextureType_DIFFUSE);
 	     //	Upp::Cout() << "Nb diffuse " << Upp::AsString(textures.GetCount()) << Upp::EOL;
 	    ManageTextures(textures,material,aiTextureType_SPECULAR);
@@ -129,6 +130,7 @@ void Object3D::ProcessMesh(aiMesh *mesh, const aiScene *scene){
 	    //Upp::Cout() << "Nb  AMBIENT + Height +  speculare + diffuse " << Upp::AsString(textures.GetCount()) << Upp::EOL;
 	    ManageTextures(textures,material,aiTextureType_NORMALS);
 	     //	Upp::Cout() << "Nb  NORMAL  + AMBIENT + Height +  speculare + diffuse " << Upp::AsString(textures.GetCount()) << Upp::EOL;
+	     */
     }else{
         LOG("Warning : cant load and Bind texture since no context is linked to object3D : " + name );
     }

@@ -1,4 +1,5 @@
 #include "Scene.h"
+
 Scene::Scene(){}
 Scene::Scene(UltimateOpenGL_Context& _context){
 	context = &_context;
@@ -9,7 +10,7 @@ Scene::Scene(UltimateOpenGL_Context& _context, const Upp::String& _name){
 }
 Scene::~Scene(){}
 UltimateOpenGL_Context& Scene::GetContext(){
-	if(!context)ASSERT("Scene::GetContext() Scene have nullptr Context");
+	ASSERT_(!context,"Scene::GetContext() Scene have nullptr Context");
 	return *context;
 }
 Upp::String Scene::GetName(){
@@ -62,7 +63,7 @@ Camera& Scene::GetCamera(const Upp::String& _CameraName){
 	throw UOGLException(4,"Error : Camera& Scene::GetCamera(const Upp::String&) => No camera named \""+ _CameraName +"\" have been found !",1);
 }
 Camera& Scene::GetActiveCamera(){ //Raise Assertion if active camera has not been set !
-	if(!ActiveCamera)ASSERT("Active Camera have nullptr object, be sure to Set ActiveCamere by using SetActiveCamera(const Upp::String&) or by creating the first one of the scene");
+	ASSERT_(!ActiveCamera,"Active Camera have nullptr object, be sure to Set ActiveCamere by using SetActiveCamera(const Upp::String&) or by creating the first one of the scene");
 	return *ActiveCamera;
 }
 Scene& Scene::SetActiveCamera(const Upp::String& _CameraName){//If name is incorrect then LOG will raise warning and active Camera will be set to the default one.If no camera exist then Default camera will be set to NullPtr raising Assertion error on next GetActiveCamera() Call

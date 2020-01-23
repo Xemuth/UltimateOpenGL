@@ -2,7 +2,7 @@
 #define _UltimateOpenGL_Shader_h_
 #include "Definition.h"
 #include "Texture.h"
-
+#include "Light.h"
 //*****************Material***********//
 struct TextureInformation{
 		Texture texture;

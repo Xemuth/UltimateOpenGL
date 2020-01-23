@@ -1,7 +1,7 @@
 #ifndef _UltimateOpenGL_Object3D_h_
 #define _UltimateOpenGL_Object3D_h_
+#include "Definition.h"
 #include "GameObject.h"
-#include "Mesh.h"
 
 class Object3D : public GameObject
 {

@@ -1,6 +1,7 @@
 #ifndef _UltimateOpenGL_Light_h_
 #define _UltimateOpenGL_Light_h_
 #include "Definition.h"
+#include "Camera.h"
 #include "GameObject.h"
 
 class Light : public GameObject

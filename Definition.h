@@ -9,7 +9,6 @@
 #ifndef flagNOUPPGL
 	#include <GLCtrl/GLCtrl.h>
 #endif
-
 //Assimp package used to Load 3D Models
 /*
 	Special Thanks to Koldo
@@ -17,7 +16,6 @@
 	https://www.ultimatepp.org/forums/index.php?t=usrinfo&id=648&
 */
 #include <plugin/Assimp/assimp.h>
-
 //GLM Package used to do a lot of mathematical function
 #define GLM_ENABLE_EXPERIMENTAL
 #include <plugin/glm/glm.hpp>
@@ -25,14 +23,12 @@
 #include <plugin/glm/gtc/type_ptr.hpp>
 #include <plugin/glm/gtx/quaternion.hpp>
 #include <plugin/glm/gtx/norm.hpp>
-
 //Gestion of auto generated Shaders
 #include "Simps/MaterialTexture.glsl"
 #include "Simps/MaterialColor.glsl"
 #include "Simps/PointLight.glsl"
 #include "Simps/SpotLight.glsl"
 #include "Simps/DirLight.glsl"
-
 /*
 	Multiples ENUM used in differentes class
 */
@@ -67,35 +63,21 @@ UOGL_POLYGON -> GL_POLYGON
 Draws a single, convex polygon. Vertices 1 through N define this polygon
 */
 /*
-// Default camera values
-const float YAW         = -90.0f;
-const float PITCH       =  0.0f;
-const float SPEED       = 15.0f;
-const float SENSITIVITY =  0.1f;
-const float FOV        =  90.0f;
-*/
-
-/*
 	Definition of all defaults class used in UOGL
 */
 class UltimateOpenGL_Context;
+
+struct TextureInformation;
+struct Vertex;
+
 class Scene;
-class Camera;
 class GameObject;
-class Mesh;
-class Object3D;
 class Light;
 class DirLight;
 class PointLight;
 class SpotLight;
-class Shader;
-class Transform;
-
-struct Vertex;
-struct TextureParameter;
-struct Material;
-struct MaterialTexture;
-struct MaterialColor;
+class Object3D;
+class Mesh;
 
 //typedef int TRANSLATION_TYPE;
 typedef void (*ACTION_FUNCTION)(GameObject& myObject);

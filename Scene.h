@@ -1,6 +1,7 @@
 #ifndef _UltimateOpenGL_Scene_h_
 #define _UltimateOpenGL_Scene_h_
-#include "UltimateOpenGL.h"
+#include "Definition.h"
+#include "Shader.h"
 class Scene{
 	protected:
 		UltimateOpenGL_Context* context= nullptr;

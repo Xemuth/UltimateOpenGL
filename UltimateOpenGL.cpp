@@ -52,11 +52,9 @@ Scene& UltimateOpenGL_Context::AddScene(const Upp::String& name){
 	}
 }
 Scene& UltimateOpenGL_Context::GetActiveScene(){
-	if(ActiveScene == nullptr && AllScenes.GetCount() == 0) ASSERT("UltimateOpenGL_Context have nullptr ActiveScene and don't have any scenes created");
-	else{
-		ActiveScene = &AllScenes[0];
-		LOG("Warning : UltimateOpenGL_Context::GetActiveScene() have nullptr ActiveScene, Scene number 0 have been binded by default to active scene and has been returned");
-	}
+	ASSERT_(ActiveScene == nullptr && AllScenes.GetCount() == 0,"UltimateOpenGL_Context have nullptr ActiveScene and don't have any scenes created");
+	ActiveScene = &AllScenes[0];
+	LOG("Warning : UltimateOpenGL_Context::GetActiveScene() have nullptr ActiveScene, Scene number 0 have been binded by default to active scene and has been returned");
 	return *ActiveScene;
 }
 Scene& UltimateOpenGL_Context::GetScene(const Upp::String& name){

@@ -9,13 +9,16 @@
 #include <ctime>
 
 #include "Definition.h"
-#include "Texture.h"
 #include "Transform.h"
-#include "Shader.h"
 #include "Camera.h"
+#include "Texture.h"
+#include "Shader.h"
 
 #include "Scene.h"
-
+#include "GameObject.h"
+#include "Light.h"
+#include "Object3D.h"
+#include "Mesh.h"
 
 class UltimateOpenGL_Context{
 	private:
@@ -104,5 +107,5 @@ class UltimateOpenGL_Context{
 		static float ColorUniformisation(float ColorFloat);
 		static Upp::String TransformFilePath(const Upp::String& FilePath);
 };
-
+#include "Scene.h"
 #endif

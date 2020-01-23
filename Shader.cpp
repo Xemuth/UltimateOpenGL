@@ -1,4 +1,5 @@
 #include "Shader.h"
+#include "UltimateOpenGL.h"
 //**********************Material****************************
 TextureInformation& TextureInformation::SetTexture(Texture& _texture){
 	if(_texture.IsLoaded()){
