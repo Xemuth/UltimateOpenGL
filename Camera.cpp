@@ -1,6 +1,6 @@
 #include "Camera.h"
-#include "Scene.h"
 #include "UltimateOpenGL.h"
+#include "Scene.h"
 Camera::Camera(){} //be carefull of setting scene correctly
 Camera::Camera(Scene& _scene){
 	scene = &_scene;
@@ -38,7 +38,7 @@ Camera& Camera::SetDrawDistanceMin(float value){
 	return *this;
 }
 Scene& Camera::GetScene(){
-	ASSERT_(!scene , "Camera named \""+ Name +"\" object have a nullptr Scene object !");
+	ASSERT_(scene , "Camera named \""+ Name +"\" object have a nullptr Scene object !");
 	return *scene;
 }
 Upp::String Camera::GetName(){

@@ -1,8 +1,6 @@
 #ifndef _UltimateOpenGL_Shader_h_
 #define _UltimateOpenGL_Shader_h_
 #include "Definition.h"
-#include "Texture.h"
-
 class Shader {
 private:
 	struct shader_Data{

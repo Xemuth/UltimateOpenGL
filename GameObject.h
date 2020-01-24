@@ -1,7 +1,7 @@
 #ifndef _UltimateOpenGL_GameObject_h_
 #define _UltimateOpenGL_GameObject_h_
-#include "Definition.h"
-#include "Camera.h"
+#include "Scene.h"
+
 class GameObject{
 	protected:
 		Upp::String name="";

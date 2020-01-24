@@ -69,5 +69,6 @@ class Transform{
 		//******************Quick function part*************
 		Transform&  LookAt(glm::vec3 direction,bool updateChildrens = true);
 		glm::quat RotationBetweenVectors(glm::vec3 start, glm::vec3 dest);
+		glm::mat4 GetViewMatrix();
 };
 #endif

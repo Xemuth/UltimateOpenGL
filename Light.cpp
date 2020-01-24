@@ -1,5 +1,4 @@
 #include "Light.h"
-
 //********************** Light ****************************
 Light::Light(Scene& _scene) : GameObject(_scene, GOT_UNKNOW){}
 Light::Light(Scene& _scene,GameObjectType got,glm::vec3 _ambient, glm::vec3 _diffuse, glm::vec3 _specular) : GameObject(_scene, got){

@@ -1,8 +1,6 @@
 #ifndef _UltimateOpenGL_Texture_h_
 #define _UltimateOpenGL_Texture_h_
 #include "Definition.h"
-
-
 class Texture : Upp::Moveable<Texture>{ //only support 2D textures actually //Don't support IML format and UPP FileImage system atm
 	private:
 		Upp::String Path = "";

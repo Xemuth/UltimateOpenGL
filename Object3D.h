@@ -1,8 +1,6 @@
 #ifndef _UltimateOpenGL_Object3D_h_
 #define _UltimateOpenGL_Object3D_h_
-#include "Definition.h"
 #include "GameObject.h"
-#include "Shader.h"
 class Object3D : public GameObject
 {
 	protected:
@@ -15,6 +13,7 @@ class Object3D : public GameObject
 					   //he must use this shader.
 					   
 		DrawMethod drawMethod = DM_TRIANGLES;
+		Object3DBehaviour behavior = OBJ_STATIC;
 		
 		bool alphaAffected = true;
 		bool lightAffected = true;

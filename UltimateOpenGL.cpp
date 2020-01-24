@@ -18,10 +18,10 @@ void UltimateOpenGL_Context::Initialise(){
 }
 void UltimateOpenGL_Context::Draw(const Upp::String& SceneToDraw,const Upp::String& CameraToUse){
 	try{
-		Scene* scene = &GetActiveScene();
+		Scene& scene = GetActiveScene();
 		if(SceneToDraw.GetCount() > 0){
 			if(AllScenes.Find(SceneToDraw) != -1){
-				scene = &AllScenes.Get(SceneToDraw);
+				scene = AllScenes.Get(SceneToDraw);
 			}
 		}
 		//HEre I must do DeltaTime Calculation
@@ -35,12 +35,12 @@ void UltimateOpenGL_Context::Draw(const Upp::String& SceneToDraw,const Upp::Stri
 			bufferFrame=0;
 			LastTime = currentFrame;
 		}
-		//scene->Draw(CameraToUse);
+		scene.Draw(CameraToUse);
 	}catch(UOGLException exception){
 	//	ASSERT("Error have been raised to UltimateOpenGL_Context::Draw(...), " + Upp::AsString(+ exception.what()));
 	}
 }
-Scene& UltimateOpenGL_Context::AddScene(const Upp::String& name){
+Scene& UltimateOpenGL_Context::CreateScene(const Upp::String& name){
 	if(AllScenes.Find(name) ==-1){
 		Scene& s= AllScenes.Create<Scene>(name);
 		s.SetName(name);
@@ -52,9 +52,11 @@ Scene& UltimateOpenGL_Context::AddScene(const Upp::String& name){
 	}
 }
 Scene& UltimateOpenGL_Context::GetActiveScene(){
-	ASSERT_(ActiveScene == nullptr && AllScenes.GetCount() == 0,"UltimateOpenGL_Context have nullptr ActiveScene and don't have any scenes created");
-	ActiveScene = &AllScenes[0];
-	LOG("Warning : UltimateOpenGL_Context::GetActiveScene() have nullptr ActiveScene, Scene number 0 have been binded by default to active scene and has been returned");
+	ASSERT_(!(!ActiveScene && AllScenes.GetCount() == 0),"UltimateOpenGL_Context have nullptr ActiveScene and don't have any scenes created");
+	if(!ActiveScene){ 
+		ActiveScene = &AllScenes[0];
+		LOG("Warning : UltimateOpenGL_Context::GetActiveScene() have nullptr ActiveScene, Scene number 0 have been binded by default to active scene and has been returned");
+	}
 	return *ActiveScene;
 }
 Scene& UltimateOpenGL_Context::GetScene(const Upp::String& name){

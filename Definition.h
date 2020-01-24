@@ -40,6 +40,7 @@ enum ShaderType{ST_PROGRAMM,ST_VERTEX,ST_FRAGMENT}; //Define type of shader we w
 enum DrawMethod{DM_POINTS,DM_LINES,DM_LINE_STRIP,DM_LINE_LOOP,DM_TRIANGLES,DM_TRIANGLE_STRIP,DM_TRIANGLE_FAN,DM_QUADS,DM_QUAD_STRIP,DM_POLYGON};
 enum LightType{LT_DIRLIGHT,LT_SPOTLIGHT,LT_POINTLIGHT};
 enum GameObjectType{GOT_SOUND,GOT_3D,GOT_SPOT_LIGHT,GOT_POINT_LIGHT,GOT_DIR_LIGHT,GOT_UNKNOW};
+enum Object3DBehaviour{OBJ_STATIC,OBJ_DYNAMIC};
 /*
 PROGRAMM -> GL_POINTS
 Treats each vertex as a single point. Vertex n defines point n. N points are drawn.
@@ -69,6 +70,10 @@ class UltimateOpenGL_Context;
 
 struct TextureInformation;
 struct Vertex;
+
+class Camera;
+class Transform;
+class Transform;
 
 class Scene;
 class GameObject;
@@ -128,7 +133,7 @@ inline Upp::VectorMap<Upp::String,Upp::String> BasicShaders{
 		,Upp::Vector<Upp::String>{R"(@)"},Upp::Vector<Upp::String>{"//"})
 	}
 };
-Upp::String& IncludeShader(Upp::String& shader){
+static Upp::String& IncludeShader(Upp::String& shader){
 	shader.Replace("MATERIAL_TEXTURE_STRUCT()",MATERIAL_TEXTURE_STRUCT());
 	shader.Replace("MATERIAL_COLOR_STRUCT()",MATERIAL_COLOR_STRUCT());
 	

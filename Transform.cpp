@@ -295,3 +295,6 @@ glm::quat Transform::RotationBetweenVectors(glm::vec3 start, glm::vec3 dest){
     float invs = 1 / s;
     return glm::quat(s*0.5f,rotationAxis.x * invs,rotationAxis.y * invs,rotationAxis.z * invs);
 }
+glm::mat4 Transform::GetViewMatrix(){
+	return glm::lookAt(position,position + Front, Up);
+}
