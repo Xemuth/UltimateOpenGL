@@ -2,6 +2,9 @@
 #define _UltimateOpenGL_Mesh_h_
 #include "Definition.h"
 #include "Texture.h"
+#include "Transform.h"
+#include "Shader.h"
+#include "Camera.h"
 struct Vertex : public Upp::Moveable<Vertex> {
     // position
     glm::vec3 Position=glm::vec3(0);

@@ -1,4 +1,5 @@
-#include "UltimateOpenGL.h"
+#include "Object3D.h"
+#include "Mesh.h"
 Object3D::Object3D(Scene& _scene) : GameObject(_scene,GOT_3D){}
 Object3D::Object3D(Scene& _scene, Mesh& _mesh) : GameObject(_scene,GOT_3D){
 	Mesh& m =meshes.Create<Mesh>(_mesh);
@@ -142,7 +143,7 @@ void Object3D::ProcessMesh(aiMesh *mesh, const aiScene *scene){
 }
 
 void Object3D::LoadModel(const Upp::String& path){//Used to load 3D Model
-	Upp::String realPath =UltimateOpenGL_Context::TransformFilePath(path);
+	Upp::String realPath =TransformFilePath(path);
     // read file via ASSIMP
     Assimp::Importer importer;
     //  const aiScene* scene = importer.ReadFile(realPath, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace |aiProcess_GenNormals );

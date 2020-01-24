@@ -2,7 +2,7 @@
 #define _UltimateOpenGL_Object3D_h_
 #include "Definition.h"
 #include "GameObject.h"
-
+#include "Shader.h"
 class Object3D : public GameObject
 {
 	protected:

@@ -1,4 +1,142 @@
 #include "Texture.h"
+#include "UltimateOpenGL.h"
+//**********************Material****************************
+TextureInformation& TextureInformation::SetTexture(Texture& _texture){
+	if(_texture.IsLoaded()){
+		texture = _texture;
+	}
+	return *this;
+}
+TextureInformation& TextureInformation::SetSpecular(Texture& _specular){
+	if(_specular.IsLoaded()){
+		Specular = _specular;
+	}
+	return *this;
+}
+TextureInformation& TextureInformation::SetMix(float _mix){
+	mix = ((_mix > 1.0f)? 1.0f:_mix <0.0f)? 0.0f:_mix;
+	return *this;
+}
+
+Material::Material(const Material& material){
+	shininess = material.shininess; //Brilliance en français
+	diffuse = material.diffuse; //Valeur de diffusion
+	
+	ambient = material.ambient;
+	specular = material.specular;
+	whatToUse = material.whatToUse;// what to use.
+	
+//	TextureToUse = ;
+	TextureToUse.Append(material.TextureToUse);	 //the float is used to setUp the MixValue of texture. If you only have one texture set it to One.
+												//If you have 2 textures and want a 50%/50% set it to 0.5f to boath texture.
+								  
+	defaultColor = material.defaultColor; //used to know if this material have been modified and should be use.
+	color = material.color; //Color with Alpha
+}
+Material& Material::operator=(const Material& material){
+	shininess = material.shininess; //Brilliance en français
+	diffuse = material.diffuse; //Valeur de diffusion
+	
+	ambient = material.ambient;
+	specular = material.specular;
+	whatToUse = material.whatToUse;// what to use.
+	
+	TextureToUse.Append(material.TextureToUse); //the float is used to setUp the MixValue of texture. If you only have one texture set it to One.
+										 //If you have 2 textures and want a 50%/50% set it to 0.5f to boath texture.
+								  
+	defaultColor = material.defaultColor; //used to know if this material have been modified and should be use.
+	color = material.color; //Color with Alpha
+	
+	return *this;
+}
+Material& Material::UseTextures(){
+	whatToUse = TEXTURE;
+	return *this;
+}
+Material& Material::UseColor(){
+	whatToUse = COLOR;
+	return *this;
+}
+Material& Material::UseBoth(){
+	whatToUse = BOTH;
+	return *this;
+}
+Material& Material::SetColor(int red,int green, int blue, int alpha){
+	glm::vec3 buffer = TransformRGBToFloatColor(red,green,blue);
+	alpha = ((alpha<0)?0:alpha> 255)?255:0;
+	color = glm::vec4(buffer.x,buffer.y,buffer.z,(float(alpha)/255.0f));
+	defaultColor=false;
+	return *this;
+}
+Material& Material::SetColor(glm::vec4 _color){
+	color = _color;
+	return *this;
+}
+Material& Material::SetColor(glm::vec3 _color){
+	color = glm::vec4(_color.x,_color.y,_color.z,1.0f);
+	return *this;
+}
+TextureInformation& Material::AddTexture(Texture& t1, float MixValueInPourcentage, Texture tSpeculare ){
+	if(t1.IsLoaded()){
+		TextureInformation& t = TextureToUse.Create<TextureInformation>().SetTexture(t1).SetMix(MixValueInPourcentage);
+		if(tSpeculare.IsLoaded())
+			t.SetSpecular(tSpeculare);
+		else
+			LOG("Warning : Material& Material::AddTexture(...) Texture speculare named " + tSpeculare.GetName() + " is not loaded yet and has been discarded !");
+		return t;
+	}else{
+		LOG("Warning : Material& Material::AddTexture(...) Texture have not been added because it's not loaded yet !");
+	}
+	throw UOGLException();
+}
+Material& Material::RemoveTexture(int iterator){
+	if(iterator < TextureToUse.GetCount() &&  iterator >= 0) TextureToUse.Remove(iterator,1);
+	return *this;
+}
+Upp::Array<TextureInformation>& Material::GetTextures(){
+	return TextureToUse;
+}
+
+bool Material::HaveBeenSetUp(){//Used to know if this Material have been setting up (to know if UOGL should use it).
+	if(!defaultColor)return true;
+	if(TextureToUse.GetCount()> 0)return true;
+	return false;
+}
+
+Material& Material::SetDiffuse(float _diffuse){
+	diffuse = _diffuse;
+	return *this;
+}
+Material& Material::SetShininess(float _shininess){
+	shininess = _shininess;
+	return *this;
+}
+Material& Material::SetAmbient(glm::vec3 _ambient){
+	ambient = _ambient;
+	return *this;
+}
+Material& Material::SetSpecular(glm::vec3 _specular){
+	specular = _specular;
+	return *this;	
+}
+glm::vec4 Material::GetColor(){
+	return color;
+}
+glm::vec3 Material::GetAmbient(){
+	return ambient;
+}
+glm::vec3 Material::GetSpecular(){
+	return specular;
+}
+float Material::GetShininess(){
+	return shininess;
+}
+float Material::GetDiffuse(){
+	return diffuse;
+}
+///////////////////////////////////////////////////////////////////////////////
+////////////////////////////     Texture   ////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 Texture::Texture(){}
 Texture::Texture(const Upp::String& _path){
 	if(FileExists(_path)){

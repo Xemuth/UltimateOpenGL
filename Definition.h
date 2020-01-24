@@ -209,4 +209,43 @@ class UOGLException : public std::exception { //classe to managed every exceptio
 			delete [] myChar;
 		}
 };
+//****************Static part **************************
+/*
+	This part give some basic function to do
+	convertion of String path or Color transformation
+*/
+static Upp::String TransformFilePath(const Upp::String& FilePath){
+	Upp::String FilePathBuffer =FilePath;
+
+	FilePathBuffer = Replace(FilePathBuffer,Upp::Vector<Upp::String>{"\\"},Upp::Vector<Upp::String>{"/"});
+
+	return FilePathBuffer;
+}
+static int ColorUniformisation(int ColorRgb){ //Fonction très utile et très complexe
+	if(ColorRgb> 255) ColorRgb=255;
+	if(ColorRgb< 0) ColorRgb=0;
+	return ColorRgb;
+}
+static float ColorUniformisation(float ColorFloat){
+	if(ColorFloat> 1.0f) ColorFloat=1.0f;
+	if(ColorFloat< 0.0f) ColorFloat=0.0f;
+	return ColorFloat;
+}
+static Upp::Vector<int> TransformGlmColorToRGB(glm::vec3 FloatColor){
+	return Upp::Vector<int>{ ColorUniformisation((int)(FloatColor.x*255)),ColorUniformisation((int)(FloatColor.y*255)), ColorUniformisation((int)(FloatColor.z*255)) };
+}
+static Upp::Vector<int> TransformFloatColorToRGB(float RedFloat,float GreenFloat,float BlueFloat){
+	return Upp::Vector<int>{ ColorUniformisation((int)(RedFloat*255)),ColorUniformisation((int)(GreenFloat*255)), ColorUniformisation((int)(BlueFloat*255))};
+}
+static glm::vec3 TransformRGBToFloatColor(int Red,int Green,int Blue){
+	return  glm::vec3( ((float)ColorUniformisation(Red))/255.0f ,((float)ColorUniformisation(Green))/255.0f,((float)ColorUniformisation(Blue))/255.0f);
+}
+static glm::vec3 TransformVectorToFloatColor(Upp::Vector<int> rgb){
+	if(rgb.GetCount() < 3){
+		LOG("Erreur TransformRGBToFloatColor(Vector<int>) : Vector incorrect !\n");
+		return  glm::vec3(1.0);
+	}
+	return glm::vec3( ((float)ColorUniformisation(rgb[0]))/255.0f ,((float)ColorUniformisation(rgb[1]))/255.0f,((float)ColorUniformisation(rgb[2]))/255.0f);
+}
+
 #endif

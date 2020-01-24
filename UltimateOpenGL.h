@@ -13,7 +13,6 @@
 #include "Camera.h"
 #include "Texture.h"
 #include "Shader.h"
-
 #include "Scene.h"
 #include "GameObject.h"
 #include "Light.h"
@@ -93,19 +92,5 @@ class UltimateOpenGL_Context{
 		void Trace(bool b = true);//Log all OpenGL Error
 		void Draw(const Upp::String& SceneToDraw="",const Upp::String& CameraToUse=""); //Draw active scene and active camera or specified Scene and camera to draw
 		void Initialise(); //Initialise context, start timer,  setup some OpenGL Feature like anti allising or blendig
-		
-		//****************Static part **************************
-		/*
-			This part give some basic function to do
-			convertion of String path or Color transformation
-		*/
-		static Upp::Vector<int> TransformGlmColorToRGB(glm::vec3 FloatColor);
-		static Upp::Vector<int> TransformFloatColorToRGB(float RedFloat,float GreenFloat,float BlueFloat);
-		static glm::vec3 TransformRGBToFloatColor(int Red,int Green,int Blue);
-		static glm::vec3 TransformVectorToFloatColor(Upp::Vector<int> rgb);
-		static int ColorUniformisation(int ColorRgb);
-		static float ColorUniformisation(float ColorFloat);
-		static Upp::String TransformFilePath(const Upp::String& FilePath);
 };
-#include "Scene.h"
 #endif
