@@ -64,7 +64,7 @@ Scene& Scene::SetSkyBox(Material& _skyBox){
 	SkyBox = _skyBox;
 	return *this;
 }
-Camera& Scene::AddCamera(const Upp::String& _CameraName){//if the Camera exists then it will remove it to create new one
+Camera& Scene::CreateCamera(const Upp::String& _CameraName){//if the Camera exists then it will remove it to create new one
 	if(AllCameras.Find(_CameraName) ==-1){
 		Camera& added = AllCameras.Create<Camera>(_CameraName,*this,_CameraName);
 		if(!ActiveCamera) ActiveCamera = &added;
@@ -75,6 +75,32 @@ Camera& Scene::AddCamera(const Upp::String& _CameraName){//if the Camera exists 
 		if(!ActiveCamera) ActiveCamera = &added;
 		return added;
 	}
+}
+Camera& Scene::AddCamera(const Upp::String& _CameraName, Camera& camera){ //Copying camera and give it a new name
+	Upp::String newName = _CameraName;
+	int cpt = 1;
+	while(AllCameras.Find(newName) != -1){
+		newName = newName + "(" + Upp::AsString(cpt) + ")";
+		cpt++;
+	}
+	Camera& added = AllCameras.Add(newName,camera);
+	added.SetName(newName);
+	added.SetScene(*this);
+	if(!ActiveCamera) ActiveCamera = &added;
+	return added;
+}
+Camera& Scene::AddCamera(Camera& camera){//Copy the camera using name of camera
+	Upp::String newName = camera.GetName();
+	int cpt = 1;
+	while(AllCameras.Find(newName) != -1){
+		newName = newName + "(" + Upp::AsString(cpt) + ")";
+		cpt++;
+	}
+	Camera& added = AllCameras.Add(newName,camera);
+	added.SetName(newName);
+	added.SetScene(*this);
+	if(!ActiveCamera) ActiveCamera = &added;
+	return added;
 }
 Camera& Scene::GetCamera(const Upp::String& _CameraName){
 	if(AllCameras.Find(_CameraName) != -1){

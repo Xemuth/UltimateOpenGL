@@ -36,7 +36,9 @@ class Scene{
 		Scene& SetShader(Shader& _shader);
 		Scene& SetSkyBox(Material& _skyBox);
 		
-		Camera& AddCamera(const Upp::String& _CameraName);//if the Camera exists then it will remove it to create new one
+		Camera& CreateCamera(const Upp::String& _CameraName);//if the Camera exists then it will remove it to create new one
+		Camera& AddCamera(const Upp::String& _CameraName, Camera& camera); //Copying camera and give it a new name
+		Camera& AddCamera(Camera& camera); //Copy the camera using name of camera
 		Camera& GetCamera(const Upp::String& _CameraName);
 		Camera& GetActiveCamera(); //Raise Assertion if active camera has not been set !
 		Scene& SetActiveCamera(const Upp::String& _CameraName);//If name is incorrect then LOG will raise warning and active Camera will be set to the default one.
