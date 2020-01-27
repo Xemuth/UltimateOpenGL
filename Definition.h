@@ -131,6 +131,16 @@ inline Upp::VectorMap<Upp::String,Upp::String> BasicShaders{
 	Replace(
 		#include "Simps/DefaultFragmentShader.glsl"
 		,Upp::Vector<Upp::String>{R"(@)"},Upp::Vector<Upp::String>{"//"})
+	},
+	{"Simple_Vertex_Shader",
+	Replace(
+		#include "Simps/SimpleVertex.glsl"
+		,Upp::Vector<Upp::String>{R"(@)"},Upp::Vector<Upp::String>{"//"})
+	},
+	{"Simple_Fragment_Shader",
+	Replace(
+		#include "Simps/SimpleFragment.glsl"
+		,Upp::Vector<Upp::String>{R"(@)"},Upp::Vector<Upp::String>{"//"})
 	}
 };
 static Upp::String& IncludeShader(Upp::String& shader){

@@ -20,13 +20,14 @@ class Object3D : public GameObject
 		
 		Material material; //This material must be Set. To overLoad on a mesh this material, you must set the mesh material
         
+        unsigned int VAO, VBO, EBO;
+        
         //Loading 3D Model using Assimp and custom loader
         void ProcessNode(aiNode *node, const aiScene *scene);
         void ProcessMesh(aiMesh *mesh, const aiScene *scene);
         void ManageTextures(Upp::Vector<Texture>& vectorToFile, aiMaterial *mat, aiTextureType type);
         Upp::Vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type,const Upp::String& typeName);
     public:
-        
         Object3D(Scene& _scene);
         Object3D(Scene& _scene, Mesh& _mesh);
         Object3D(Scene& _scene, Upp::Array<Mesh>& _meshes);
@@ -55,6 +56,17 @@ class Object3D : public GameObject
 		
 		Object3D& SetShader(Shader& _shader);
 		Shader& GetShader();
+		
+		Object3DBehaviour GetBehaviour();
+		Object3D& SetBehaviour(Object3DBehaviour _behaviour);
+		
+		Object3D& SetVAO(unsigned int VAO);
+		Object3D& SetVBO(unsigned int VBO);
+		Object3D& SetEBO(unsigned int EBO);
+		
+		unsigned int GetVAO();
+		unsigned int GetVBO();
+		unsigned int GetEBO();
 		
 		//Override
         void Load();

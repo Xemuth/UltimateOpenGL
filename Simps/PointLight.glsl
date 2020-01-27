@@ -1,5 +1,5 @@
-#ifndef _UltimateOpenGL_V3_POINTLIGHT_SHADER
-#define _UltimateOpenGL_V3_POINTLIGHT_SHADER
+#ifndef _UltimateOpenGL_POINTLIGHT_SHADER
+#define _UltimateOpenGL_POINTLIGHT_SHADER
 #define LIGHT_POINT_STRUCT()STRINGIFY(\n\
 	struct PointLight {\n\
 	    vec3 position;\n\

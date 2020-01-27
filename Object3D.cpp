@@ -141,7 +141,6 @@ void Object3D::ProcessMesh(aiMesh *mesh, const aiScene *scene){
     m.SetObject3D(*this);
 	GetTransform().AddChildren(m.GetTransform());
 }
-
 void Object3D::LoadModel(const Upp::String& path){//Used to load 3D Model
 	Upp::String realPath =TransformFilePath(path);
     // read file via ASSIMP
@@ -260,7 +259,6 @@ Object3D& Object3D::DisableLightCalculation(){
 bool Object3D::IsLightCalculationEnable(){
 	return lightAffected;
 }
-
 Object3D& Object3D::EnableAlpha(){
 	alphaAffected = true;
 	return *this;
@@ -289,10 +287,70 @@ Object3D& Object3D::SetShader(Shader& _shader){
 Shader& Object3D::GetShader(){
 	return shader;
 }
+Object3DBehaviour Object3D::GetBehaviour(){
+	return behavior;
+}
+Object3D& Object3D::SetBehaviour(Object3DBehaviour _behaviour){
+	behavior = _behaviour;
+	return *this;
+}
 //Override
 void Object3D::Load(){
 	
+		/*if(behavior == OBJ_STATIC){
+			
+		}else if(behavior == OBJ_DYNAMIC){
+			
+		}*/
+		
+		for(Mesh& m : meshes){
+			if(m.GetBehaviour() == OBJ_DYNAMIC) m.Load();
+			else{
+				//Here I Add All data of the mesh to the global Object3D buffer.
+			}
+		}
+		//After having setted up all the data into the global Object3D buffer I settup all
+		//layout of the data sended to the graphical card
+		
+		
+		/*glGenVertexArrays(1, &VAO);
+	    glGenBuffers(1, &VBO);
+	    glGenBuffers(1, &EBO);
+	
+	    glBindVertexArray(VAO);
+	    // load data into vertex buffers
+	    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	    // A great thing about structs is that their memory layout is sequential for all its items.
+	    // The effect is that we can simply pass a pointer to the struct and it translates perfectly to a glm::vec3/2 array which
+	    // again translates to 3/2 floats which translates to a byte array.
+	    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
+	    
+	    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+	
+	    // vertex Positions
+	    glEnableVertexAttribArray(0);
+	    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+	    // vertex normals
+	    glEnableVertexAttribArray(1);
+	    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Normal));
+	    // vertex texture coords
+	    glEnableVertexAttribArray(2);
+	    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
+	    // vertex tangent
+	    glEnableVertexAttribArray(3);
+	    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Tangent));
+	    // vertex bitangent
+	    glEnableVertexAttribArray(4);
+	    glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Bitangent));
+	
+	    glBindVertexArray(0);*/
 }
 void Object3D::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform,Camera& camera){
-
+	/* Bind shader blablab blab
+		etc.
+	*/
+	for(Mesh& m : meshes){
+		if(m.GetBehaviour() == OBJ_DYNAMIC) m.Draw();
+	}
 }

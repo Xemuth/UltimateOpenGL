@@ -1,5 +1,5 @@
-#ifndef _UltimateOpenGL_V3_MATERIAL_TEXTURE_SHADER
-#define _UltimateOpenGL_V3_MATERIAL_TEXTURE_SHADER
+#ifndef _UltimateOpenGL_MATERIAL_TEXTURE_SHADER
+#define _UltimateOpenGL_MATERIAL_TEXTURE_SHADER
 #define MATERIAL_TEXTURE_STRUCT() STRINGIFY(\
 	struct MaterialTexture {\
 	    sampler2D diffuse;\

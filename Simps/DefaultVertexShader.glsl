@@ -1,5 +1,5 @@
-#ifndef _UltimateOpenGL_V3_VERTEX_SHADER
-#define _UltimateOpenGL_V3_VERTEX_SHADER
+#ifndef _UltimateOpenGL_VERTEX_SHADER
+#define _UltimateOpenGL_VERTEX_SHADER
 SHADER(330 core,
 
 //	layout (location = 0) in vec3 aPos;\n
@@ -11,7 +11,8 @@ SHADER(330 core,
 	@LAYOUT_TANGEANT\n
 	@LAYOUT_BITANGEANT\n
 	@LAYOUT_MODEL_MATRIX\n
-	
+	@LAYOUT_COLOR\n
+	@LAYOUT_TEXTURE\n
 	/*
 		This Shader is used to Generate automatique Shader using UltimateOpenGL.
 		\n It is not elegant but necessary because Annotation(@) will be at reading transform to

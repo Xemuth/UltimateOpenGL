@@ -21,7 +21,7 @@ Scene& Scene::operator=(Scene& _scene){
 	for(const Upp::String& cam : _scene.AllCameras.GetKeys()){
 		auto& e = AllCameras.Add(cam, _scene.AllCameras.Get(cam));
 		if(&_scene.AllCameras.Get(cam) == _scene.ActiveCamera) ActiveCamera = &e;
-		e.SetScene(*this);	
+		e.SetScene(*this);
 	}
 	
 	shader = _scene.shader;
@@ -125,60 +125,6 @@ Scene& Scene::RemoveCamera(const Upp::String& _CameraName){//if the removed came
 	}
 	return *this;
 }
-template <class T,class... Args>
-T& Scene::CreateGameObject(const Upp::String& _ObjectName, Args&&... args){//if the game object exists then it will remove it to create new one
-	try{
-		if(AllGamesObjects.Find(_ObjectName) ==-1){
-			return dynamic_cast<T&>(AllGamesObjects.Create<T>(_ObjectName,std::forward<Args>(args)...));
-		}else{
-			RemoveGameObject(_ObjectName);
-			return dynamic_cast<T&>(AllGamesObjects.Create<T>(_ObjectName,std::forward<Args>(args)...));
-		}
-	}catch(...){
-		throw UOGLException(6,"Error : T& Scene::CreateGameObject(...) => Error on convertion of the game Object !",1);
-	}
-}
-template <class T>
-T& Scene::AddGameObject(const Upp::String& _ObjectName,T& ObjectToAdd){//if the game object exists then it will remove it to create new one
-	try{
-		if(AllGamesObjects.Find(_ObjectName) ==-1){
-			auto& type = (dynamic_cast<T&>(AllGamesObjects.Create<T>(_ObjectName)) = ObjectToAdd);
-			type.SetScene(*this);
-			type.SetName(_ObjectName);
-			return type;
-		}else{
-			RemoveGameObject(_ObjectName);
-			auto& type = (dynamic_cast<T&>(AllGamesObjects.Create<T>(_ObjectName)) = ObjectToAdd);
-			type.SetScene(*this);
-			type.SetName(_ObjectName);
-			return type;
-		}
-	}catch(...){
-		throw UOGLException(6,"Error : T& Scene::AddGameObject(...) => Error on convertion of the game Object !",1);
-	}
-}
-template <class T>
-T& Scene::GetGameObject(const Upp::String& _ObjectName){//Throw exception if gameObject don't exists
-	if(AllGamesObjects.Find(_ObjectName) != -1){
-		try{
-			return dynamic_cast<T&>(AllGamesObjects.Get(_ObjectName));
-		}catch(...){
-			throw UOGLException(6,"Error : T& Scene::GetGameObject(...) => Error on convertion of the game Object !",1);
-		}
-	}
-	throw UOGLException(6,"Error : T& Scene::GetGameObject(...) => No GameObject named \""+ _ObjectName +"\" exists !",1);
-}
-template <class T>
-bool Scene::IsGameObjectIsTypeOf(const Upp::String& _ObjectName){//Return true if the game object exits and is type of template, else return false
-	if(AllGamesObjects.Find(_ObjectName) != -1){
-		try{
-			return (typeid(dynamic_cast<T&>(AllGamesObjects.Get(_ObjectName)))== typeid(T));
-		}catch(...){
-			return false;
-		}
-	}
-	return false;
-}
 bool Scene::IsGameObjectExist(const Upp::String& _ObjectName){//Return true if the game object exists
 	if(AllGamesObjects.Find(_ObjectName) != -1)return true;
 	return false;
@@ -190,6 +136,7 @@ Scene& Scene::RemoveGameObject(const Upp::String& _ObjectName){//Will remove gam
 	return *this;
 }
 Scene& Scene::Load(){
+	
 	return *this;
 }
 bool Scene::IsLoaded(){

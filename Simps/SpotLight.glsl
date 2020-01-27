@@ -1,5 +1,5 @@
-#ifndef _UltimateOpenGL_V3_SPOTLIGHT_SHADER
-#define _UltimateOpenGL_V3_SPOTLIGHT_SHADER
+#ifndef _UltimateOpenGL_SPOTLIGHT_SHADER
+#define _UltimateOpenGL_SPOTLIGHT_SHADER
 #define LIGHT_SPOT_STRUCT()STRINGIFY(\n\
 	struct SpotLight {\n\
 	    vec3 position;\n\

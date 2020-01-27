@@ -68,6 +68,7 @@ class Mesh : public Upp::Moveable<Mesh> {
 										      //one particulare Shader, you must call
 										      //SetDrawMethod() of the mesh to ensure it must
 										      //use a custom drawMethod()
+        Object3DBehaviour behavior = OBJ_STATIC;
         
 		Material material; //Same as Draw method. If material is completed with texture or something else than default color then it will be used instead of Obect3D material
 		bool useMaterial = false;
@@ -129,6 +130,9 @@ class Mesh : public Upp::Moveable<Mesh> {
         void LoadDefaultIndices();
         void GenerateAutoShader(int NbLightDir,int NbLightPoint,int NbLightSpot);
         GLint ResolveDrawMethod();
+        
+        Object3DBehaviour GetBehaviour();
+		Mesh& SetBehaviour(Object3DBehaviour _behaviour);
         
         Mesh() = default;
         Mesh(GameObject& gameObject, const Upp::Vector<Vertex>& vertices, Upp::Vector<unsigned int>& indices, Upp::Vector<Texture>& textures);

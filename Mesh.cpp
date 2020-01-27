@@ -95,7 +95,13 @@ void Mesh::LoadDefaultIndices(){
         indices.Add(r);
     }
 }
-
+Object3DBehaviour Mesh::GetBehaviour(){
+	return behavior;
+}
+Mesh& Mesh::SetBehaviour(Object3DBehaviour _behaviour){
+	behavior = _behaviour;
+	return *this;
+}
 GLint Mesh::ResolveDrawMethod(){
 	switch(drawMethod){
     	case DM_POINTS:
@@ -132,7 +138,6 @@ GLint Mesh::ResolveDrawMethod(){
     		return GL_TRIANGLES;
     }
 }
-
 void Mesh::Load(){
 	if(indices.size() != 0 || vertices.size() != 0){
 		/*if(textures.GetCount() > 0 && materialsTexture.GetCount() == 0){
@@ -211,9 +216,6 @@ void Mesh::Load(){
 	    LOG("Mesh of object named " + object3D->GetName() + " are error ! or undefined ! nothing to load !");
 	}
 }
-
-
-
 void Mesh::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform,Camera& camera){
 	
 	shader.Use();

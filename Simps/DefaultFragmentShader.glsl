@@ -1,12 +1,12 @@
-#ifndef _UltimateOpenGL_V3_FRAGMENT_SHADER
-#define _UltimateOpenGL_V3_FRAGMENT_SHADER
+#ifndef _UltimateOpenGL_FRAGMENT_SHADER
+#define _UltimateOpenGL_FRAGMENT_SHADER
 SHADER(330 core,
 	@STRUCT_MATERIAL_TEXTURE\n
 	@STRUCT_MATERIAL_COLOR\n
 	@STRUCT_POINT_LIGHT\n
 	@STRUCT_DIR_LIGHT\n
 	@STRUCT_SPOT_LIGHT\n
-
+	@LAYOUT_COLOR\n
 	/*
 		This Shader is used to Generate automatique Shader using UltimateOpenGL.
 		\n It is not elegant but necessary because Annotation(@) will be at reading transform to
