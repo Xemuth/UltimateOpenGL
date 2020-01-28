@@ -147,9 +147,9 @@ Transform& Transform::Move(glm::vec3 move,bool updateChildrens){//Move the posit
 	return *this;
 }
 Transform& Transform::SetNewPosition(glm::vec3 newPosition,bool updateChildrens){//set the new position of object //It update all the child by : newPose + (old parent pose - old child pos);
-	glm::vec3 buffer = newPosition;
+	glm::vec3 buffer = position;
 	buffer +=newPosition;
-	newPosition = newPosition;
+	position = newPosition;
 	if(updateChildrens){
 		for(Transform* ptr1 : childrens){
 			ptr1->Move(buffer,updateChildrens);

@@ -49,10 +49,10 @@ class Scene{
 		T& CreateGameObject(const Upp::String& _ObjectName, Args&&... args){//if the game object exists then it will remove it to create new one
 			try{
 				if(AllGamesObjects.Find(_ObjectName) ==-1){
-					return dynamic_cast<T&>(AllGamesObjects.Create<T>(_ObjectName,*this,_ObjectName,std::forward<Args>(args)...));
+					return AllGamesObjects.Create<T>(_ObjectName,*this,_ObjectName,std::forward<Args>(args)...);
 				}else{
 					RemoveGameObject(_ObjectName);
-					return dynamic_cast<T&>(AllGamesObjects.Create<T>(_ObjectName,*this,_ObjectName,std::forward<Args>(args)...));
+					return AllGamesObjects.Create<T>(_ObjectName,*this,_ObjectName,std::forward<Args>(args)...);
 				}
 			}catch(...){
 				throw UOGLException(6,"Error : T& Scene::CreateGameObject(...) => Error on convertion of the game Object !",1);
@@ -62,13 +62,13 @@ class Scene{
 		T& AddGameObject(const Upp::String& _ObjectName,T& ObjectToAdd){//if the game object exists then it will remove it to create new one
 			try{
 				if(AllGamesObjects.Find(_ObjectName) ==-1){
-					auto& type = (dynamic_cast<T&>(AllGamesObjects.Create<T>(_ObjectName)) = ObjectToAdd);
+					auto& type = (AllGamesObjects.Create<T>(_ObjectName) = ObjectToAdd);
 					type.SetScene(*this);
 					type.SetName(_ObjectName);
 					return type;
 				}else{
 					RemoveGameObject(_ObjectName);
-					auto& type = (dynamic_cast<T&>(AllGamesObjects.Create<T>(_ObjectName)) = ObjectToAdd);
+					auto& type = (AllGamesObjects.Create<T>(_ObjectName) = ObjectToAdd);
 					type.SetScene(*this);
 					type.SetName(_ObjectName);
 					return type;

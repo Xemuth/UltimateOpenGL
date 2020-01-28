@@ -321,7 +321,7 @@ void Object3D::Load(){
 		}*/
 		
 		//here you can have a look of every layout an object will have
-		Upp::Vector<float> Positions;
+		Upp::Array<glm::vec3> Positions;
 		Upp::Vector<float> Normals;
 		Upp::Vector<float> TextCoords;
 		Upp::Vector<float> Tangents;
@@ -330,19 +330,17 @@ void Object3D::Load(){
 		Upp::Vector<int> UseTextures; //True to use texture, -1 it use color
 		Upp::Vector<int> Textures; //UnusedTexture must be set to -1
 		Upp::Vector<int> SpeculareTextures; //unusedSpeculare must be set to -1
-		Upp::Vector<float> MatricesModels;
+		Upp::Array<glm::mat4> MatricesModels;
 		
 		glm::mat4 model(1.0f);
-		
+		//Upp::Cout()<< GetTransform().GetPosition().x << " | " << GetTransform().GetPosition().y << " | " << GetTransform().GetPosition().z << Upp::EOL;
+		model = glm::translate(model,GetTransform().GetPosition())*glm::mat4_cast(GetTransform().GetQuaterion())*GetTransform().GetModelMatrixScaller();
 		for(Mesh& m : meshes){
 			if(m.GetBehaviour() == OBJ_DYNAMIC) m.Load();
 			else{
-				model = glm::translate(model,GetTransform().GetPosition())*glm::mat4_cast(GetTransform().GetQuaterion())*GetTransform().GetModelMatrixScaller();
 				for(Vertex& v :  m.GetVertices()){
-					Positions.Add(v.Position.x);
-					Positions.Add(v.Position.y);
-					Positions.Add(v.Position.z);
-					Normals.Add(v.Normal.x);
+					Positions.Add(v.Position);
+					/*Normals.Add(v.Normal.x);
 					Normals.Add(v.Normal.y);
 					Normals.Add(v.Normal.z);
 					TextCoords.Add(v.TexCoords.x);
@@ -359,12 +357,8 @@ void Object3D::Load(){
 					Colors.Add(m.GetMaterial().GetColor().w);
 					UseTextures.Add(-1); //For the test, only color will be able
 					Textures.Add(-1);
-					SpeculareTextures.Add(-1);
-					for(int e = 0; e < 4; e++){
-						for(int r = 0; r < 4; r++){
-							MatricesModels.Add(model[e][r]);
-						}
-					}
+					SpeculareTextures.Add(-1);*/
+					MatricesModels.Add(model);
 				}
 				//Here I Add All data of the mesh to the global Object3D buffer.
 			}
@@ -378,64 +372,85 @@ void Object3D::Load(){
 		
 		//Binding Position :
 		glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
-		glBufferData(GL_ARRAY_BUFFER, Positions.GetCount() * sizeof(float), Positions, GL_STATIC_DRAW);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		glBufferData(GL_ARRAY_BUFFER, Positions.GetCount() * sizeof(glm::vec3), &Positions[0], GL_STATIC_DRAW);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 		glEnableVertexAttribArray(0);
-		
+		glVertexAttribDivisor(0, 0);
+		/*
 		//Binding Normals :
 		glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
-		glBufferData(GL_ARRAY_BUFFER, Normals.GetCount() * sizeof(float), Normals, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, Normals.GetCount() * sizeof(float), &Normals[0], GL_STATIC_DRAW);
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
 		glEnableVertexAttribArray(1);
-		
+		glVertexAttribDivisor(1, 1);
 		//Binding TextureCoordinate :
 		glBindBuffer(GL_ARRAY_BUFFER, VBO[2]);
-		glBufferData(GL_ARRAY_BUFFER, TextCoords.GetCount() * sizeof(float), TextCoords, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, TextCoords.GetCount() * sizeof(float), &TextCoords[0], GL_STATIC_DRAW);
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);
 		glEnableVertexAttribArray(2);
-		
+		glVertexAttribDivisor(2, 1);
 		//Binding Tangeant :
 		glBindBuffer(GL_ARRAY_BUFFER, VBO[3]);
-		glBufferData(GL_ARRAY_BUFFER, Tangents.GetCount() * sizeof(float), Tangents, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, Tangents.GetCount() * sizeof(float), &Tangents[0], GL_STATIC_DRAW);
 		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, 0);
 		glEnableVertexAttribArray(3);
-		
+		glVertexAttribDivisor(3, 1);
 		//Binding BiTangeant :
 		glBindBuffer(GL_ARRAY_BUFFER, VBO[4]);
-		glBufferData(GL_ARRAY_BUFFER, BiTangents.GetCount() * sizeof(float), BiTangents, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, BiTangents.GetCount() * sizeof(float), &BiTangents[0], GL_STATIC_DRAW);
 		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, 0);
 		glEnableVertexAttribArray(4);
-		
+		glVertexAttribDivisor(4, 1);
 		//Binding Color :
 		glBindBuffer(GL_ARRAY_BUFFER, VBO[5]);
-		glBufferData(GL_ARRAY_BUFFER, Colors.GetCount() * sizeof(float), Colors, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, Colors.GetCount() * sizeof(float), &Colors[0], GL_STATIC_DRAW);
 		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 0, 0);
 		glEnableVertexAttribArray(5);
-		
+		glVertexAttribDivisor(5, 1);
 		//Binding UseTexture :
 		glBindBuffer(GL_ARRAY_BUFFER, VBO[6]);
-		glBufferData(GL_ARRAY_BUFFER, UseTextures.GetCount() * sizeof(float), UseTextures, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, UseTextures.GetCount() * sizeof(float), &UseTextures[0], GL_STATIC_DRAW);
 		glVertexAttribPointer(6, 1, GL_INT, GL_FALSE, 0, 0);
 		glEnableVertexAttribArray(6);
-		
+		glVertexAttribDivisor(6, 1);
 		//Binding Texture :
 		glBindBuffer(GL_ARRAY_BUFFER, VBO[7]);
-		glBufferData(GL_ARRAY_BUFFER, Textures.GetCount() * sizeof(float), Textures, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, Textures.GetCount() * sizeof(float), &Textures[0], GL_STATIC_DRAW);
 		glVertexAttribPointer(7, 1, GL_INT, GL_FALSE, 0, 0);
 		glEnableVertexAttribArray(7);
-		
+		glVertexAttribDivisor(7, 1);
 		//Binding SpeculareTexture :
 		glBindBuffer(GL_ARRAY_BUFFER, VBO[8]);
-		glBufferData(GL_ARRAY_BUFFER, SpeculareTextures.GetCount() * sizeof(float), SpeculareTextures, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, SpeculareTextures.GetCount() * sizeof(float), &SpeculareTextures[0], GL_STATIC_DRAW);
 		glVertexAttribPointer(8, 1, GL_INT, GL_FALSE, 0, 0);
 		glEnableVertexAttribArray(8);
-		
+		glVertexAttribDivisor(8, 1);
+		*/
 		//Binding ModelMatrice :
+			/*
 		glBindBuffer(GL_ARRAY_BUFFER, VBO[9]);
-		glBufferData(GL_ARRAY_BUFFER, MatricesModels.GetCount() * sizeof(float), MatricesModels, GL_STATIC_DRAW);
-		glVertexAttribPointer(9, 16, GL_FLOAT, GL_FALSE, 0, 0);
-		glEnableVertexAttribArray(9);
+		glBufferData(GL_ARRAY_BUFFER, MatricesModels.GetCount() * sizeof(glm::mat4), &MatricesModels[0], GL_STATIC_DRAW);
+		glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 0, 0);
+		glEnableVertexAttribArray(2);
+		glVertexAttribDivisor(2, 1);*/
+		// set attribute pointers for matrix (4 times vec4)
+		glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
+		glBufferData(GL_ARRAY_BUFFER, MatricesModels.GetCount() * sizeof(glm::mat4), &MatricesModels[0], GL_STATIC_DRAW);
+		
+        glEnableVertexAttribArray(2);
+        glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
+        glEnableVertexAttribArray(3);
+        glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4)));
+        glEnableVertexAttribArray(4);
+        glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(2 * sizeof(glm::vec4)));
+        glEnableVertexAttribArray(5);
+        glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(3 * sizeof(glm::vec4)));
 
+        /*glVertexAttribDivisor(2, 1);
+        glVertexAttribDivisor(3, 1);
+        glVertexAttribDivisor(4, 1);
+        glVertexAttribDivisor(5, 1);*/
+		
 		//Unbind the vertex array
 		glBindVertexArray(0);
 		loaded = true;
@@ -477,11 +492,15 @@ void Object3D::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat
 	/* Bind shader blablab blab
 		etc.
 	*/
+	
+	
 	shader.Use();
     shader.SetMat4("view",view);
     shader.SetMat4("projection", projection);
 	glBindVertexArray(VAO);
 	//glDrawArrays(GL_TRIANGLES, 0, 11 ); //12 is static value , CHANGE TODO
+	//glDrawElementsInstanced(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0, 2);
+	//glDrawArraysInstanced(GL_TRIANGLES, 0, 3, 12);
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 	shader.Unbind();
 	/*

@@ -107,38 +107,38 @@ Mesh& Mesh::SetBehaviour(Object3DBehaviour _behaviour){
 }
 GLint Mesh::ResolveDrawMethod(){
 	switch(drawMethod){
-    	case DM_POINTS:
-    		return GL_POINTS;
-    	break;
-    	case DM_LINES:
-    		return GL_LINES;
-    	break;
-    	case DM_LINE_STRIP:
-    		return GL_LINE_STRIP;
-    	break;
-    	case DM_LINE_LOOP:
-    		return GL_LINE_LOOP;
-    	break;
-    	case DM_TRIANGLES:
-    		return GL_TRIANGLES;
-    	break;
-    	case DM_TRIANGLE_STRIP:
-    		return GL_TRIANGLE_STRIP;
-    	break;
-    	case DM_TRIANGLE_FAN:
-    		return GL_TRIANGLE_FAN;
-    	break;
-    	case DM_QUADS:
-    		return GL_QUADS;
-    	break;
-    	case DM_QUAD_STRIP:
-    		return GL_QUAD_STRIP;
-    	break;
-    	case DM_POLYGON:
-    		return GL_POLYGON;
-    	break;
-    	default:
-    		return GL_TRIANGLES;
+		case DM_POINTS:
+			return GL_POINTS;
+		break;
+		case DM_LINES:
+			return GL_LINES;
+		break;
+		case DM_LINE_STRIP:
+			return GL_LINE_STRIP;
+		break;
+		case DM_LINE_LOOP:
+			return GL_LINE_LOOP;
+		break;
+		case DM_TRIANGLES:
+			return GL_TRIANGLES;
+		break;
+		case DM_TRIANGLE_STRIP:
+			return GL_TRIANGLE_STRIP;
+		break;
+		case DM_TRIANGLE_FAN:
+			return GL_TRIANGLE_FAN;
+		break;
+		case DM_QUADS:
+			return GL_QUADS;
+		break;
+		case DM_QUAD_STRIP:
+			return GL_QUAD_STRIP;
+		break;
+		case DM_POLYGON:
+			return GL_POLYGON;
+		break;
+		default:
+			return GL_TRIANGLES;
     }
 }
 void Mesh::Load(){
@@ -177,7 +177,7 @@ void Mesh::Load(){
 	    // A great thing about structs is that their memory layout is sequential for all its items.
 	    // The effect is that we can simply pass a pointer to the struct and it translates perfectly to a glm::vec3/2 array which
 	    // again translates to 3/2 floats which translates to a byte array.
-	    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);  
+	    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
 	
 	    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
@@ -187,12 +187,10 @@ void Mesh::Load(){
 		float* buffer = nullptr;
 		for(Vertex& v : vertices){
 			buffer = (float*)&v;
-			
 			for (int e =0 ; e < 13 ; e++){
-				Upp::Cout() <<Upp::AsString(*buffer) <<",";	
+				Upp::Cout() <<Upp::AsString(*buffer) <<",";
 				buffer++;
 			}
-			
 			Upp::Cout() <<  Upp::EOL;
 		}*/
 	
