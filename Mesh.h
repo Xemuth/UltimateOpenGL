@@ -135,7 +135,8 @@ class Mesh : public Upp::Moveable<Mesh> {
 		Mesh& SetBehaviour(Object3DBehaviour _behaviour);
         
         Mesh() = default;
-        Mesh(GameObject& gameObject, const Upp::Vector<Vertex>& vertices, Upp::Vector<unsigned int>& indices, Upp::Vector<Texture>& textures);
+        Mesh(Object3D& obj);
+        Mesh(Object3D& gameObject, Upp::Vector<Vertex>& vertices, Upp::Vector<unsigned int>& indices, Upp::Vector<Texture>& textures);
         Mesh(const Mesh& _mesh); //Dont forget to set z
         void Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform,Camera& camera);
 };

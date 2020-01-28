@@ -2,7 +2,7 @@
 #include "Texture.h"
 #include "Scene.h"
 #include "UltimateOpenGL.h"
-Mesh::Mesh(GameObject& gameObject,const Upp::Vector<Vertex>& vertices, Upp::Vector<unsigned int>& indices, Upp::Vector<Texture>& textures) : transform()
+Mesh::Mesh(Object3D& gameObject, Upp::Vector<Vertex>& vertices, Upp::Vector<unsigned int>& indices, Upp::Vector<Texture>& textures) : transform()
 {
     this->vertices.Append(vertices);
     this->indices.Append(indices);
@@ -63,6 +63,9 @@ Mesh::Mesh(GameObject& gameObject,const Upp::Vector<Vertex>& vertices, Upp::Vect
 
 	
    //Load();
+}
+Mesh::Mesh(Object3D& obj){
+	object3D = &obj;
 }
 Mesh::Mesh(const Mesh& _mesh){
 	object3D = _mesh.object3D;

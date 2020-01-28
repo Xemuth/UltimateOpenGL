@@ -28,7 +28,9 @@ Scene& Scene::operator=(Scene& _scene){
 	SkyBox = _scene.SkyBox;
 	return *this;
 }
-Scene::~Scene(){}
+Scene::~Scene(){
+	AllGamesObjects.Clear();
+}
 UltimateOpenGL_Context& Scene::GetContext(){
 	ASSERT_(context,"Scene::GetContext() Scene have nullptr Context");
 	return *context;
@@ -136,11 +138,13 @@ Scene& Scene::RemoveGameObject(const Upp::String& _ObjectName){//Will remove gam
 	return *this;
 }
 Scene& Scene::Load(){
-	
+	for(GameObject& gm : AllGamesObjects){
+		gm.Load();
+	}
 	return *this;
 }
 bool Scene::IsLoaded(){
-	return true;
+	return loaded;
 }
 Scene& Scene::Draw(const Upp::String& CameraToUse){
 	if( IsLoaded()){
@@ -156,16 +160,25 @@ Scene& Scene::Draw(const Upp::String& CameraToUse){
 		view = camera.GetTransform().GetViewMatrix();
 		glm::mat4 projection = glm::mat4(1.0f);
 		float screenSizeX = 800.0f;
-		float screenSizeY = 600.0f;	
+		float screenSizeY = 600.0f;
 		screenSizeX=(float) GetContext().GetScreenSize().cx;
-		screenSizeY=(float) GetContext().GetScreenSize().cy;	
+		screenSizeY=(float) GetContext().GetScreenSize().cy;
 
 		projection = glm::perspective(glm::radians(camera.GetFOV()),(float)( screenSizeX / screenSizeY),camera.GetDrawDistanceMin(),camera.GetDrawDisanceMax());//We calculate Projection here since multiple camera can have different FOV
 																																							      //I will also provide différent camera parameter in futurs
 							
-		glClearColor(SkyBox.GetColor().x,SkyBox.GetColor().y,SkyBox.GetColor().z,SkyBox.GetColor().w); //définie la couleur de fond dans la fenetre graphique 
+		glClearColor(SkyBox.GetColor().x,SkyBox.GetColor().y,SkyBox.GetColor().z,SkyBox.GetColor().w);//définie la couleur de fond dans la fenetre graphique
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //nétoie la fenetre graphique et la regénère Scene::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform){
-			
+		//we must render all game object by distance To do proper blending (gestion of alpha)
+		Upp::ArrayMap<float,GameObject*> sorted;
+		for (GameObject& object : AllGamesObjects){
+		    float distance = glm::length(camera.GetTransform().GetPosition() - object.GetTransform().GetPosition());
+		    sorted.Add(distance,&object);
+		}
+		Upp::SortByKey(sorted,[](const float& a, const float& b) { return a>b; });
+		for(GameObject* object : sorted.GetValues()){
+			object->Draw(model,view,projection,transform,camera);
+		}
 	}
 	return *this;
 }

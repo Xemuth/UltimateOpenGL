@@ -2,12 +2,12 @@
 #include "Mesh.h"
 Object3D::Object3D(Scene& _scene) : GameObject(_scene,GOT_3D){}
 Object3D::Object3D(Scene& _scene, Mesh& _mesh) : GameObject(_scene,GOT_3D){
-	Mesh& m =meshes.Create<Mesh>(_mesh);
+	Mesh& m =meshes.Create(_mesh);
 	transform.AddChildren(m.GetTransform());
 }
-Object3D::Object3D(Scene& _scene, Upp::Array<Mesh>& _meshes) : GameObject(_scene,GOT_3D){
+Object3D::Object3D(Scene& _scene, Upp::Vector<Mesh>& _meshes) : GameObject(_scene,GOT_3D){
 	for(Mesh& m : _meshes){
-		Mesh& m2 =meshes.Create<Mesh>(m);
+		Mesh& m2 =meshes.Create(m);
 		transform.AddChildren(m2.GetTransform());
 	}
 }
@@ -15,6 +15,21 @@ Object3D::Object3D(Scene& _scene, Upp::Vector<float>& Vertices, ReaderParameters
 	ReadData(Vertices,readerParameter,readerRoutine);
 }
 Object3D::Object3D(Scene& _scene, const Upp::String& pathOfModel) : GameObject(_scene,GOT_3D){
+	LoadModel(pathOfModel);
+}
+Object3D::Object3D(Scene& _scene, Upp::String _name, Upp::Vector<Mesh>& _meshes) : GameObject(_scene,GOT_3D){
+	name = _name;
+	for(Mesh& m : _meshes){
+		Mesh& m2 =meshes.Create(m);
+		transform.AddChildren(m2.GetTransform());
+	}
+}
+Object3D::Object3D(Scene& _scene, Upp::String _name, Upp::Vector<float>& Vertices, ReaderParameters readerParameter, ReaderRoutine readerRoutine) : GameObject(_scene,GOT_3D){
+	name = _name;
+	ReadData(Vertices,readerParameter,readerRoutine);
+}
+Object3D::Object3D(Scene& _scene, Upp::String _name, const Upp::String& pathOfModel) : GameObject(_scene,GOT_3D){
+	name = _name;
 	LoadModel(pathOfModel);
 }
 Object3D::Object3D(Object3D& _object) : GameObject(_object){//Be carefull of setting the Scene
@@ -137,7 +152,7 @@ void Object3D::ProcessMesh(aiMesh *mesh, const aiScene *scene){
     }
     
     // return a mesh object created from the extracted mesh data
-    Mesh& m =  meshes.Create<Mesh>(*this ,vertices, indices, textures);
+    Mesh& m =  meshes.Create(*this ,vertices, indices, textures);
     m.SetObject3D(*this);
 	GetTransform().AddChildren(m.GetTransform());
 }
@@ -214,7 +229,9 @@ void Object3D::ReadData(Upp::Vector<float>& data ,ReaderParameters readerParamet
 		}else{
 			if(readerRoutine.allowCreation){
 				if(dataBuffer.GetCount() > 0){
-					m = &meshes.Add();
+					m = &(meshes.Create<Mesh>(*this)); //Here happen a memory violation
+					//Upp::Cout() << m << Upp::EOL;
+					//Upp::Cout() << &meshes[0] << Upp::EOL;
 				}
 				created=true;
 			}else{
@@ -245,7 +262,7 @@ void Object3D::ReadData(Upp::Vector<float>& data ,ReaderParameters readerParamet
 		}
 	}
 }
-Upp::Array<Mesh>& Object3D::GetMeshes(){
+Upp::Vector<Mesh>& Object3D::GetMeshes(){
 	return meshes;
 }
 Object3D& Object3D::EnableLightCalculation(){
@@ -303,17 +320,127 @@ void Object3D::Load(){
 			
 		}*/
 		
+		//here you can have a look of every layout an object will have
+		Upp::Vector<float> Positions;
+		Upp::Vector<float> Normals;
+		Upp::Vector<float> TextCoords;
+		Upp::Vector<float> Tangents;
+		Upp::Vector<float> BiTangents;
+		Upp::Vector<float> Colors;
+		Upp::Vector<int> UseTextures; //True to use texture, -1 it use color
+		Upp::Vector<int> Textures; //UnusedTexture must be set to -1
+		Upp::Vector<int> SpeculareTextures; //unusedSpeculare must be set to -1
+		Upp::Vector<float> MatricesModels;
+		
+		glm::mat4 model(1.0f);
+		
 		for(Mesh& m : meshes){
 			if(m.GetBehaviour() == OBJ_DYNAMIC) m.Load();
 			else{
+				model = glm::translate(model,GetTransform().GetPosition())*glm::mat4_cast(GetTransform().GetQuaterion())*GetTransform().GetModelMatrixScaller();
+				for(Vertex& v :  m.GetVertices()){
+					Positions.Add(v.Position.x);
+					Positions.Add(v.Position.y);
+					Positions.Add(v.Position.z);
+					Normals.Add(v.Normal.x);
+					Normals.Add(v.Normal.y);
+					Normals.Add(v.Normal.z);
+					TextCoords.Add(v.TexCoords.x);
+					TextCoords.Add(v.TexCoords.y);
+					Tangents.Add(v.Tangent.x);
+					Tangents.Add(v.Tangent.y);
+					Tangents.Add(v.Tangent.z);
+					BiTangents.Add(v.Bitangent.x);
+					BiTangents.Add(v.Bitangent.y);
+					BiTangents.Add(v.Bitangent.z);
+					Colors.Add(m.GetMaterial().GetColor().x);
+					Colors.Add(m.GetMaterial().GetColor().y);
+					Colors.Add(m.GetMaterial().GetColor().z);
+					Colors.Add(m.GetMaterial().GetColor().w);
+					UseTextures.Add(-1); //For the test, only color will be able
+					Textures.Add(-1);
+					SpeculareTextures.Add(-1);
+					for(int e = 0; e < 4; e++){
+						for(int r = 0; r < 4; r++){
+							MatricesModels.Add(model[e][r]);
+						}
+					}
+				}
 				//Here I Add All data of the mesh to the global Object3D buffer.
 			}
 		}
 		//After having setted up all the data into the global Object3D buffer I settup all
 		//layout of the data sended to the graphical card
 		
+		glGenVertexArrays(1, &VAO);
+		glBindVertexArray(VAO);
+		glGenBuffers(10,VBO);
 		
-		/*glGenVertexArrays(1, &VAO);
+		//Binding Position :
+		glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
+		glBufferData(GL_ARRAY_BUFFER, Positions.GetCount() * sizeof(float), Positions, GL_STATIC_DRAW);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		glEnableVertexAttribArray(0);
+		
+		//Binding Normals :
+		glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
+		glBufferData(GL_ARRAY_BUFFER, Normals.GetCount() * sizeof(float), Normals, GL_STATIC_DRAW);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		glEnableVertexAttribArray(1);
+		
+		//Binding TextureCoordinate :
+		glBindBuffer(GL_ARRAY_BUFFER, VBO[2]);
+		glBufferData(GL_ARRAY_BUFFER, TextCoords.GetCount() * sizeof(float), TextCoords, GL_STATIC_DRAW);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);
+		glEnableVertexAttribArray(2);
+		
+		//Binding Tangeant :
+		glBindBuffer(GL_ARRAY_BUFFER, VBO[3]);
+		glBufferData(GL_ARRAY_BUFFER, Tangents.GetCount() * sizeof(float), Tangents, GL_STATIC_DRAW);
+		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		glEnableVertexAttribArray(3);
+		
+		//Binding BiTangeant :
+		glBindBuffer(GL_ARRAY_BUFFER, VBO[4]);
+		glBufferData(GL_ARRAY_BUFFER, BiTangents.GetCount() * sizeof(float), BiTangents, GL_STATIC_DRAW);
+		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		glEnableVertexAttribArray(4);
+		
+		//Binding Color :
+		glBindBuffer(GL_ARRAY_BUFFER, VBO[5]);
+		glBufferData(GL_ARRAY_BUFFER, Colors.GetCount() * sizeof(float), Colors, GL_STATIC_DRAW);
+		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 0, 0);
+		glEnableVertexAttribArray(5);
+		
+		//Binding UseTexture :
+		glBindBuffer(GL_ARRAY_BUFFER, VBO[6]);
+		glBufferData(GL_ARRAY_BUFFER, UseTextures.GetCount() * sizeof(float), UseTextures, GL_STATIC_DRAW);
+		glVertexAttribPointer(6, 1, GL_INT, GL_FALSE, 0, 0);
+		glEnableVertexAttribArray(6);
+		
+		//Binding Texture :
+		glBindBuffer(GL_ARRAY_BUFFER, VBO[7]);
+		glBufferData(GL_ARRAY_BUFFER, Textures.GetCount() * sizeof(float), Textures, GL_STATIC_DRAW);
+		glVertexAttribPointer(7, 1, GL_INT, GL_FALSE, 0, 0);
+		glEnableVertexAttribArray(7);
+		
+		//Binding SpeculareTexture :
+		glBindBuffer(GL_ARRAY_BUFFER, VBO[8]);
+		glBufferData(GL_ARRAY_BUFFER, SpeculareTextures.GetCount() * sizeof(float), SpeculareTextures, GL_STATIC_DRAW);
+		glVertexAttribPointer(8, 1, GL_INT, GL_FALSE, 0, 0);
+		glEnableVertexAttribArray(8);
+		
+		//Binding ModelMatrice :
+		glBindBuffer(GL_ARRAY_BUFFER, VBO[9]);
+		glBufferData(GL_ARRAY_BUFFER, MatricesModels.GetCount() * sizeof(float), MatricesModels, GL_STATIC_DRAW);
+		glVertexAttribPointer(9, 16, GL_FLOAT, GL_FALSE, 0, 0);
+		glEnableVertexAttribArray(9);
+
+		//Unbind the vertex array
+		glBindVertexArray(0);
+		loaded = true;
+		/*
+		glGenVertexArrays(1, &VAO);
 	    glGenBuffers(1, &VBO);
 	    glGenBuffers(1, &EBO);
 	
@@ -350,7 +477,15 @@ void Object3D::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat
 	/* Bind shader blablab blab
 		etc.
 	*/
+	shader.Use();
+    shader.SetMat4("view",view);
+    shader.SetMat4("projection", projection);
+	glBindVertexArray(VAO);
+	//glDrawArrays(GL_TRIANGLES, 0, 11 ); //12 is static value , CHANGE TODO
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+	shader.Unbind();
+	/*
 	for(Mesh& m : meshes){
-		if(m.GetBehaviour() == OBJ_DYNAMIC) m.Draw();
-	}
+		//if(m.GetBehaviour() == OBJ_DYNAMIC) m.Draw();
+	}*/
 }

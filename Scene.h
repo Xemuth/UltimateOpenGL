@@ -49,10 +49,10 @@ class Scene{
 		T& CreateGameObject(const Upp::String& _ObjectName, Args&&... args){//if the game object exists then it will remove it to create new one
 			try{
 				if(AllGamesObjects.Find(_ObjectName) ==-1){
-					return dynamic_cast<T&>(AllGamesObjects.Create<T>(_ObjectName,*this,std::forward<Args>(args)...));
+					return dynamic_cast<T&>(AllGamesObjects.Create<T>(_ObjectName,*this,_ObjectName,std::forward<Args>(args)...));
 				}else{
 					RemoveGameObject(_ObjectName);
-					return dynamic_cast<T&>(AllGamesObjects.Create<T>(_ObjectName,*this,std::forward<Args>(args)...));
+					return dynamic_cast<T&>(AllGamesObjects.Create<T>(_ObjectName,*this,_ObjectName,std::forward<Args>(args)...));
 				}
 			}catch(...){
 				throw UOGLException(6,"Error : T& Scene::CreateGameObject(...) => Error on convertion of the game Object !",1);
