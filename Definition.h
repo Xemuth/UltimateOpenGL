@@ -143,30 +143,7 @@ inline Upp::VectorMap<Upp::String,Upp::String> BasicShaders{
 		,Upp::Vector<Upp::String>{R"(@)"},Upp::Vector<Upp::String>{"//"})
 	}
 };
-static Upp::String& IncludeShader(Upp::String& shader){
-	shader.Replace("MATERIAL_TEXTURE_STRUCT()",MATERIAL_TEXTURE_STRUCT());
-	shader.Replace("MATERIAL_COLOR_STRUCT()",MATERIAL_COLOR_STRUCT());
-	
-	shader.Replace("LIGHT_POINT_STRUCT()",LIGHT_POINT_STRUCT());
-	shader.Replace("LIGHT_POINT_TEXTURE_PROTOTYPE()",LIGHT_POINT_TEXTURE_PROTOTYPE());
-	shader.Replace("LIGHT_POINT_TEXTURE_FUNCTION()",LIGHT_POINT_TEXTURE_FUNCTION());
-	shader.Replace("LIGHT_POINT_COLOR_PROTOTYPE()",LIGHT_POINT_COLOR_PROTOTYPE());
-	shader.Replace("LIGHT_POINT_COLOR_FUNCTION()",LIGHT_POINT_COLOR_FUNCTION());
-	
-	shader.Replace("LIGHT_SPOT_STRUCT()",LIGHT_SPOT_STRUCT());
-	shader.Replace("LIGHT_SPOT_TEXTURE_PROTOTYPE()",LIGHT_SPOT_TEXTURE_PROTOTYPE());
-	shader.Replace("LIGHT_SPOT_TEXTURE_FUNCTION()",LIGHT_SPOT_TEXTURE_FUNCTION());
-	shader.Replace("LIGHT_SPOT_COLOR_PROTOTYPE()",LIGHT_SPOT_COLOR_PROTOTYPE());
-	shader.Replace("LIGHT_SPOT_COLOR_FUNCTION()",LIGHT_SPOT_COLOR_FUNCTION());
-	
-	shader.Replace("LIGHT_DIR_STRUCT()",LIGHT_DIR_STRUCT());
-	shader.Replace("LIGHT_DIR_TEXTURE_PROTOTYPE()",LIGHT_DIR_TEXTURE_PROTOTYPE());
-	shader.Replace("LIGHT_DIR_TEXTURE_FUNCTION()",LIGHT_DIR_TEXTURE_FUNCTION());
-	shader.Replace("LIGHT_DIR_COLOR_PROTOTYPE()",LIGHT_DIR_COLOR_PROTOTYPE());
-	shader.Replace("LIGHT_DIR_COLOR_FUNCTION()",LIGHT_DIR_COLOR_FUNCTION());
-	shader = Replace(shader,Upp::Vector<Upp::String>{"\""},Upp::Vector<Upp::String>{""});
-	return shader;
-}
+
 /*
 	Used to do custom texture loading. If you don't have some advanced texture usage to do, you
 	will not have to be bothered with this

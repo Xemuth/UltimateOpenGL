@@ -2,6 +2,7 @@
 #include "Texture.h"
 #include "Scene.h"
 #include "UltimateOpenGL.h"
+Mesh::Mesh(): transform(){}
 Mesh::Mesh(Object3D& gameObject, Upp::Vector<Vertex>& vertices, Upp::Vector<unsigned int>& indices, Upp::Vector<Texture>& textures) : transform()
 {
     this->vertices.Append(vertices);
@@ -64,9 +65,10 @@ Mesh::Mesh(Object3D& gameObject, Upp::Vector<Vertex>& vertices, Upp::Vector<unsi
 	
    //Load();
 }
-Mesh::Mesh(Object3D& obj){
+Mesh::Mesh(Object3D& obj): transform(){
 	object3D = &obj;
 }
+
 Mesh::Mesh(const Mesh& _mesh){
 	object3D = _mesh.object3D;
 	VAO = _mesh.VAO;
@@ -381,9 +383,9 @@ Upp::Vector<unsigned int>& Mesh::GetIndices(){
 bool Mesh::ReadData(Upp::Vector<float>& data,ReaderParameters readerParameter){
 	//I thing this code is really bad.
 	if(readerParameter.coordinatesPosition> -1){
-		enum AllDataType{VERTICES,NORMAL,TEXTURE,TANGANT,BITANGANT};
-		Upp::ArrayMap<int,AllDataType> map;
-		int* iterateur =static_cast<int*>( &readerParameter.coordinatesPosition);
+		enum AllDataTypes{VERTICES,NORMAL,TEXTURE,TANGANT,BITANGANT};
+		Upp::ArrayMap<int,AllDataTypes> map;
+		int* iterateur =(int*)&readerParameter.coordinatesPosition;
 		int cpt  = 0;
 		for(int e=0;e< 5;iterateur++,e++){
 			if(*iterateur != -1){
@@ -420,7 +422,7 @@ bool Mesh::ReadData(Upp::Vector<float>& data,ReaderParameters readerParameter){
 		while(iteratorSize < data.GetCount()){
 			Vertex& v =  vertices.Add();
 			for(const int& iterator  : map.GetKeys()){
-				switch( map.Get(iterator)){ 
+				switch( map.Get(iterator)){
 					case VERTICES:
 						v.Position = glm::vec3(*fIterator,*(fIterator++),*(fIterator++));
 						iteratorSize+=3;

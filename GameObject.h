@@ -21,6 +21,7 @@ class GameObject{
 		GameObject(Scene& _scene, GameObjectType got);
 		GameObject(const GameObject& gameObject);
 		GameObject& operator=(const GameObject& gameObject);
+		virtual ~GameObject();
 				
 		//******************Scene part*************************
 		Scene& GetScene()const;

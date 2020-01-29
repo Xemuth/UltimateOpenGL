@@ -2,12 +2,12 @@
 #include "Mesh.h"
 Object3D::Object3D(Scene& _scene) : GameObject(_scene,GOT_3D){}
 Object3D::Object3D(Scene& _scene, Mesh& _mesh) : GameObject(_scene,GOT_3D){
-	Mesh& m =meshes.Create(_mesh);
+	Mesh& m =meshes.Create<Mesh>(_mesh);
 	transform.AddChildren(m.GetTransform());
 }
 Object3D::Object3D(Scene& _scene, Upp::Vector<Mesh>& _meshes) : GameObject(_scene,GOT_3D){
 	for(Mesh& m : _meshes){
-		Mesh& m2 =meshes.Create(m);
+		Mesh& m2 =meshes.Create<Mesh>(m);
 		transform.AddChildren(m2.GetTransform());
 	}
 }
@@ -20,7 +20,7 @@ Object3D::Object3D(Scene& _scene, const Upp::String& pathOfModel) : GameObject(_
 Object3D::Object3D(Scene& _scene, Upp::String _name, Upp::Vector<Mesh>& _meshes) : GameObject(_scene,GOT_3D){
 	name = _name;
 	for(Mesh& m : _meshes){
-		Mesh& m2 =meshes.Create(m);
+		Mesh& m2 =meshes.Create<Mesh>(m);
 		transform.AddChildren(m2.GetTransform());
 	}
 }
@@ -42,6 +42,9 @@ Object3D::Object3D(Object3D& _object) : GameObject(_object){//Be carefull of set
     for(Mesh& m : meshes){
 		transform.AddChildren(m.GetTransform());
     }
+}
+Object3D::~Object3D(){
+	meshes.Clear();
 }
 Object3D& Object3D::operator=(Object3D& _object){//Be carefull of setting the Scene
 	*static_cast<GameObject*>(this)=_object;
@@ -152,7 +155,7 @@ void Object3D::ProcessMesh(aiMesh *mesh, const aiScene *scene){
     }
     
     // return a mesh object created from the extracted mesh data
-    Mesh& m =  meshes.Create(*this ,vertices, indices, textures);
+    Mesh& m =  meshes.Create<Mesh>(*this ,vertices, indices, textures);
     m.SetObject3D(*this);
 	GetTransform().AddChildren(m.GetTransform());
 }
@@ -229,9 +232,11 @@ void Object3D::ReadData(Upp::Vector<float>& data ,ReaderParameters readerParamet
 		}else{
 			if(readerRoutine.allowCreation){
 				if(dataBuffer.GetCount() > 0){
-					m = &(meshes.Create<Mesh>(*this)); //Here happen a memory violation
-					//Upp::Cout() << m << Upp::EOL;
-					//Upp::Cout() << &meshes[0] << Upp::EOL;
+					
+					m = &(meshes.Create<Mesh>(*this)); // Original line, Here happen a memory violation
+				//	meshes.Create<Mesh>(*this); //Same memory violation happen
+				//	meshes.Add(); //Occure the same error
+				//	Mesh(*this); //Everythings is ok
 				}
 				created=true;
 			}else{
@@ -262,7 +267,7 @@ void Object3D::ReadData(Upp::Vector<float>& data ,ReaderParameters readerParamet
 		}
 	}
 }
-Upp::Vector<Mesh>& Object3D::GetMeshes(){
+Upp::Array<Mesh>& Object3D::GetMeshes(){
 	return meshes;
 }
 Object3D& Object3D::EnableLightCalculation(){

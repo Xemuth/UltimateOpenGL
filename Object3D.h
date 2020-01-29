@@ -5,7 +5,7 @@ class Object3D : public GameObject
 {
 	protected:
 	    //Upp::Vector<Texture> textures_loaded;// stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
-	    Upp::Vector<Mesh> meshes;
+	    Upp::Array<Mesh> meshes;
 	    Upp::String directory="";
 	    bool loaded=false;
 	    
@@ -36,14 +36,14 @@ class Object3D : public GameObject
         Object3D(Scene& _scene, Upp::String _name, Upp::Vector<Mesh>& _meshes);
         Object3D(Scene& _scene, Upp::String _name, Upp::Vector<float>& Vertices, ReaderParameters readerParameter = ReaderParameters(), ReaderRoutine readerRoutine = ReaderRoutine());
         Object3D(Scene& _scene, Upp::String _name, const Upp::String& pathOfModel);
-        
+        virtual ~Object3D();
         Object3D(Object3D& _object);//Be carefull of setting the Scene
         Object3D& operator=(Object3D& _object);//Be carefull of setting the Scene
 
         void LoadModel(const Upp::String& path); //Used to load 3D Model
         void ReadData(Upp::Vector<float>& data ,ReaderParameters readerParameter = ReaderParameters(),ReaderRoutine readerRoutine = ReaderRoutine()); //Used to read vector<Float>
         
-        Upp::Vector<Mesh>& GetMeshes();
+        Upp::Array<Mesh>& GetMeshes();
         
         Object3D& EnableLightCalculation();
         Object3D& DisableLightCalculation();

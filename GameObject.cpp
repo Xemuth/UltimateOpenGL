@@ -21,6 +21,7 @@ GameObject::GameObject(const GameObject& gameObject) : transform(){
 
 	drawable=gameObject.drawable;
 }
+GameObject::~GameObject(){}
 GameObject& GameObject::operator=(const GameObject& gameObject){
 	name=gameObject.name;
 	type=gameObject.type;

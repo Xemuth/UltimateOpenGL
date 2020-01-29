@@ -47,7 +47,7 @@ struct Vertex : public Upp::Moveable<Vertex> {
     
 };
 
-class Mesh : public Upp::Moveable<Mesh> {
+class Mesh {
 	protected:
 		Object3D* object3D =nullptr;
 		
@@ -77,6 +77,10 @@ class Mesh : public Upp::Moveable<Mesh> {
 		bool AlphaAffected = true;
 		bool LightAffected = true;
     public:
+        Mesh();
+        Mesh(Object3D& obj);
+        Mesh(Object3D& gameObject, Upp::Vector<Vertex>& vertices, Upp::Vector<unsigned int>& indices, Upp::Vector<Texture>& textures);
+        Mesh(const Mesh& _mesh); //Dont forget to set z
         
 		unsigned int GetVAO();
 		unsigned int GetVBO();
@@ -134,10 +138,7 @@ class Mesh : public Upp::Moveable<Mesh> {
         Object3DBehaviour GetBehaviour();
 		Mesh& SetBehaviour(Object3DBehaviour _behaviour);
         
-        Mesh() = default;
-        Mesh(Object3D& obj);
-        Mesh(Object3D& gameObject, Upp::Vector<Vertex>& vertices, Upp::Vector<unsigned int>& indices, Upp::Vector<Texture>& textures);
-        Mesh(const Mesh& _mesh); //Dont forget to set z
+        
         void Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform,Camera& camera);
 };
 #endif
