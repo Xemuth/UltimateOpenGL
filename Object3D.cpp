@@ -232,11 +232,7 @@ void Object3D::ReadData(Upp::Vector<float>& data ,ReaderParameters readerParamet
 		}else{
 			if(readerRoutine.allowCreation){
 				if(dataBuffer.GetCount() > 0){
-					
 					m = &(meshes.Create<Mesh>(*this)); // Original line, Here happen a memory violation
-				//	meshes.Create<Mesh>(*this); //Same memory violation happen
-				//	meshes.Add(); //Occure the same error
-				//	Mesh(*this); //Everythings is ok
 				}
 				created=true;
 			}else{
@@ -338,13 +334,17 @@ void Object3D::Load(){
 		Upp::Array<glm::mat4> MatricesModels;
 		
 		glm::mat4 model(1.0f);
+		glm::vec3 position = GetTransform().GetPosition();
+		glm::quat quaterion = GetTransform().GetQuaterion();
+		glm::mat4 scallMatrix = GetTransform().GetModelMatrixScaller();
 		//Upp::Cout()<< GetTransform().GetPosition().x << " | " << GetTransform().GetPosition().y << " | " << GetTransform().GetPosition().z << Upp::EOL;
-		model = glm::translate(model,GetTransform().GetPosition())*glm::mat4_cast(GetTransform().GetQuaterion())*GetTransform().GetModelMatrixScaller();
+		model = glm::translate(model,position) * glm::mat4_cast(quaterion)* scallMatrix;
 		for(Mesh& m : meshes){
 			if(m.GetBehaviour() == OBJ_DYNAMIC) m.Load();
 			else{
 				for(Vertex& v :  m.GetVertices()){
 					Positions.Add(v.Position);
+					LOG( v.Position.x <<  " | " << v.Position.y << " | " << v.Position.z );
 					/*Normals.Add(v.Normal.x);
 					Normals.Add(v.Normal.y);
 					Normals.Add(v.Normal.z);

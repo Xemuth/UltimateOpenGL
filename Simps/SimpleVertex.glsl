@@ -29,8 +29,8 @@ SHADER(330 core,
 	void main()\n
 	{\n
 		inColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n
-		gl_Position = projection * view * vec4(aPos, 1.0f);\n
-		//gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+		//gl_Position = projection * view * aMatricesModels * vec4(aPos, 1.0f);\n
+		gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n
 	}\n
 )
 #endif
