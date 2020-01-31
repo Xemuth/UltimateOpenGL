@@ -62,6 +62,9 @@ float Camera::GetDrawDisanceMax(){
 float Camera::GetDrawDistanceMin(){
 	return DrawDistanceMin;
 }
+float Camera::GetRealMouseSensitivity(){
+	return MouseSensitivity * 0.02f;
+}
 Camera& Camera::SetMaxFOV(float value){
 	MaxFOV = value;
 	return *this;
@@ -100,15 +103,9 @@ Camera& Camera::ProcessKeyboardMouvement(Camera_Movement direction){
 	return *this;
 }
 Camera& Camera::ProcessMouveMouvement(float xoffset, float yoffset){
-	xoffset *= MouseSensitivity;
-	yoffset *= MouseSensitivity;
-	
-	glm::vec3 front;
-	front.x = cos(glm::radians(xoffset)) * cos(glm::radians(yoffset));
-	front.y = sin(glm::radians(yoffset));
-	front.z = sin(glm::radians(xoffset)) * cos(glm::radians(yoffset));
-	
-	transform.Rotate(glm::quat(glm::vec3(front.x, front.y, front.z)));
+	xoffset *= GetRealMouseSensitivity();
+	yoffset *= GetRealMouseSensitivity();
+	GetTransform().UpdateQuaterion(yoffset,xoffset);
 	return *this;
 }
 Camera& Camera::ProcessMouseScroll(float yoffset){

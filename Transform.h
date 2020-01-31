@@ -16,6 +16,21 @@ class Transform{
 		glm::vec3 Up = glm::vec3(0.0f, 1.0f, 0.0f);
 		glm::vec3 Right = glm::vec3(1.0f, 0.0f, 0.0f);
 		glm::vec3 WorldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+		
+		/*
+		float Yaw = -90.0f;
+		float MaxYaw =+89.99f,MinYaw=-89.99f;
+		bool LimiteYaw = false;
+		
+		float Pitch = 0.0f;
+		float MaxPitch =89.99f,MinPitch=-89.99f;
+		bool LimitePitch = true;
+		
+		float Roll = 0.0f;
+		float MaxRoll =0.0f,MinRoll=0.0f;
+		bool LimiteRoll= true;
+		
+		*/
 	public:
 		Transform();
 		Transform(const Transform& _transform);
@@ -27,6 +42,7 @@ class Transform{
 		Transform& SetRight(const glm::vec3& _right);
 		Transform& SetWorldUp(const glm::vec3& _worldUp);
 		
+
 		const glm::vec3& GetFront()const;
 		const glm::vec3& GetUp()const;
 		const glm::vec3& GetRight()const;
@@ -45,7 +61,41 @@ class Transform{
 		Transform& RemoveChildrens(const Upp::Vector<Transform*>& _childrens);
 		Transform& RemoveChildren(Transform& _ptr);
 		int NumberOfChildrens();
-
+		
+		/*// Yaw Pitch Roll manipulation
+		Transform& EnableLimiteYaw();
+		Transform& DisableLimiteYaw();
+		const float GetMaxYaw()const;
+		const float GetMinYaw()const;
+		Transform& SetMaxYaw(float _MaxYaw);
+		Transform& SetMinYaw(float _MinYaw);
+		
+		Transform& EnableLimitePitch();
+		Transform& DisableLimitePitch();
+		const float GetMaxPitch()const;
+		const float GetMinPitch()const;
+		Transform& SetMaxPitch(float _MaxPitch);
+		Transform& SetMinPitch(float _MinPitch);
+		
+		Transform& EnableLimiteRoll();
+		Transform& DisableLimiteRoll();
+		const float GetMaxRoll()const;
+		const float GetMinRoll()const;
+		Transform& SetMaxRoll(float _MaxRoll);
+		Transform& SetMinRoll(float _MinRoll);
+		
+		const float GetYaw()const;
+		const float GetPitch()const;
+		const float GetRoll()const;
+		
+		Transform& SetYaw(float _Yaw,bool updateChildrens = true);
+		Transform& SetPitch(float _Pitch,bool updateChildrens = true);
+		Transform& SetRoll(float _Roll,bool updateChildrens = true);
+		
+		Transform& IncreaseYaw(float _Yaw,bool updateChildrens = true);
+		Transform& IncreasePitch(float _Pitch,bool updateChildrens = true);
+		Transform& IncreaseRoll(float _Roll,bool updateChildrens = true);*/
+		
 		//******************Position part******************
 		Transform& Move(glm::vec3 move,bool updateChildrens = true); //Move the position from the vec3 arg
 		Transform& SetNewPosition(glm::vec3 newPosition,bool updateChildrens = true);//set the new position of object //It update all the child by : newPose + (old parent pose - old child pos);
@@ -57,16 +107,18 @@ class Transform{
 		//******************Rotation part******************
 		Transform& Rotate(glm::quat quaterion,bool updateChildrens = true);
 		Transform& SetNewRotation(glm::quat newQuaterion,bool updateChildrens = true);
-		Transform& RotateFromEulerAngles(float angleInDegree,glm::vec3 EulerAngles,bool updateChildrens = true);
-		Transform& SetNewRotationEulerAngles(float angleInDegree,glm::vec3 EulerAngles,bool updateChildrens = true);
+		Transform& RotateFromAngles(float angleInDegree,glm::vec3 EulerAngles,bool updateChildrens = true);
+		Transform& SetNewRotationFromAngles(float angleInDegree,glm::vec3 EulerAngles,bool updateChildrens = true);
 
 		//******************Second Rotation part***********
 		Transform& SecondRotate(glm::quat _quaterion,bool updateChildrens = true);
 		Transform& SetNewSecondRotation(glm::quat newQuaterion,bool updateChildrens = true);
-		Transform& SecondRotateEulerAngles(float angleInDegree,glm::vec3 EulerAngles,bool updateChildrens = true);
-		Transform& SetNewSecondRotationEulerAngles(float angleInDegree,glm::vec3 EulerAngles,bool updateChildrens = true);
+		Transform& SecondRotateFromAngles(float angleInDegree,glm::vec3 EulerAngles,bool updateChildrens = true);
+		Transform& SetNewSecondRotationFromAngles(float angleInDegree,glm::vec3 EulerAngles,bool updateChildrens = true);
 
 		//******************Quick function part*************
+		//Transform& RecalculateEulerAngles(bool updateChildrens = true);
+		Transform& UpdateQuaterion(float Pitch, float Yaw, float Roll =0.0f,bool updateChildrens = true);
 		Transform& LookAt(glm::vec3 direction,bool updateChildrens = true);
 		glm::quat RotationBetweenVectors(glm::vec3 start, glm::vec3 dest);
 		glm::mat4 GetModelMatrice();

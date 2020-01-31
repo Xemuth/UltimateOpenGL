@@ -329,6 +329,7 @@ void Object3D::Load(){
 				for(Vertex& v :  m.GetVertices()){
 					AllVertex.Add() = v;
 					cptVertex++;
+					NumberOfVertexToDraw++;
 				}
 			}
 			AllMatrices.Add(transform.GetModelMatrice());
@@ -359,6 +360,6 @@ void Object3D::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat
 	shader.SetMat4("projection",projection);
 	shader.SetMat4("model",GetTransform().GetModelMatrice());
 	glBindVertexArray(VAO);
-	glDrawArrays(GL_TRIANGLES, 0, 3);
+	glDrawArrays(GL_TRIANGLES, 0, NumberOfVertexToDraw);
 	shader.Unbind();
 }

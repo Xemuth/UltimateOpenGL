@@ -18,6 +18,9 @@ class Camera{
 	    
 		float DrawDisanceMax = 300.0f;
 		float DrawDistanceMin = 0.1f;
+		
+		float GetRealMouseSensitivity();
+		
 	public:
 		Camera(); //be carefull of setting scene correctly
 		Camera(Scene& _scene);

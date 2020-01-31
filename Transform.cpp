@@ -12,6 +12,10 @@ Transform::Transform(const Transform& _transform){
 	Up =_transform.Up;
 	Right = _transform.Right;
 	WorldUp = _transform.WorldUp;
+	/*
+	Yaw = _transform.Yaw;
+	Pitch = _transform.Pitch;
+	Roll = _transform.Roll;*/
 }
 Transform& Transform::operator=(const Transform& _transform){
 	position = _transform.position;
@@ -25,6 +29,11 @@ Transform& Transform::operator=(const Transform& _transform){
 	Up =_transform.Up;
 	Right = _transform.Right;
 	WorldUp = _transform.WorldUp;
+	
+	/*
+	Yaw = _transform.Yaw;
+	Pitch = _transform.Pitch;
+	Roll = _transform.Roll;*/
 	return *this;
 }
 //******************Setter/Getter*******************
@@ -136,6 +145,147 @@ Transform& Transform::RemoveChildren(Transform& _ptr){
 int Transform::NumberOfChildrens(){
 	return childrens.GetCount();
 }
+/*
+// Yaw Pitch Roll manipulation
+Transform& Transform::EnableLimiteYaw(){
+	LimiteYaw =true;
+	return *this;
+}
+Transform& Transform::DisableLimiteYaw(){
+	LimiteYaw = false;
+	return *this;
+}
+const float Transform::GetMaxYaw()const{return MaxYaw;}
+const float Transform::GetMinYaw()const{return MinYaw;}
+Transform& Transform::SetMaxYaw(float _MaxYaw){
+	MaxYaw = _MaxYaw;
+	return *this;
+}
+Transform& Transform::SetMinYaw(float _MinYaw){
+	MinYaw = _MinYaw;
+	return *this;
+}
+Transform& Transform::EnableLimitePitch(){
+	LimitePitch = true;
+	return *this;
+}
+Transform& Transform::DisableLimitePitch(){
+	LimitePitch = false;
+	return *this;
+}
+const float Transform::GetMaxPitch()const{return MaxPitch;}
+const float Transform::GetMinPitch()const{return MinPitch;}
+Transform& Transform::SetMaxPitch(float _MaxPitch){
+	MaxPitch = _MaxPitch;
+	return *this;
+}
+Transform& Transform::SetMinPitch(float _MinPitch){
+	MinPitch = _MinPitch;
+	return *this;
+}
+Transform& Transform::EnableLimiteRoll(){
+	LimiteRoll = true;
+	return *this;
+}
+Transform& Transform::DisableLimiteRoll(){
+	LimiteRoll = false;
+	return *this;
+}
+const float Transform::GetMaxRoll()const{return MaxRoll;}
+const float Transform::GetMinRoll()const{return MinRoll;}
+Transform& Transform::SetMaxRoll(float _MaxRoll){
+	MaxRoll = _MaxRoll;
+	return *this;
+}
+Transform& Transform::SetMinRoll(float _MinRoll){
+	MinRoll = _MinRoll;
+	return *this;
+}
+const float Transform::GetYaw()const{return Yaw;}
+const float Transform::GetPitch()const{return Pitch;}
+const float Transform::GetRoll()const{return Roll;}
+Transform& Transform::SetYaw(float _Yaw,bool updateChildrens){
+	float newYaw = _Yaw - Yaw;
+	Yaw = _Yaw;
+	if(LimiteYaw){
+		if(MaxYaw < Yaw) Yaw = MaxYaw;
+		else if( MinYaw > Yaw) Yaw = MinYaw;
+	}
+	if(updateChildrens){
+		for(Transform* ptr1 : childrens){
+			ptr1->IncreaseYaw(newYaw,updateChildrens);
+		}
+	}
+	return *this;
+}
+Transform& Transform::SetPitch(float _Pitch,bool updateChildrens){
+	float newPitch = _Pitch - Pitch;
+	Pitch = _Pitch;
+	if(LimitePitch){
+		if(MaxPitch < Pitch) Pitch = MaxPitch;
+		else if( MinPitch > Pitch) Pitch = MinPitch;
+	}
+	if(updateChildrens){
+		for(Transform* ptr1 : childrens){
+			ptr1->IncreasePitch(newPitch,updateChildrens);
+		}
+	}
+	return *this;
+}
+Transform& Transform::SetRoll(float _Roll,bool updateChildrens){
+	float newRoll = _Roll - Roll;
+	Roll = _Roll;
+	if(LimiteRoll){
+		if(MaxRoll < Roll) Roll = MaxRoll;
+		else if( MinRoll > Roll) Roll = MinRoll;
+	}
+	if(updateChildrens){
+		for(Transform* ptr1 : childrens){
+			ptr1->IncreaseRoll(newRoll,updateChildrens);
+		}
+	}
+	return *this;
+}
+Transform& Transform::IncreaseYaw(float _Yaw,bool updateChildrens){
+	Yaw += _Yaw;
+	if(LimiteYaw){
+		if(MaxYaw < Yaw) Yaw = MaxYaw;
+		else if( MinYaw > Yaw) Yaw = MinYaw;
+	}
+	if(updateChildrens){
+		for(Transform* ptr1 : childrens){
+			ptr1->IncreaseYaw(_Yaw,updateChildrens);
+		}
+	}
+	return *this;
+}
+Transform& Transform::IncreasePitch(float _Pitch,bool updateChildrens){
+	Pitch += _Pitch;
+	if(LimitePitch){
+		if(MaxPitch < Pitch) Pitch = MaxPitch;
+		else if( MinPitch > Pitch) Pitch = MinPitch;
+	}
+	if(updateChildrens){
+		for(Transform* ptr1 : childrens){
+			ptr1->IncreasePitch(_Pitch,updateChildrens);
+		}
+	}
+	return *this;
+}
+Transform& Transform::IncreaseRoll(float _Roll,bool updateChildrens){
+	Roll += _Roll;
+	if(LimiteRoll){
+		if(MaxRoll < Roll) Roll = MaxRoll;
+		else if( MinRoll > Roll) Roll = MinRoll;
+	}
+	if(updateChildrens){
+		for(Transform* ptr1 : childrens){
+			ptr1->IncreaseRoll(_Roll,updateChildrens);
+		}
+	}
+	return *this;
+}
+*/
 //******************Position part******************
 Transform& Transform::Move(glm::vec3 move,bool updateChildrens){//Move the position from the vec3 arg
 	position  += move;
@@ -186,6 +336,7 @@ Transform& Transform::Rotate(glm::quat _quaterion,bool updateChildrens){
 			ptr1->Rotate(_quaterion,updateChildrens);
 		}
 	}
+	//RecalculateEulerAngles(updateChildrens);
 	return *this;
 }
 Transform& Transform::SetNewRotation(glm::quat newQuaterion,bool updateChildrens){
@@ -195,9 +346,10 @@ Transform& Transform::SetNewRotation(glm::quat newQuaterion,bool updateChildrens
 			ptr1->SetNewRotation(newQuaterion,updateChildrens);
 		}
 	}
+	//RecalculateEulerAngles(updateChildrens);
 	return *this;
 }
-Transform& Transform::RotateFromEulerAngles(float angleInDegree,glm::vec3 EulerAngles,bool updateChildrens){
+Transform& Transform::RotateFromAngles(float angleInDegree,glm::vec3 EulerAngles,bool updateChildrens){
 	if(EulerAngles.x > 0){
 		Rotate(glm::angleAxis(glm::radians(angleInDegree), glm::vec3(1.0f,0.0f,0.0f)),updateChildrens);
 	}
@@ -207,9 +359,10 @@ Transform& Transform::RotateFromEulerAngles(float angleInDegree,glm::vec3 EulerA
 	if(EulerAngles.z > 0){
 		Rotate(glm::angleAxis(glm::radians(angleInDegree), glm::vec3(0.0f,0.0f,1.0f)),updateChildrens);
 	}
+	//RecalculateEulerAngles(updateChildrens);
 	return *this;
 }
-Transform& Transform::SetNewRotationEulerAngles(float angleInDegree,glm::vec3 EulerAngles,bool updateChildrens){
+Transform& Transform::SetNewRotationFromAngles(float angleInDegree,glm::vec3 EulerAngles,bool updateChildrens){
 	if(EulerAngles.x > 0){
 		SetNewRotation(glm::angleAxis(glm::radians(angleInDegree), glm::vec3(1.0f,0.0f,0.0f)),updateChildrens);
 	}
@@ -219,6 +372,7 @@ Transform& Transform::SetNewRotationEulerAngles(float angleInDegree,glm::vec3 Eu
 	if(EulerAngles.z > 0){
 		SetNewRotation(glm::angleAxis(glm::radians(angleInDegree), glm::vec3(0.0f,0.0f,1.0f)),updateChildrens);
 	}
+	//RecalculateEulerAngles(updateChildrens);
 	return *this;
 }
 //******************Second Rotation part***********
@@ -240,7 +394,7 @@ Transform& Transform::SetNewSecondRotation(glm::quat newQuaterion,bool updateChi
 	}
 	return *this;
 }
-Transform& Transform::SecondRotateEulerAngles(float angleInDegree,glm::vec3 EulerAngles,bool updateChildrens){
+Transform& Transform::SecondRotateFromAngles(float angleInDegree,glm::vec3 EulerAngles,bool updateChildrens){
 	if(EulerAngles.x > 0){
 		SecondRotate(glm::angleAxis(glm::radians(angleInDegree), glm::vec3(1.0f,0.0f,0.0f)),updateChildrens);
 	}
@@ -252,7 +406,7 @@ Transform& Transform::SecondRotateEulerAngles(float angleInDegree,glm::vec3 Eule
 	}
 	return *this;
 }
-Transform& Transform::SetNewSecondRotationEulerAngles(float angleInDegree,glm::vec3 EulerAngles,bool updateChildrens){
+Transform& Transform::SetNewSecondRotationFromAngles(float angleInDegree,glm::vec3 EulerAngles,bool updateChildrens){
 	if(EulerAngles.x > 0){
 		SetNewSecondRotation(glm::angleAxis(glm::radians(angleInDegree), glm::vec3(1.0f,0.0f,0.0f)),updateChildrens);
 	}
@@ -265,6 +419,48 @@ Transform& Transform::SetNewSecondRotationEulerAngles(float angleInDegree,glm::v
 	return *this;
 }
 //******************Quick function part******************
+/*
+Transform& Transform::RecalculateEulerAngles(bool updateChildrens){
+	glm::vec3 eulerAngles = glm::eulerAngles(quaterion);
+	Yaw =eulerAngles.y;
+	Pitch =eulerAngles.x;
+	Roll =eulerAngles.z;
+	if(LimiteYaw){
+		if(MaxYaw < Yaw) Yaw = MaxYaw;
+		else if( MinYaw > Yaw) Yaw = MinYaw;
+	}
+	if(LimitePitch){
+		if(MaxPitch < Pitch) Pitch = MaxPitch;
+		else if( MinPitch > Pitch) Pitch = MinPitch;
+	}
+	if(LimiteRoll){
+		if(MaxRoll < Roll) Roll = MaxRoll;
+		else if( MinRoll > Roll) Roll = MinRoll;
+	}
+	if(updateChildrens){
+		for(Transform* ptr1 :childrens){
+			ptr1->RecalculateEulerAngles(updateChildrens);
+		}
+	}
+	return *this;
+}*/
+Transform& Transform::UpdateQuaterion(float Pitch, float Yaw, float Roll,bool updateChildrens){
+	glm::quat key_quat = glm::quat(glm::vec3(-Pitch, Yaw, Roll));
+	quaterion = key_quat * quaterion;
+	quaterion = glm::normalize(quaterion);
+	
+	Front = glm::rotate(glm::inverse(quaterion), glm::vec3(0.0, 0.0, -1.0));
+    Right = glm::rotate(glm::inverse(quaterion), glm::vec3(1.0, 0.0, 0.0));
+    Up = glm::vec3(0.0, 1.0, 0.0);
+	if(updateChildrens){
+		for(Transform* ptr1 :childrens){
+			ptr1->UpdateQuaterion(Pitch,Yaw,Roll,updateChildrens);
+		}
+	}
+	//RecalculateEulerAngles(updateChildrens);
+	return *this;
+}
+
 Transform&  Transform::LookAt(glm::vec3 direction,bool updateChildrens){
 	glm::quat buffer = RotationBetweenVectors(direction, position);
 	SetNewRotation(buffer);
@@ -299,5 +495,11 @@ glm::mat4 Transform::GetModelMatrice(){
 	return glm::translate(glm::mat4(1.0f),position) * glm::mat4_cast(quaterion) * modelMatrix;
 }
 glm::mat4 Transform::GetViewMatrix(){
-	return glm::lookAt(position,position + Front, Up);
+	//return glm::lookAt(position,position + Front, Up);
+	//temporary frame quaternion from pitch,yaw,roll
+	//here roll is not used
+	glm::mat4 rotate = glm::mat4_cast(quaterion);
+	glm::mat4 translate = glm::mat4(1.0f);
+	translate = glm::translate(translate,-position);
+	return rotate * translate;
 }
