@@ -3,18 +3,17 @@
 #include "Object3D.h"
 struct Vertex : public Upp::Moveable<Vertex> {
     // position
-    glm::vec3 Position=glm::vec3(0);
+    glm::vec3 Position=glm::vec3(0.0,0.0,0.0);
     // normal
-    glm::vec3 Normal=glm::vec3(0);
+    glm::vec3 Normal=glm::vec3(0.0,0.0,0.0);
     // texCoords
     glm::vec2 TexCoords=glm::vec2(0.0,0.0);
     // tangent
-    glm::vec3 Tangent=glm::vec3(0);
+    glm::vec3 Tangent=glm::vec3(0.0,0.0,0.0);
     // bitangent
-    glm::vec3 Bitangent=glm::vec3(0);
+    glm::vec3 Bitangent=glm::vec3(0.0,0.0,0.0);
     
     Vertex(){}
-    
     Vertex& SetPosition(glm::vec3 _position){
         Position = _position;
         return *this;
@@ -36,7 +35,6 @@ struct Vertex : public Upp::Moveable<Vertex> {
         Bitangent = _bitangent;
         return *this;
     }
-    
     Vertex(const Vertex& v){
 		Position = v.Position;
 		Normal = v.Normal;
@@ -44,7 +42,6 @@ struct Vertex : public Upp::Moveable<Vertex> {
 		Tangent = v.Tangent;
 		Bitangent = v.Bitangent;
     }
-    
 };
 
 class Mesh {

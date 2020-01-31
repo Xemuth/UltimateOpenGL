@@ -417,36 +417,48 @@ bool Mesh::ReadData(Upp::Vector<float>& data,ReaderParameters readerParameter){
 			cpt++;
 		}
 		Upp::SortByKey(map,[](const int& a, const int& b) { return a<b; });
-		float* fIterator =static_cast<float*>( &(data[0]));
+		float* fIterator =(float*)&data[0];
 		int iteratorSize = 0;
+		float float1 = 0.0f;
+		float float2 = 0.0f;
+		float float3 = 0.0f;
 		while(iteratorSize < data.GetCount()){
 			Vertex& v =  vertices.Add();
 			for(const int& iterator  : map.GetKeys()){
 				switch( map.Get(iterator)){
 					case VERTICES:
-						v.Position = glm::vec3(*fIterator,*(fIterator++),*(fIterator++));
+						float1 =*fIterator++;
+						float2 =*fIterator++;
+						float3 =*fIterator++;
+						v.Position = glm::vec3(float1,float2,float3);
 						iteratorSize+=3;
-						fIterator++;
 					break;
 					case NORMAL:
-						v.Normal = glm::vec3(*fIterator,*(fIterator++),*(fIterator++));
+						float1 =*fIterator++;
+						float2 =*fIterator++;
+						float3 =*fIterator++;
+						v.Normal = glm::vec3(float1,float2,float3);
 						iteratorSize+=3;
-						fIterator++;
 					break;
 					case TEXTURE:
-						v.TexCoords = glm::vec2(*fIterator,*(fIterator++));
+						float1 =*fIterator++;
+						float2 =*fIterator++;
+						v.TexCoords = glm::vec2(float1,float2);
 						iteratorSize+=2;
-						fIterator++;
 					break;
 					case TANGANT:
-						v.Tangent = glm::vec3(*fIterator,*(fIterator++),*(fIterator++));
+						float1 =*fIterator++;
+						float2 =*fIterator++;
+						float3 =*fIterator++;
+						v.Tangent = glm::vec3(float1,float2,float3);
 						iteratorSize+=3;
-						fIterator++;
 					break;
 					case BITANGANT:
-						v.Bitangent = glm::vec3(*fIterator,*(fIterator++),*(fIterator++));
+						float1 =*fIterator++;
+						float2 =*fIterator++;
+						float3 =*fIterator++;
+						v.Bitangent = glm::vec3(float1,float2,float3);
 						iteratorSize+=3;
-						fIterator++;
 					break;
 					default:
 						LOG("Class Mesh:(Warning) bool Mesh::ReadData() strange value spotted on the map used to readData !");

@@ -312,6 +312,9 @@ Object3D& Object3D::SetBehaviour(Object3DBehaviour _behaviour){
 	behavior = _behaviour;
 	return *this;
 }
+
+#include <iostream>
+#include <vector>
 //Override
 void Object3D::Load(){
 	if(!loaded){
@@ -350,7 +353,7 @@ void Object3D::Load(){
 	}
 }
 void Object3D::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform,Camera& camera){
-	onDraw(*this);
+	if(onDraw)onDraw(*this);
 	shader.Use();
 	shader.SetMat4("view",camera.GetTransform().GetViewMatrix());
 	shader.SetMat4("projection",projection);
