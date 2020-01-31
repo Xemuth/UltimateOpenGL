@@ -20,7 +20,7 @@ class Object3D : public GameObject
 		
 		Material material; //This material must be Set. To overLoad on a mesh this material, you must set the mesh material
         
-        GLuint VAO, VBO[10];
+        unsigned int VAO, VBO;
         
         //Loading 3D Model using Assimp and custom loader
         void ProcessNode(aiNode *node, const aiScene *scene);

@@ -23,6 +23,7 @@
 #include <plugin/glm/gtc/type_ptr.hpp>
 #include <plugin/glm/gtx/quaternion.hpp>
 #include <plugin/glm/gtx/norm.hpp>
+#include <plugin/glm/gtx/string_cast.hpp>
 //Gestion of auto generated Shaders
 #include "Simps/MaterialTexture.glsl"
 #include "Simps/MaterialColor.glsl"

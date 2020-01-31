@@ -345,7 +345,7 @@ bool Texture::Use(){
 		glBindTexture(GL_TEXTURE_2D, ID);
 		return true;
 	}else{
-		Upp::Cout() << "Warning Use(): Can't use an Unloaded texture !\n";
+		LOG("Warning Use(): Can't use an Unloaded texture !");
 	}
 	return false;
 }

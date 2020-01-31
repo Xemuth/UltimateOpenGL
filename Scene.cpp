@@ -159,6 +159,8 @@ Scene& Scene::Draw(const Upp::String& CameraToUse){
 		glm::mat4 transform = glm::mat4(1.0f);
 		glm::mat4 view = glm::mat4(1.0f);
 		view = camera.GetTransform().GetViewMatrix();
+		//LOG(Upp::String(glm::to_string(view)));
+		
 		glm::mat4 projection = glm::mat4(1.0f);
 		float screenSizeX = 800.0f;
 		float screenSizeY = 600.0f;
@@ -166,6 +168,7 @@ Scene& Scene::Draw(const Upp::String& CameraToUse){
 		screenSizeY=(float) GetContext().GetScreenSize().cy;
 
 		projection = glm::perspective(glm::radians(camera.GetFOV()),(float)( screenSizeX / screenSizeY),camera.GetDrawDistanceMin(),camera.GetDrawDisanceMax());//We calculate Projection here since multiple camera can have different FOV
+
 		//I will also provide différent camera parameter in futur
 		glClearColor(SkyBox.GetColor().x,SkyBox.GetColor().y,SkyBox.GetColor().z,SkyBox.GetColor().w);//définie la couleur de fond dans la fenetre graphique
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //nétoie la fenetre graphique et la regénère Scene::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform){

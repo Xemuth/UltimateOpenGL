@@ -19,18 +19,19 @@ SHADER(330 core,
 	//layout (location = 6) in int aUseTextures;\n
 	//layout (location = 7) in int aTextures;\n
 	//layout (location = 8) in int aSpeculareTextures;\n
-	layout (location = 1) in mat4 aMatricesModels;\n
+	//layout (location = 1) in mat4 aMatricesModels;\n
 	\n
-	out vec4 inColor;\n
+	//out vec4 inColor;\n
 	\n
 	uniform mat4 view;\n
 	uniform mat4 projection;\n
+	uniform mat4 model;\n
 	\n
 	void main()\n
 	{\n
-		inColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n
-		//gl_Position = projection * view * aMatricesModels * vec4(aPos, 1.0f);\n
-		gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n
+		//inColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n
+		gl_Position = view *  model * vec4(aPos, 1.0f);\n
+		//gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n
 	}\n
 )
 #endif

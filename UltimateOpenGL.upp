@@ -42,8 +42,8 @@ file
 	Simps\MaterialTexture.glsl,
 	Simps\PointLight.glsl,
 	Simps\SpotLight.glsl,
-	Simps\SimpleVertex.glsl,
-	Simps\SimpleFragment.glsl,
+	Simps\SimpleVertex.glsl highlight cpp,
+	Simps\SimpleFragment.glsl highlight cpp,
 	OtherLibs readonly separator,
 	stb_image.cpp,
 	stb_image.h;
