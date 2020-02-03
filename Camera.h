@@ -8,7 +8,7 @@ class Camera{
 		
 		Transform transform; //The Camera Transform object
 
-	    float MouvementSpeed = 15.0f;;
+	    float MouvementSpeed = 5.0f;;
 	    float MouseSensitivity = 0.1f;
 	    float FOV =90.0f;
 	    

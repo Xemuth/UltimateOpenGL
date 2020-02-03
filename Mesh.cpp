@@ -380,16 +380,17 @@ Upp::Vector<unsigned int>& Mesh::GetIndices(){
 }
 
 
-bool Mesh::ReadData(Upp::Vector<float>& data,ReaderParameters readerParameter){
+bool Mesh::ReadData(Upp::Vector<float>& data,ReaderParameters& readerParameter,bool UseMaterialColor){
 	//I thing this code is really bad.
+	useMaterialColorInsteadOfColorRetrieve=true;
 	if(readerParameter.coordinatesPosition> -1){
-		enum AllDataTypes{VERTICES,NORMAL,TEXTURE,TANGANT,BITANGANT};
+		enum AllDataTypes{VERTICES,NORMAL,TEXTURE,TANGANT,BITANGANT,COLOR_INT_RGB,COLOR_FLOAT_RGB,COLOR_INT_RGBA,COLOR_FLOAT_RGBA};
 		Upp::ArrayMap<int,AllDataTypes> map;
 		int* iterateur =(int*)&readerParameter.coordinatesPosition;
 		int cpt  = 0;
-		for(int e=0;e< 5;iterateur++,e++){
+		for(int e=0;e< 6;iterateur++,e++){
 			if(*iterateur != -1){
-				for(int r = 0;r < 5; r++){
+				for(int r = 0;r < 6; r++){
 					if(*iterateur == r){
 						switch(cpt){
 							case 0:
@@ -407,6 +408,22 @@ bool Mesh::ReadData(Upp::Vector<float>& data,ReaderParameters readerParameter){
 							case 4:
 								map.Add(*iterateur,BITANGANT);
 							break;
+							case 5:
+								if( readerParameter.colorType == CT_RGB){
+									if(readerParameter.colorFormat == CF_INTEGER){
+										map.Add(*iterateur,COLOR_INT_RGB);
+									}else if(readerParameter.colorFormat == CF_FLOAT){
+										map.Add(*iterateur,COLOR_FLOAT_RGB);
+									}
+								}else if(readerParameter.colorType == CT_RGBA){
+									if(readerParameter.colorFormat == CF_INTEGER){
+										map.Add(*iterateur,COLOR_INT_RGBA);
+									}else if(readerParameter.colorFormat == CF_FLOAT){
+										map.Add(*iterateur,COLOR_FLOAT_RGBA);
+									}
+								}
+								useMaterialColorInsteadOfColorRetrieve =UseMaterialColor;
+							break;
 							default:
 								LOG("Class Mesh:(Warning) bool Mesh::ReadData() strange iterator is passed over the map !");
 						}
@@ -422,8 +439,10 @@ bool Mesh::ReadData(Upp::Vector<float>& data,ReaderParameters readerParameter){
 		float float1 = 0.0f;
 		float float2 = 0.0f;
 		float float3 = 0.0f;
+		float float4 = 0.0f;
 		while(iteratorSize < data.GetCount()){
 			Vertex& v =  vertices.Add();
+			v.SaveColor = !useMaterialColorInsteadOfColorRetrieve;
 			for(const int& iterator  : map.GetKeys()){
 				switch( map.Get(iterator)){
 					case VERTICES:
@@ -459,6 +478,34 @@ bool Mesh::ReadData(Upp::Vector<float>& data,ReaderParameters readerParameter){
 						float3 =*fIterator++;
 						v.Bitangent = glm::vec3(float1,float2,float3);
 						iteratorSize+=3;
+					break;
+					case COLOR_INT_RGB:
+						float1 =*fIterator++;
+						float2 =*fIterator++;
+						float3 =*fIterator++;
+						v.SetColor(TransformRGBToFloatColor(float1,float2,float3));
+						iteratorSize+=3;
+					break;
+					case COLOR_INT_RGBA:
+						float1 =*fIterator++;
+						float2 =*fIterator++;
+						float3 =*fIterator++;
+						float4 =*fIterator++;
+						v.SetColor(TransformRGBAToFloatColor(float1,float2,float3,float4));
+						iteratorSize+=4;
+					break;
+					case COLOR_FLOAT_RGB:
+						float1 =*fIterator++;
+						float2 =*fIterator++;
+						float3 =*fIterator++;
+						v.SetColor(glm::vec3(float1,float2,float3));
+					break;
+					case COLOR_FLOAT_RGBA:
+						float1 =*fIterator++;
+						float2 =*fIterator++;
+						float3 =*fIterator++;
+						float4 =*fIterator++;
+						v.SetColor(glm::vec4(float1,float2,float3,float4));
 					break;
 					default:
 						LOG("Class Mesh:(Warning) bool Mesh::ReadData() strange value spotted on the map used to readData !");

@@ -16,13 +16,12 @@ Light::Light(Scene& _scene, glm::vec3 _ambient, glm::vec3 _diffuse, glm::vec3 _s
 	diffuse  = _diffuse;
 	specular = _specular;
 }
-
-
 Light::Light(Light& light) : GameObject(GOT_UNKNOW){//Be carefull of setting the Scene
 	ambient  = light.ambient;
 	diffuse  = light.diffuse;
 	specular = light.specular;
 }
+Light::~Light(){}
 Light& Light::operator=(Light& light){//Be carefull of setting the Scene
 	ambient  = light.ambient;
 	diffuse  = light.diffuse;
@@ -74,6 +73,7 @@ DirLight::DirLight(DirLight& dirLight) : Light(dirLight){//Be carefull of settin
 	specular = dirLight.specular;
 	direction = dirLight.direction;
 }
+DirLight::~DirLight(){}
 DirLight& DirLight::operator=(DirLight& dirLight){//Be carefull of setting the Scene
 	static_cast<Light>(*this)=dirLight;
 	ambient  = dirLight.ambient;
@@ -112,6 +112,7 @@ SpotLight::SpotLight(SpotLight& _spotLight) : Light(_spotLight){//Be carefull of
 	linear = _spotLight.linear;
 	quadratic = _spotLight.quadratic;
 }
+SpotLight::~SpotLight(){}
 SpotLight& SpotLight::operator=(SpotLight& _spotLight){//Be carefull of setting the Scene
 	static_cast<Light>(*this)=_spotLight;
 	ambient  = _spotLight.ambient;
@@ -180,6 +181,7 @@ PointLight::PointLight(PointLight& _pointLight) : Light(_pointLight){//Be carefu
     linear=_pointLight.linear;
     quadratic=_pointLight.quadratic;
 }
+PointLight::~PointLight(){}
 PointLight& PointLight::operator=(PointLight& _pointLight){//Be carefull of setting the Scene
 	static_cast<Light>(*this)=_pointLight;
     constant=_pointLight.constant;

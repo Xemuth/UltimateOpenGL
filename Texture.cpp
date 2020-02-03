@@ -61,17 +61,17 @@ Material& Material::UseBoth(){
 	return *this;
 }
 Material& Material::SetColor(int red,int green, int blue, int alpha){
-	glm::vec3 buffer = TransformRGBToFloatColor(red,green,blue);
-	alpha = ((alpha<0)?0:alpha> 255)?255:0;
-	color = glm::vec4(buffer.x,buffer.y,buffer.z,(float(alpha)/255.0f));
+	color = TransformRGBAToFloatColor(red,green,blue,alpha);
 	defaultColor=false;
 	return *this;
 }
 Material& Material::SetColor(glm::vec4 _color){
+	defaultColor = false;
 	color = _color;
 	return *this;
 }
 Material& Material::SetColor(glm::vec3 _color){
+	defaultColor = false;
 	color = glm::vec4(_color.x,_color.y,_color.z,1.0f);
 	return *this;
 }

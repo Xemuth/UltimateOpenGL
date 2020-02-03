@@ -14,7 +14,8 @@ class Light : public GameObject
 		Light(Scene& _scene);
 		Light(Scene& _scene, glm::vec3 _ambient=glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3 _diffuse=glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3 _specular=glm::vec3(1.0f,1.0f,1.0f));
 		Light(Light& light); //Be carefull of setting the Scene
-		
+		virtual ~Light();
+				
 		Light& operator=(Light& light); //Be carefull of setting the Scene
 		Light& SetAmbient(glm::vec3& _ambient);
 		glm::vec3 GetAmbient() const;
@@ -39,6 +40,7 @@ class DirLight : public Light
 		DirLight(Scene& _scene);
 		DirLight(Scene& _scene,glm::vec3 _ambient=glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3 _diffuse=glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3 _specular=glm::vec3(1.0f,1.0f,1.0f), glm::vec3 _direction=glm::vec3(0.0f,-1.0f,0.0f));
 		DirLight(DirLight& dirLight);
+		virtual ~DirLight();
 		
 		DirLight& operator=(DirLight& dirLight);
 		DirLight& SetDirection(glm::vec3 _direction);
@@ -58,6 +60,7 @@ class SpotLight : public Light
 		SpotLight(Scene& _scene);
 		SpotLight(Scene& _scene, glm::vec3 _ambient=glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3 _diffuse=glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3 _specular=glm::vec3(1.0f,1.0f,1.0f), glm::vec3 _position=glm::vec3(0.0f,0.0f,0.0f), glm::vec3 _direction=glm::vec3(0.0f,-1.0f,0.0f), float _cutOff=glm::cos(glm::radians(12.5f)), float _outerCutOff=glm::cos(glm::radians(15.0f)), float _constant=1.0f, float _linear=0.09f, float _quadratic=0.032f);
 		SpotLight(SpotLight& spotLight);//Be carefull of setting the Scene
+		virtual ~SpotLight();
 		
 		SpotLight& operator=(SpotLight& spotLight);//Be carefull of setting the Scene
 		SpotLight& SetDirection(glm::vec3 _direction=glm::vec3(0.0f,-1.0f,0.0f));
@@ -84,6 +87,7 @@ class PointLight : public Light
 		PointLight(Scene& _scene);
 		PointLight(Scene& _scene,glm::vec3 _ambient=glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3 _diffuse=glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3 _specular=glm::vec3(1.0f,1.0f,1.0f), glm::vec3 _position=glm::vec3(0.0f,0.0f,0.0f), float _constant=1.0f, float _linear=0.09f, float _quadratic=0.032f);
 		PointLight(PointLight& _pointLight);//Be carefull of setting the Scene
+		virtual ~PointLight();
 		
 		PointLight& operator=(PointLight& _pointLight);//Be carefull of setting the Scene
 		PointLight& SetConstant(float _constant=1.0f);

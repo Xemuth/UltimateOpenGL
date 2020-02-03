@@ -20,7 +20,7 @@ class Object3D : public GameObject
 		
 		Material material; //This material must be Set. To overLoad on a mesh this material, you must set the mesh material
         
-        unsigned int VAO, VBO;
+        unsigned int VAO, VBO, EBO;
         int NumberOfVertexToDraw = 0;
         
         //Loading 3D Model using Assimp and custom loader

@@ -12,6 +12,9 @@ struct Vertex : public Upp::Moveable<Vertex> {
     glm::vec3 Tangent=glm::vec3(0.0,0.0,0.0);
     // bitangent
     glm::vec3 Bitangent=glm::vec3(0.0,0.0,0.0);
+    //Color
+    glm::vec4 Color = glm::vec4(1.0f,1.0f,1.0f,1.0f);
+    bool SaveColor =false;
     
     Vertex(){}
     Vertex& SetPosition(glm::vec3 _position){
@@ -32,8 +35,15 @@ struct Vertex : public Upp::Moveable<Vertex> {
     }
     Vertex& SetBitangent(glm::vec3 _bitangent){
         Bitangent = _bitangent;
-        Bitangent = _bitangent;
         return *this;
+    }
+    Vertex& SetColor(glm::vec4 _Color){
+        Color = _Color;
+        return *this;
+    }
+    Vertex& SetColor(glm::vec3 _Color){
+		Color = glm::vec4(_Color.x,_Color.y,_Color.z,1.0f);
+		return *this;
     }
     Vertex(const Vertex& v){
 		Position = v.Position;
@@ -41,6 +51,8 @@ struct Vertex : public Upp::Moveable<Vertex> {
 		TexCoords = v.TexCoords;
 		Tangent = v.Tangent;
 		Bitangent = v.Bitangent;
+		Color = v.Color;
+		SaveColor = v.SaveColor;
     }
 };
 
@@ -69,7 +81,7 @@ class Mesh {
         
 		Material material; //Same as Draw method. If material is completed with texture or something else than default color then it will be used instead of Obect3D material
 		bool useMaterial = false;
-		
+		bool useMaterialColorInsteadOfColorRetrieve = false;
 		
 		bool AlphaAffected = true;
 		bool LightAffected = true;
@@ -106,7 +118,7 @@ class Mesh {
 		MaterialTexture& CreateMaterialTexture(const Upp::String& _name);
 		MaterialColor& CreateMaterialColor(const Upp::String& _name);*/
 		
-		bool ReadData(Upp::Vector<float>& data, ReaderParameters readerParameter);
+		bool ReadData(Upp::Vector<float>& data, ReaderParameters& readerParameter, bool UseMaterialColor = false );
 		
 		Mesh& SetDrawMethod(DrawMethod dm);
 		DrawMethod GetDrawMethod();

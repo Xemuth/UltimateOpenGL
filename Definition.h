@@ -89,37 +89,51 @@ class Mesh;
 typedef void (*ACTION_FUNCTION)(GameObject& myObject);
 
 //Both structures is used to read Vector of float used to show multiple shape
+enum ColorFormat{CF_FLOAT,CF_INTEGER};
+enum ColorType{CT_RGBA,CT_RGB};
 struct ReaderParameters{
 	int coordinatesPosition = -1; //Define position of coordinates in vector of float
 	int normalPosition = -1; //Define position of normal in vector of float
 	int textureCoordinatePosition = -1; //Define position of texture coordinate in vector of float
 	int tangentPosition = -1; //Define position of tangent position in vector of float
 	int bitangentPosition = -1; //Define position of bitangent position in vector of float
-	ReaderParameters(int vp=0,int np=1,int tcp=2,int tp=-1,int bp=-1){
-		coordinatesPosition=vp;
-		normalPosition=np;
-		textureCoordinatePosition=tcp;
-		tangentPosition=tp;
-		bitangentPosition=bp;
+	int colorPosition = -1; //Define position of color in vector of float
+	ColorFormat colorFormat = CF_INTEGER; //Define format of Color
+	ColorType colorType = CT_RGB;//Define type of color(RGB = 3 Float or Int ||RGBA = 4 Float or int)
+	ReaderParameters(int CoordinatesPosition=0,int NormalPosition=1,int TextureCoordinatePosition=2,int TangentPosition=-1,int BitangentPosition=-1, int ColorPosition=-1,ColorFormat _ColorFormat=CF_INTEGER,ColorType _ColorType=CT_RGB){
+		coordinatesPosition=CoordinatesPosition;
+		normalPosition=NormalPosition;
+		textureCoordinatePosition=TextureCoordinatePosition;
+		tangentPosition=TangentPosition;
+		bitangentPosition=BitangentPosition;
+		colorPosition=ColorPosition;
+		colorFormat =_ColorFormat;
+		colorType = _ColorType;
 	}
-	ReaderParameters& CoordinatesPosition(int vp){coordinatesPosition = vp;return *this;}
-	ReaderParameters& NormalPosition(int np){normalPosition = np;return *this;}
-	ReaderParameters& TextureCoordinatePosition(int tcp){textureCoordinatePosition = tcp;return *this;}
-	ReaderParameters& TangentPosition(int tp){tangentPosition = tp;return *this;}
-	ReaderParameters& BitangentPosition(int bp){bitangentPosition = bp;return *this;}
+	ReaderParameters& CoordinatesPosition(int CoordinatesPosition){coordinatesPosition = CoordinatesPosition;return *this;}
+	ReaderParameters& NormalPosition(int NormalPosition){normalPosition = NormalPosition;return *this;}
+	ReaderParameters& TextureCoordinatePosition(int TextureCoordinatePosition){textureCoordinatePosition = TextureCoordinatePosition;return *this;}
+	ReaderParameters& TangentPosition(int TangentPosition){tangentPosition = TangentPosition;return *this;}
+	ReaderParameters& BitangentPosition(int BitangentPosition){bitangentPosition = BitangentPosition;return *this;}
+	ReaderParameters& ColorPosition(int ColorPosition){colorPosition = ColorPosition;return *this;}
+	ReaderParameters& ColorFormat(ColorFormat _ColorFormat){colorFormat = _ColorFormat;return *this;}
+	ReaderParameters& ColorType(ColorType _ColorType){colorType = _ColorType;return *this;}
 };
 struct ReaderRoutine{
 	int verticesPerMesh = -1; //Define how many line mesh should  carry
 	int startMesh = -1;	 //Define where readData should start is completion of Mesh
 	bool allowCreation = true; //Define if creation of mesh is allowed in the object3D
-	ReaderRoutine(int vpm=-1, int sm=-1, int ac=true){
-		verticesPerMesh=vpm;
-		startMesh=sm;
-		allowCreation=ac;
+	bool useMaterialColor = false; //Define if ReaderRoutine should force the usage of Material color instead of color retrieve in Vector<float>(only if ColorPosition have been set)
+	ReaderRoutine(int VerticesPerMesh=-1, int StartMesh=-1, bool UseMaterialColor = false, bool AllowCreation=true){
+		verticesPerMesh=VerticesPerMesh;
+		startMesh=StartMesh;
+		allowCreation=AllowCreation;
+		useMaterialColor = UseMaterialColor;
 	}
-	ReaderRoutine& VerticesPerMesh(int vpm){verticesPerMesh = vpm; return *this;}
-	ReaderRoutine& StartMesh(int sm){startMesh = sm; return *this;}
-	ReaderRoutine& AllowCreation(bool ac){allowCreation = ac; return *this;}
+	ReaderRoutine& VerticesPerMesh(int VerticesPerMesh){verticesPerMesh = VerticesPerMesh; return *this;}
+	ReaderRoutine& StartMesh(int StartMesh){startMesh = StartMesh; return *this;}
+	ReaderRoutine& AllowCreation(bool AllowCreation){allowCreation = AllowCreation; return *this;}
+	ReaderRoutine& UseMaterialColor(bool UseMaterialColor){useMaterialColor = UseMaterialColor;return *this;}
 };
 //Used to read all file used to auto generate some kind of shader
 inline Upp::VectorMap<Upp::String,Upp::String> BasicShaders{
@@ -238,7 +252,18 @@ static glm::vec3 TransformVectorToFloatColor(Upp::Vector<int> rgb){
 		LOG("Erreur TransformRGBToFloatColor(Vector<int>) : Vector incorrect !\n");
 		return  glm::vec3(1.0);
 	}
-	return glm::vec3( ((float)ColorUniformisation(rgb[0]))/255.0f ,((float)ColorUniformisation(rgb[1]))/255.0f,((float)ColorUniformisation(rgb[2]))/255.0f);
+	return glm::vec3(((float)ColorUniformisation(rgb[0]))/255.0f ,((float)ColorUniformisation(rgb[1]))/255.0f,((float)ColorUniformisation(rgb[2]))/255.0f);
 }
+static glm::vec4 TransformRGBAToFloatColor(int Red,int Green,int Blue,int alpha){
+	return  glm::vec4(((float)ColorUniformisation(Red))/255.0f ,((float)ColorUniformisation(Green))/255.0f,((float)ColorUniformisation(Blue))/255.0f,((float)ColorUniformisation(alpha))/255.0f);
+}
+static glm::vec4 TransformVectorToFloatColorAlpha(Upp::Vector<int> rgba){
+	if(rgba.GetCount() < 4){
+		LOG("Erreur TransformRGBToFloatColor(Vector<int>) : Vector incorrect !\n");
+		return  glm::vec4(1.0);
+	}
+	return glm::vec4(((float)ColorUniformisation(rgba[0]))/255.0f ,((float)ColorUniformisation(rgba[1]))/255.0f,((float)ColorUniformisation(rgba[2]))/255.0f,((float)ColorUniformisation(rgba[3]))/255.0f);
+}
+
 
 #endif

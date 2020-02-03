@@ -206,7 +206,9 @@ void Object3D::ReadData(Upp::Vector<float>& data ,ReaderParameters readerParamet
 	if(readerParameter.textureCoordinatePosition != -1)NumberOfFloatByLine+=2;
 	if(readerParameter.tangentPosition != -1)NumberOfFloatByLine+=3;
 	if(readerParameter.bitangentPosition != -1)	NumberOfFloatByLine+=3;
-	
+	if(readerParameter.colorPosition != -1 && readerParameter.colorType == CT_RGB) NumberOfFloatByLine+=3;
+	else if(readerParameter.colorPosition != -1 && readerParameter.colorType == CT_RGBA)NumberOfFloatByLine+=4;
+		
 	while(!stop){
 		if(readerRoutine.verticesPerMesh != -1){
 			if(Copie.GetCount() >= NumberOfFloatByLine*readerRoutine.verticesPerMesh){
@@ -242,7 +244,7 @@ void Object3D::ReadData(Upp::Vector<float>& data ,ReaderParameters readerParamet
 		}
 		if(m){
 			if(dataBuffer.GetCount() > 0){
-				if(m->ReadData(dataBuffer,readerParameter)){
+				if(m->ReadData(dataBuffer,readerParameter, readerRoutine.useMaterialColor)){
 					m->SetObject3D(*this);
 					transform.AddChildren(m->GetTransform());
 				//LOG("Log : void Object3D::ReadData(...) Data have been readed succesfully !");
@@ -312,9 +314,6 @@ Object3D& Object3D::SetBehaviour(Object3DBehaviour _behaviour){
 	behavior = _behaviour;
 	return *this;
 }
-
-#include <iostream>
-#include <vector>
 //Override
 void Object3D::Load(){
 	if(!loaded){
@@ -327,7 +326,10 @@ void Object3D::Load(){
 			if(m.GetBehaviour() == OBJ_DYNAMIC) m.Load();
 			else{
 				for(Vertex& v :  m.GetVertices()){
-					AllVertex.Add() = v;
+					Vertex& buff = AllVertex.Add() = v;
+					if(!buff.SaveColor){
+						buff.Color = (m.GetMaterial().HaveBeenSetUp())? m.GetMaterial().GetColor(): (material.HaveBeenSetUp())?material.GetColor():buff.Color;
+					}
 					cptVertex++;
 					NumberOfVertexToDraw++;
 				}
@@ -343,11 +345,44 @@ void Object3D::Load(){
 		glGenBuffers(1,&VBO);
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
 		
-		glBufferData(GL_ARRAY_BUFFER, cptVertex * sizeof(Vertex), &AllVertex[0], GL_STATIC_DRAW);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+		/*
+		layout (location = 0) in vec3 aPos;\n
+		layout (location = 1) in vec3 aNorm;\n
+		layout (location = 2) in vec2 aTextCoords;\n
+		layout (location = 3) in vec3 aTangents;\n
+		layout (location = 4) in vec3 aBiTangents;\n
+		layout (location = 5) in vec4 aColors;\n
+		layout (location = 6) in int aUseTextures;\n
+		layout (location = 7) in bool aUseColors;\n
+		layout (location = 8) in int aTextures;\n
+		layout (location = 9) in int aSpeculareTextures;\n
+		layout (location = 10) in mat4 aMatricesModels;\n
+		*/
 		
+		glBufferData(GL_ARRAY_BUFFER, cptVertex * sizeof(Vertex), &AllVertex[0], GL_STATIC_DRAW);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0); //importing coordinate
 		glEnableVertexAttribArray(0);
+		
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(glm::vec3))); //Importing Normalmap
+		glEnableVertexAttribArray(1);
+		
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(2 * sizeof(glm::vec3))); //Importing Texture coordinate
+		glEnableVertexAttribArray(2);
 
+		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(2 * sizeof(glm::vec3) + sizeof(glm::vec2))); //Importing Tangents
+		glEnableVertexAttribArray(3);
+		
+		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(3 * sizeof(glm::vec3) + sizeof(glm::vec2))); //Importing BiTangents
+		glEnableVertexAttribArray(4);
+		
+		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(4 * sizeof(glm::vec3) + sizeof(glm::vec2))); //Importing Color
+		glEnableVertexAttribArray(5);
+	
+		//Here I must build a new VBO that will  carry texture and for each All mesh 
+	
+	
+	
+	
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
 		loaded = true;
