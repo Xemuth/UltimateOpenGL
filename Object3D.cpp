@@ -1,34 +1,34 @@
 #include "Object3D.h"
 #include "Mesh.h"
-Object3D::Object3D(Scene& _scene) : GameObject(_scene,GOT_3D){}
-Object3D::Object3D(Scene& _scene, Mesh& _mesh) : GameObject(_scene,GOT_3D){
+Object3D::Object3D(Scene& _scene) : GameObject(_scene) {}
+Object3D::Object3D(Scene& _scene, Mesh& _mesh) : GameObject(_scene){
 	Mesh& m =meshes.Create<Mesh>(_mesh);
 	transform.AddChildren(m.GetTransform());
 }
-Object3D::Object3D(Scene& _scene, Upp::Vector<Mesh>& _meshes) : GameObject(_scene,GOT_3D){
+Object3D::Object3D(Scene& _scene, Upp::Vector<Mesh>& _meshes) : GameObject(_scene){
 	for(Mesh& m : _meshes){
 		Mesh& m2 =meshes.Create<Mesh>(m);
 		transform.AddChildren(m2.GetTransform());
 	}
 }
-Object3D::Object3D(Scene& _scene, Upp::Vector<float>& Vertices, ReaderParameters readerParameter, ReaderRoutine readerRoutine) : GameObject(_scene,GOT_3D){
+Object3D::Object3D(Scene& _scene, Upp::Vector<float>& Vertices, ReaderParameters readerParameter, ReaderRoutine readerRoutine) : GameObject(_scene){
 	ReadData(Vertices,readerParameter,readerRoutine);
 }
-Object3D::Object3D(Scene& _scene, const Upp::String& pathOfModel) : GameObject(_scene,GOT_3D){
+Object3D::Object3D(Scene& _scene, const Upp::String& pathOfModel) : GameObject(_scene){
 	LoadModel(pathOfModel);
 }
-Object3D::Object3D(Scene& _scene, Upp::String _name, Upp::Vector<Mesh>& _meshes) : GameObject(_scene,GOT_3D){
+Object3D::Object3D(Scene& _scene, const Upp::String& _name, Upp::Vector<Mesh>& _meshes) : GameObject(_scene){
 	name = _name;
 	for(Mesh& m : _meshes){
 		Mesh& m2 =meshes.Create<Mesh>(m);
 		transform.AddChildren(m2.GetTransform());
 	}
 }
-Object3D::Object3D(Scene& _scene, Upp::String _name, Upp::Vector<float>& Vertices, ReaderParameters readerParameter, ReaderRoutine readerRoutine) : GameObject(_scene,GOT_3D){
+Object3D::Object3D(Scene& _scene, const Upp::String& _name, Upp::Vector<float>& Vertices, ReaderParameters readerParameter, ReaderRoutine readerRoutine) : GameObject(_scene){
 	name = _name;
 	ReadData(Vertices,readerParameter,readerRoutine);
 }
-Object3D::Object3D(Scene& _scene, Upp::String _name, const Upp::String& pathOfModel) : GameObject(_scene,GOT_3D){
+Object3D::Object3D(Scene& _scene, const Upp::String& _name, const Upp::String& pathOfModel) : GameObject(_scene){
 	name = _name;
 	LoadModel(pathOfModel);
 }
@@ -307,188 +307,23 @@ Object3D& Object3D::SetShader(Shader& _shader){
 Shader& Object3D::GetShader(){
 	return shader;
 }
-Object3DBehaviour Object3D::GetBehaviour(){
-	return behavior;
-}
-Object3D& Object3D::SetBehaviour(Object3DBehaviour _behaviour){
-	behavior = _behaviour;
-	return *this;
-}
 
-unsigned int Object3D::GetVertexVBO(){
-	return VertexVBO;
-}
-unsigned int Object3D::GetMaterialVBO(){
-	return MaterialVBO;
-}
-unsigned int Object3D::GetMatriceVBO(){
-	return MatriceVBO;
-}
 //Override
 void Object3D::Load(){
 	if(!loaded){
-#ifdef flagUOGLV3
-		for(int i =0 ; i < meshes.size(); i++){//Changement made by Iñaki
+		for(int i = 0 ; i < meshes.size(); i++){//Changement made by Iñaki
 			if(shader.IsCompiled())meshes[i].SetShader(shader);
 			meshes[i].Load();
 		}
-#else
-		Upp::Array<glm::mat4> AllMatrices;
-		Upp::Vector<Vertex> AllVertex;
-		Upp::Vector<GlobalMaterialInformation> AllTextureInformation;
-		
-		int cptVertex = 0;
-		int cptMesh = 0;
-		for(Mesh& m : meshes){
-			if(m.GetBehaviour() == OBJ_DYNAMIC) m.Load();
-			else{
-				for(Vertex& v :  m.GetVertices()){
-					Vertex& buff = AllVertex.Add() = v;
-					if(!buff.SaveColor){
-						buff.Color = (m.GetMaterial().HaveBeenSetUp())? m.GetMaterial().GetColor(): (material.HaveBeenSetUp())?material.GetColor():buff.Color;
-					}
-					cptVertex++;
-					NumberOfVertexToDraw++;
-				}
-				//AllTextureInformation.Add((m.GetMaterial().HaveBeenSetUp() )?m.GetMaterial().GetGlobalMaterialInformation():GetMaterial().GetGlobalMaterialInformation());
-				GlobalMaterialInformation gmi = GetMaterial().GetGlobalMaterialInformation();
-				AllTextureInformation.Add(gmi);
-			}
-			AllMatrices.Add(transform.GetModelMatrice());
-			cptMesh++;
-		}
-		//After having setted up all the data into the global Object3D buffer I settup all
-		//layout of the data sended to the graphical card
-		glGenVertexArrays(1, &VAO);
-		glBindVertexArray(VAO);
-		
-		glGenBuffers(1,&VertexVBO);
-		glBindBuffer(GL_ARRAY_BUFFER, VertexVBO);
-		
-		/*
-		layout (location = 0) in vec3 aPos;\n
-		layout (location = 1) in vec3 aNorm;\n
-		layout (location = 2) in vec2 aTextCoords;\n
-		layout (location = 3) in vec3 aTangents;\n
-		layout (location = 4) in vec3 aBiTangents;\n
-		layout (location = 5) in vec4 aColors;\n
-		layout (location = 6) in int aUseTextures;\n
-		layout (location = 7) in bool aUseColors;\n
-		layout (location = 8) in int aTextures;\n
-		layout (location = 9) in int aSpeculareTextures;\n
-		layout (location = 10) in mat4 aMatricesModels;\n
-		*/
-		
-		glBufferData(GL_ARRAY_BUFFER, cptVertex * sizeof(Vertex), &AllVertex[0], GL_STATIC_DRAW);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0); //importing coordinate
-		glEnableVertexAttribArray(0);
-		
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(glm::vec3))); //Importing Normalmap
-		glEnableVertexAttribArray(1);
-		
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(2 * sizeof(glm::vec3))); //Importing Texture coordinate
-		glEnableVertexAttribArray(2);
-
-		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(2 * sizeof(glm::vec3) + sizeof(glm::vec2))); //Importing Tangents
-		glEnableVertexAttribArray(3);
-		
-		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(3 * sizeof(glm::vec3) + sizeof(glm::vec2))); //Importing BiTangents
-		glEnableVertexAttribArray(4);
-		
-		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(4 * sizeof(glm::vec3) + sizeof(glm::vec2))); //Importing Color
-		glEnableVertexAttribArray(5);
-		
-		//HEre I bind the model matrix
-		
-		glGenBuffers(1,&MatriceVBO);
-		glBindBuffer(GL_ARRAY_BUFFER, MatriceVBO);
-		glBufferData(GL_ARRAY_BUFFER, cptMesh * sizeof(glm::mat4), &AllMatrices[0], GL_STATIC_DRAW);
-		
-		glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)0); //Importing first row
-		glEnableVertexAttribArray(6);
-		glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)(1 * sizeof(glm::vec4))); //Importing second row
-		glEnableVertexAttribArray(7);
-		glVertexAttribPointer(8, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)(2 * sizeof(glm::vec4))); //Importing third row
-		glEnableVertexAttribArray(8);
-		glVertexAttribPointer(9, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)(3 * sizeof(glm::vec4))); //Importing fourth row
-		glEnableVertexAttribArray(9);
-		
-		glVertexAttribDivisor(6, 1);
-	    glVertexAttribDivisor(7, 1);
-	    glVertexAttribDivisor(8, 1);
-	    glVertexAttribDivisor(9, 1);
-	
-		//Here I must build a new VBO that will  carry texture and for each All mesh
-		/*
-		glGenBuffers(1,&MaterialVBO);
-		glBindBuffer(GL_ARRAY_BUFFER, MaterialVBO);
-		
-		glBufferData(GL_ARRAY_BUFFER, cptMesh * sizeof(GlobalMaterialInformation), &AllTextureInformation[0], GL_STATIC_DRAW);
-		glVertexAttribPointer(6, 1, GL_FLOAT, GL_FALSE, sizeof(GlobalMaterialInformation), (void*)0); //importing UseTextures
-		glEnableVertexAttribArray(6);
-		
-		glVertexAttribPointer(7, 1, GL_FLOAT, GL_FALSE, sizeof(GlobalMaterialInformation), (void*)(sizeof(float))); //importing UseColors
-		glEnableVertexAttribArray(7);
-		
-		glVertexAttribPointer(8, 1, GL_FLOAT, GL_FALSE, sizeof(GlobalMaterialInformation), (void*)(2 * sizeof(float))); //importing Shininess
-		glEnableVertexAttribArray(8);
-		
-		glVertexAttribPointer(9, 1, GL_FLOAT, GL_FALSE, sizeof(GlobalMaterialInformation), (void*)(3 * sizeof(float))); //importing Diffuse
-		glEnableVertexAttribArray(9);
-		
-		glVertexAttribPointer(10, 3, GL_FLOAT, GL_FALSE, sizeof(GlobalMaterialInformation), (void*)( 4 * sizeof(float))); //importing Ambient
-		glEnableVertexAttribArray(10);
-		
-		glVertexAttribPointer(11, 3, GL_FLOAT, GL_FALSE, sizeof(GlobalMaterialInformation), (void*)(4 * sizeof(float) + sizeof(glm::vec3))); //importing Speculare
-		glEnableVertexAttribArray(11);
-		
-		glVertexAttribPointer(12, 1, GL_INT, GL_FALSE, sizeof(GlobalMaterialInformation), (void*)(4 * sizeof(float) + 2 * sizeof(glm::vec3))); //importing Texture1
-		glEnableVertexAttribArray(12);
-		
-		glVertexAttribPointer(13, 1, GL_INT, GL_FALSE, sizeof(GlobalMaterialInformation), (void*)(4 * sizeof(float) + 2 * sizeof(glm::vec3) + sizeof(int))); //importing TextureSpeculare1
-		glEnableVertexAttribArray(13);
-		
-		glVertexAttribPointer(14, 1, GL_FLOAT, GL_FALSE, sizeof(GlobalMaterialInformation), (void*)(4 * sizeof(float) + 2 * sizeof(glm::vec3) + 2 * sizeof(int))); //importing Mix1
-		glEnableVertexAttribArray(14);
-		
-		glVertexAttribPointer(15, 1, GL_INT, GL_FALSE, sizeof(GlobalMaterialInformation), (void*)(5 * sizeof(float) + 2 * sizeof(glm::vec3) + 2 * sizeof(int))); //importing Texture2
-		glEnableVertexAttribArray(15);
-		
-		glVertexAttribPointer(16, 1, GL_INT, GL_FALSE, sizeof(GlobalMaterialInformation), (void*)(5 * sizeof(float) + 2 * sizeof(glm::vec3) + 3 * sizeof(int))); //importing TextureSpeculare2
-		glEnableVertexAttribArray(16);
-		
-		glVertexAttribPointer(17, 1, GL_FLOAT, GL_FALSE, sizeof(GlobalMaterialInformation), (void*)(5 * sizeof(float) + 2 * sizeof(glm::vec3) + 4 * sizeof(int))); //importing Mix2
-		glEnableVertexAttribArray(17);
-		
-		glVertexAttribPointer(18, 1, GL_INT, GL_FALSE, sizeof(GlobalMaterialInformation), (void*)(6 * sizeof(float) + 2 * sizeof(glm::vec3) + 3 * sizeof(int))); //importing Texture3
-		glEnableVertexAttribArray(18);
-		
-		glVertexAttribPointer(19, 1, GL_INT, GL_FALSE, sizeof(GlobalMaterialInformation), (void*)(6 * sizeof(float) + 2 * sizeof(glm::vec3) + 4 * sizeof(int))); //importing TextureSpeculare3
-		glEnableVertexAttribArray(19);
-		
-		glVertexAttribPointer(20, 1, GL_FLOAT, GL_FALSE, sizeof(GlobalMaterialInformation), (void*)(6 * sizeof(float) + 2 * sizeof(glm::vec3) + 5 * sizeof(int))); //importing MiX3
-		glEnableVertexAttribArray(20);
-		*/
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindVertexArray(0);
-#endif
-		loaded = true;
+		loaded =true;
+	}else{
+		LOG("Error : void Object3D::Load() Object3D named : " + name + " is still loaded !");
 	}
 }
 void Object3D::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform,Camera& camera){
-	if(loaded){
-	#ifdef flagUOGLV3
-		for(int i = 0; i < meshes.size(); i++) // meshes.size(); i++)//Changement made by Iñaki
-			meshes[i].Draw(model,camera.GetTransform().GetViewMatrix(),projection,transform,camera);
-	#else
-		if(onDraw)onDraw(*this);
-		shader.Use();
-		shader.SetMat4("view",camera.GetTransform().GetViewMatrix());
-		shader.SetMat4("projection",projection);
-		//shader.SetMat4("model",GetTransform().GetModelMatrice());
-		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, NumberOfVertexToDraw);
-		shader.Unbind();
-	#endif
+	if(onDraw != nullptr){
+		onDraw(*this);
 	}
+	for(int i = 0; i < meshes.size(); i++) // meshes.size(); i++)//Changement made by Iñaki
+		meshes[i].Draw(model,view,projection,transform,camera);
 }

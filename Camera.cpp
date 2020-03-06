@@ -90,6 +90,25 @@ float Camera::GetMaxFOV(){
 float Camera::GetMinFOV(){
 	return MinFOV;
 }
+Camera& Camera::SetOnTransformFunction(CAMERA_FUNCTION myFunction){
+	onTransform = myFunction;
+	return *this;
+}
+CAMERA_FUNCTION Camera::GetOnTransformFunction(){
+	return onTransform;
+}
+Camera& Camera::EnableTransformEvent(){
+	onTransformEventActivate = true;
+	return *this;
+}
+Camera& Camera::DisableTransformEvent(){
+	onTransformEventActivate = false;
+	return *this;
+}
+bool Camera::IsTransformEventActivated(){
+	return onTransformEventActivate;
+}
+
 Camera& Camera::ProcessKeyboardMouvement(Camera_Movement direction){
 	float velocity = MouvementSpeed * GetScene().GetContext().GetDeltaTime();
 	if (direction == CM_FORWARD)

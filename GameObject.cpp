@@ -1,14 +1,10 @@
 #include "GameObject.h"
-GameObject::GameObject(GameObjectType got) : transform(){ //BeCarefull of setting up the scene;
-	type = got;
-}
-GameObject::GameObject(Scene& _scene, GameObjectType got) : transform(){
-	type = got;
+GameObject::GameObject(){}
+GameObject::GameObject(Scene& _scene) : transform(){
 	scene = &_scene;
 }
 GameObject::GameObject(const GameObject& gameObject) : transform(){
 	name=gameObject.name;
-	type=gameObject.type;
 	scene=nullptr;//gameObject.scene;
 	transform=gameObject.transform;
 	transform.ClearChildrens();
@@ -23,8 +19,7 @@ GameObject::GameObject(const GameObject& gameObject) : transform(){
 }
 GameObject::~GameObject(){}
 GameObject& GameObject::operator=(const GameObject& gameObject){
-	name=gameObject.name;
-	type=gameObject.type;
+	name=gameObject.name; 
 	scene=nullptr;//gameObject.scene;
 	transform=gameObject.transform;
 	transform.ClearChildrens();
@@ -57,16 +52,12 @@ GameObject& GameObject::SetName(const Upp::String& _name){
 	return *this;
 }
 
-GameObjectType GameObject::GetType(){
-	return type;
-}
-	
 //******************Draw part**************************
-GameObject& GameObject::SetOnDrawFunction(ACTION_FUNCTION myFunction){
+GameObject& GameObject::SetOnDrawFunction(GAMEOBJECT_FUNCTION myFunction){
 	onDraw = myFunction;
 	return *this;
 }
-ACTION_FUNCTION GameObject::GetOnDrawFunction(){
+GAMEOBJECT_FUNCTION GameObject::GetOnDrawFunction(){
 	return onDraw;
 }
 GameObject& GameObject::EnableDrawEvent(){
@@ -82,11 +73,11 @@ bool GameObject::IsDrawEventActivated(){
 }
 
 //******************Transform part*********************
-GameObject& GameObject::SetOnTransformFunction(ACTION_FUNCTION myFunction){
+GameObject& GameObject::SetOnTransformFunction(GAMEOBJECT_FUNCTION myFunction){
 	onTransform = myFunction;
 	return *this;
 }
-ACTION_FUNCTION GameObject::GetOnTransformFunction(){
+GAMEOBJECT_FUNCTION GameObject::GetOnTransformFunction(){
 	return onTransform;
 }
 GameObject& GameObject::EnableTransformEvent(){

@@ -24,7 +24,6 @@ Scene& Scene::operator=(Scene& _scene){
 		e.SetScene(*this);
 	}
 	
-	shader = _scene.shader;
 	SkyBox = _scene.SkyBox;
 	return *this;
 }
@@ -37,9 +36,6 @@ UltimateOpenGL_Context& Scene::GetContext(){
 }
 Upp::String Scene::GetName(){
 	return name;
-}
-Shader& Scene::GetShader(){
-	return shader;
 }
 Material& Scene::GetSkyBox(){
 	return SkyBox;
@@ -56,10 +52,6 @@ Scene& Scene::SetContext(UltimateOpenGL_Context& _context){
 }
 Scene& Scene::SetName(const Upp::String& _name){
 	name = _name;
-	return *this;
-}
-Scene& Scene::SetShader(Shader& _shader){
-	shader = _shader;
 	return *this;
 }
 Scene& Scene::SetSkyBox(Material& _skyBox){
@@ -124,6 +116,16 @@ Scene& Scene::RemoveCamera(const Upp::String& _CameraName){//if the removed came
 	if(AllCameras.Find(_CameraName) != -1){
 		if(& AllCameras.Get(_CameraName) == ActiveCamera) ActiveCamera = nullptr;
 		AllCameras.Remove(AllCameras.Find(_CameraName));
+	}
+	return *this;
+}
+bool Scene::IsLightExist(const Upp::String& _LightName){ //Return true if the light  exists
+	if(AllLights.Find(_LightName) != -1)return true;
+	return false;
+}
+Scene& Scene::RemoveLight(const Upp::String& _LightName){ //Will remove light if it exist
+	if(AllLights.Find(_LightName) != -1){
+		AllLights.Remove(AllLights.Find(_LightName));
 	}
 	return *this;
 }

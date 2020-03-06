@@ -61,7 +61,7 @@ class Mesh {
 		Object3D* object3D =nullptr;
 		
         /*  Render data  */
-        unsigned int VAO, EBO, VertexVBO, MaterialVBO, MatriceVBO;
+        unsigned int VAO, EBO, VBO;
 
         /*  Mesh Data  */
         Upp::Vector<Vertex> vertices;
@@ -77,7 +77,6 @@ class Mesh {
 										      //one particulare Shader, you must call
 										      //SetDrawMethod() of the mesh to ensure it must
 										      //use a custom drawMethod()
-        Object3DBehaviour behavior = OBJ_STATIC;
         
 		Material material; //Same as Draw method. If material is completed with texture or something else than default color then it will be used instead of Obect3D material
 		bool useMaterial = false;
@@ -92,9 +91,7 @@ class Mesh {
         Mesh(const Mesh& _mesh); //Dont forget to set z
         
 		unsigned int GetVAO();
-		unsigned int GetVertexVBO();
-		unsigned int GetMaterialVBO();
-		unsigned int GetMatriceVBO();
+		unsigned int GetVBO();
 		unsigned int GetEBO();
 		
 		Upp::Vector<Vertex>& GetVertices();
@@ -145,11 +142,7 @@ class Mesh {
         void LoadDefaultIndices();
         void GenerateAutoShader(int NbLightDir,int NbLightPoint,int NbLightSpot);
         GLint ResolveDrawMethod();
-        
-        Object3DBehaviour GetBehaviour();
-		Mesh& SetBehaviour(Object3DBehaviour _behaviour);
-        
-        
+           
         void Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform,Camera& camera);
 };
 #endif

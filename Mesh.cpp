@@ -72,7 +72,7 @@ Mesh::Mesh(Object3D& obj): transform(){
 Mesh::Mesh(const Mesh& _mesh){
 	object3D = _mesh.object3D;
 	VAO = _mesh.VAO;
-	VertexVBO = _mesh.VertexVBO;
+	VBO = _mesh.VBO;
 	EBO = _mesh.EBO;
         
     vertices.Append(_mesh.vertices);
@@ -99,13 +99,6 @@ void Mesh::LoadDefaultIndices(){
     for(int r = 0; r < cpt; r++){
         indices.Add(r);
     }
-}
-Object3DBehaviour Mesh::GetBehaviour(){
-	return behavior;
-}
-Mesh& Mesh::SetBehaviour(Object3DBehaviour _behaviour){
-	behavior = _behaviour;
-	return *this;
 }
 GLint Mesh::ResolveDrawMethod(){
 	switch(drawMethod){
@@ -144,117 +137,25 @@ GLint Mesh::ResolveDrawMethod(){
     }
 }
 void Mesh::Load(){
-#ifdef flagUOGLV3
-	if(indices.size() != 0 || vertices.size() != 0){
-		/*if(textures.GetCount() > 0 && materialsTexture.GetCount() == 0){
-			for(Texture& t : textures){
-			//	Upp::Cout() << "Texture of mesh is " + t.GetName() + " with ID of " +  Upp::AsString(t.GetId()) + "\n";
-				MaterialTexture& m =  materialsTexture.Add(t.GetName());
-				m.SetDiffuse(t.GetTextureIterator());
-			}
-		}*/
-		
-		//Juste un test,ne doit pas rester en létat
-		/*for(MaterialTexture& mt : materialsTexture){
-			mt.SetMix((float) (1.0f / materialsTexture.GetCount()));
-		}*/
-		
+	if(vertices.size() != 0){
 		if(!shader.IsCompiled()){
 			LOG("Shader not compiled !, Default shaders loaded !\n");
 			//GenerateAutoShader(object3D->GetScene() ->GetNumberOfDirLight(),  object3D->GetScene() ->GetNumberOfPointLight(),object3D->GetScene()->GetNumberOfSpotLight());
-			GetShader().AssignSimpleShader();
+			shader.AssignSimpleShader();
 		}
 		if(indices.size() == 0 && vertices.size() > 0){
             LOG("No indice defined ! Auto generation of incices !");
             LoadDefaultIndices();
         }
 
-
 		// create buffers/arrays
 	    glGenVertexArrays(1, &VAO);
-	    glGenBuffers(1, &VertexVBO);
+	    glGenBuffers(1, &VBO);
 	    glGenBuffers(1, &EBO);
 	
 	    glBindVertexArray(VAO);
 	    // load data into vertex buffers
-	    glBindBuffer(GL_ARRAY_BUFFER, VertexVBO);
-	    // A great thing about structs is that their memory layout is sequential for all its items.
-	    // The effect is that we can simply pass a pointer to the struct and it translates perfectly to a glm::vec3/2 array which
-	    // again translates to 3/2 floats which translates to a byte array.
-		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
-	
-	    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
-	
-	
-	/*	Upp::Cout() << "SizeOFVertex : " << sizeof(Vertex) << "\n";
-		float* buffer = nullptr;
-		for(Vertex& v : vertices){
-			buffer = (float*)&v;
-			
-			for (int e =0 ; e < 13 ; e++){
-				Upp::Cout() <<Upp::AsString(*buffer) <<",";
-				buffer++;
-			}
-			
-			Upp::Cout() <<  Upp::EOL;
-		}*/
-	
-	    // set the vertex attribute pointers
-	    // vertex Positions
-	    glEnableVertexAttribArray(0);
-	    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
-	    // vertex normals
-	    glEnableVertexAttribArray(1);
-	    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Normal));
-	    // vertex texture coords
-	    glEnableVertexAttribArray(2);
-	    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
-	    // vertex tangent
-	    glEnableVertexAttribArray(3);
-	    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Tangent));
-	    // vertex bitangent
-	    glEnableVertexAttribArray(4);
-	    glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Bitangent));
-	
-	    glBindVertexArray(0);
-	   // shader.Use();
-	}else{
-	    LOG("Mesh of object named " + object3D->GetName() + " are error ! or undefined ! nothing to load !");
-	}
-#else
-	if(indices.size() != 0 || vertices.size() != 0){
-		/*if(textures.GetCount() > 0 && materialsTexture.GetCount() == 0){
-			for(Texture& t : textures){
-			//	Upp::Cout() << "Texture of mesh is " + t.GetName() + " with ID of " +  Upp::AsString(t.GetId()) + "\n";
-				MaterialTexture& m =  materialsTexture.Add(t.GetName());
-				m.SetDiffuse(t.GetTextureIterator());
-			}
-		}*/
-		
-		//Juste un test,ne doit pas rester en létat
-	/*	for(MaterialTexture& mt : materialsTexture){
-			mt.SetMix((float) (1.0f / materialsTexture.GetCount()));
-		}
-	*/
-	/*	if(!shader.IsCompiled() && object3D != nullptr ){
-			LOG("Shader not compiled !, Default shaders loaded !\n");
-			GenerateAutoShader(object3D->GetScene().GetNumberOfDirLight(),  object3D->GetScene().GetNumberOfPointLight(),object3D->GetScene().GetNumberOfSpotLight());
-		}
-		if(indices.size() == 0 && vertices.size() > 0){
-            LOG("No indice defined ! Auto generation of incices !");
-            LoadDefaultIndices();
-        }*/
-
-
-		// create buffers/arrays
-	    glGenVertexArrays(1, &VAO);
-	    glGenBuffers(1, &VertexVBO);
-	    glGenBuffers(1, &EBO);
-	
-	    glBindVertexArray(VAO);
-	    // load data into vertex buffers
-	    glBindBuffer(GL_ARRAY_BUFFER, VertexVBO);
+	    glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	    // A great thing about structs is that their memory layout is sequential for all its items.
 	    // The effect is that we can simply pass a pointer to the struct and it translates perfectly to a glm::vec3/2 array which
 	    // again translates to 3/2 floats which translates to a byte array.
@@ -264,17 +165,6 @@ void Mesh::Load(){
 	    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
 	
 	
-	/*	Upp::Cout() << "SizeOFVertex : " << sizeof(Vertex) << "\n";
-		float* buffer = nullptr;
-		for(Vertex& v : vertices){
-			buffer = (float*)&v;
-			for (int e =0 ; e < 13 ; e++){
-				Upp::Cout() <<Upp::AsString(*buffer) <<",";
-				buffer++;
-			}
-			Upp::Cout() <<  Upp::EOL;
-		}*/
-	
 	    // set the vertex attribute pointers
 	    // vertex Positions
 	    glEnableVertexAttribArray(0);
@@ -292,30 +182,81 @@ void Mesh::Load(){
 	    glEnableVertexAttribArray(4);
 	    glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Bitangent));
 	
+		glEnableVertexAttribArray(5);
+	    glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Color));
+
 	    glBindVertexArray(0);
-	   // shader.Use();
 	}else{
 	    LOG("Mesh of object named " + object3D->GetName() + " are error ! or undefined ! nothing to load !");
 	}
-#endif
 }
 void Mesh::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform,Camera& camera){
-#ifdef flagUOGLV3
 	shader.Use();
-	//Cout() << "x: " << Position.x << ", y: " << Position.y << ", z: " << Position.z << "\n";
 	model = glm::translate(model,GetTransform().GetPosition())*glm::mat4_cast(GetTransform().GetQuaterion())*GetTransform().GetModelMatrixScaller();
 
-	//if(ClearOnDraw)transformations.Clear();
     shader.SetMat4("model",model);
     shader.SetMat4("transform", transform);
     shader.SetMat4("view",view);
     shader.SetMat4("projection", projection);
     shader.SetVec3("viewPos",GetTransform().GetPosition());
     int cptTexture =0;
-
+	/*
+	for(const Upp::String &mtStr : materialsTexture.GetKeys()){
+		materialsTexture.Get(mtStr).diffuse = object3D->GetScene()->GetContext()->GetTextures().Get(mtStr).GetTextureIterator();
+		materialsTexture.Get(mtStr).specular= object3D->GetScene()->GetContext()->GetTextures().Get(mtStr).GetTextureIterator();
+		object3D->GetScene()->GetContext()->GetTextures().Get(mtStr).Use();
+		shader.SetMaterialTexture("texture"+ Upp::AsString(cptTexture),materialsTexture.Get(mtStr));
+		cptTexture++;
+	}
+	if(cptTexture==0){
+	    int cptColor= 0;
+	    for(const Upp::String &mcStr : materialsColor.GetKeys()){
+			shader.SetMaterialColor("color"+ Upp::AsString(cptColor),materialsColor.Get(mcStr));
+			cptColor++;
+		}
+	}
 	
-
-
+	if(LightAffected &&  object3D && object3D->GetScene()){
+	for(Light* obj : object3D->GetScene()->GetAllLights()){
+		int cptDirLight=0;
+		int cptPointLight=0;
+		int cptSpotLight=0;
+		if(obj->drawable){
+			if(obj->lightType == LT_DIRLIGHT){
+				shader.SetDirLight(obj->name,* static_cast<DirLight*>(obj),cptDirLight);
+				cptDirLight++;
+			}else if(obj->lightType == LT_POINTLIGHT){
+				shader.SetPointLight(obj->name,* static_cast<PointLight*>(obj),cptPointLight);
+				cptPointLight++;
+			}else if(obj->lightType == LT_SPOTLIGHT){
+				shader.SetSpotLight(obj->name,* static_cast<SpotLight*>(obj),cptSpotLight);
+				cptSpotLight++;
+			}
+		}	
+	}
+	}
+	
+	for(const Upp::String& str : object3D->GetScene()->GetAllGameObject().GetKeys()){
+	int cptObject = 0;
+	GameObject& obj =  object3D->GetScene()->GetAllGameObject().Get(str);
+	if(!obj.IsDrawableDuringThisFrame()){
+		for(const Upp::String& dlStr : obj.GetDirLights().GetKeys()){
+			shader.SetDirLight(dlStr,obj.GetDirLights().Get(dlStr),cptObject);
+			cptObject++;
+		}
+		cptObject=0;
+		for(const Upp::String& spStr : obj.GetSpotLights().GetKeys()){
+			shader.SetSpotLight(spStr,obj.GetSpotLights().Get(spStr),cptObject);
+			cptObject++;
+		}
+		cptObject=0;
+		for(const Upp::String& poStr : obj.GetPointLights().GetKeys()){
+			shader.SetPointLight(poStr,obj.GetPointLights().Get(poStr),cptObject);
+			cptObject++;
+		}
+	}
+    }*/
+  //	glLineWidth(2.5); //Allow user to change LineWidth
     glBindVertexArray(VAO);
     //Draw method can be setted with SetDrawMethod
     switch(drawMethod){
@@ -354,125 +295,11 @@ void Mesh::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 tr
 			LOG("Error : void Mesh::Draw(...) DrawMethod is unknow !");
     }
     
-    
+ 
     glBindVertexArray(0);
     // always good practice to set everything back to defaults once configured.
 	glActiveTexture(GL_TEXTURE0);
     shader.Unbind();
-#else
-	shader.Use();
-	//Cout() << "x: " << Position.x << ", y: " << Position.y << ", z: " << Position.z << "\n";
-	model = glm::translate(model,GetTransform().GetPosition())*glm::mat4_cast(GetTransform().GetQuaterion())*GetTransform().GetModelMatrixScaller();
-
-	//if(ClearOnDraw)transformations.Clear();
-    shader.SetMat4("model",model);
-    shader.SetMat4("transform", transform);
-    shader.SetMat4("view",view);
-    shader.SetMat4("projection", projection);
-    shader.SetVec3("viewPos",GetTransform().GetPosition());
-    int cptTexture =0;
-    
-	/*for(const Upp::String &mtStr : materialsTexture.GetKeys()){
-		materialsTexture.Get(mtStr).diffuse = object3D->GetScene().GetContext()->GetTextures().Get(mtStr).GetTextureIterator();
-		materialsTexture.Get(mtStr).specular= object3D->GetScene().GetContext()->GetTextures().Get(mtStr).GetTextureIterator();
-		object3D->GetScene()->GetContext()->GetTextures().Get(mtStr).Use();
-		shader.SetMaterialTexture("texture"+ Upp::AsString(cptTexture),materialsTexture.Get(mtStr));
-		cptTexture++;
-	}*/
-	/*
-	if(cptTexture==0){
-	    int cptColor= 0;
-	    for(const Upp::String &mcStr : materialsColor.GetKeys()){
-			shader.SetMaterialColor("color"+ Upp::AsString(cptColor),materialsColor.Get(mcStr));
-			cptColor++;
-		}
-	}*/
-	
-/*	if(LightAffected &&  object3D ){
-		for(Light* obj : object3D->GetScene().GetAllLights()){
-			int cptDirLight=0;
-			int cptPointLight=0;
-			int cptSpotLight=0;
-			if(obj.drawable){
-				if(obj.lightType == LT_DIRLIGHT){
-					shader.SetDirLight(obj->name,* static_cast<DirLight*>(obj),cptDirLight);
-					cptDirLight++;
-				}else if(obj->lightType == LT_POINTLIGHT){
-					shader.SetPointLight(obj->name,* static_cast<PointLight*>(obj),cptPointLight);
-					cptPointLight++;
-				}else if(obj->lightType == LT_SPOTLIGHT){
-					shader.SetSpotLight(obj->name,* static_cast<SpotLight*>(obj),cptSpotLight);
-					cptSpotLight++;
-				}
-			}
-		}
-	}*/
-
-   /* for(const Upp::String& str : object3D->GetScene()->GetAllGameObject().GetKeys()){
-		int cptObject = 0;
-    	GameObject& obj =  object3D->GetScene()->GetAllGameObject().Get(str);
-    	if(!obj.IsDrawableDuringThisFrame()){
-			for(const Upp::String& dlStr : obj.GetDirLights().GetKeys()){
-				shader.SetDirLight(dlStr,obj.GetDirLights().Get(dlStr),cptObject);
-				cptObject++;
-			}
-			cptObject=0;
-			for(const Upp::String& spStr : obj.GetSpotLights().GetKeys()){
-				shader.SetSpotLight(spStr,obj.GetSpotLights().Get(spStr),cptObject);
-				cptObject++;
-			}
-			cptObject=0;
-			for(const Upp::String& poStr : obj.GetPointLights().GetKeys()){
-				shader.SetPointLight(poStr,obj.GetPointLights().Get(poStr),cptObject);
-				cptObject++;
-			}
-    	}
-    }*/
-  //	glLineWidth(2.5); //Allow user to change LineWidth
-    glBindVertexArray(VAO);
-    //Draw method can be setted with SetDrawMethod
-    switch(drawMethod){
-    	case DM_POINTS:
-    		glDrawElements(GL_POINTS, indices.GetCount(), GL_UNSIGNED_INT, 0);
-    	break;
-    	case DM_LINES:
-    		
-    		glDrawElements(GL_LINES, indices.GetCount(), GL_UNSIGNED_INT, 0);
-    	break;
-    	case DM_LINE_STRIP:
-    		glDrawElements(GL_LINE_STRIP, indices.GetCount(), GL_UNSIGNED_INT, 0);
-    	break;
-    	case DM_LINE_LOOP:
-    		glDrawElements(GL_LINE_LOOP, indices.GetCount(), GL_UNSIGNED_INT, 0);
-    	break;
-    	case DM_TRIANGLES:
-    		glDrawElements(GL_TRIANGLES, indices.GetCount(), GL_UNSIGNED_INT, 0);
-    	break;
-    	case DM_TRIANGLE_STRIP:
-    		glDrawElements(GL_TRIANGLE_STRIP, indices.GetCount(), GL_UNSIGNED_INT, 0);
-    	break;
-    	case DM_TRIANGLE_FAN:
-    		glDrawElements(GL_TRIANGLE_FAN, indices.GetCount(), GL_UNSIGNED_INT, 0);
-    	break;
-    	case DM_QUADS:
-    		glDrawElements(GL_QUADS, indices.GetCount(), GL_UNSIGNED_INT, 0);
-    	break;
-    	case DM_QUAD_STRIP:
-    		glDrawElements(GL_QUAD_STRIP, indices.GetCount(), GL_UNSIGNED_INT, 0);
-    	break;
-    	case DM_POLYGON:
-    		glDrawElements(GL_POLYGON, indices.GetCount(), GL_UNSIGNED_INT, 0);
-    	break;
-    	default:
-    		LOG("Error : void Mesh::Draw(...) DrawMethod is unknow !");
-    }
-    
-    
-    glBindVertexArray(0);
-    // always good practice to set everything back to defaults once configured.
-	glActiveTexture(GL_TEXTURE0);
-    shader.Unbind();
-#endif
 }
 
 /*
@@ -501,14 +328,8 @@ Shader& Mesh::GetShader(){
 unsigned int Mesh::GetVAO(){
 	return VAO;
 }
-unsigned int Mesh::GetVertexVBO(){
-	return VertexVBO;
-}
-unsigned int Mesh::GetMaterialVBO(){
-	return MaterialVBO;
-}
-unsigned int Mesh::GetMatriceVBO(){
-	return MatriceVBO;
+unsigned int Mesh::GetVBO(){
+	return VBO;
 }
 unsigned int Mesh::GetEBO(){
 	return EBO;

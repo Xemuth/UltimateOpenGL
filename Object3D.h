@@ -12,16 +12,15 @@ class Object3D : public GameObject
 		Shader shader; //When scene handle a shader, default behaviour of Object3D is looking if is own shader is compiled. If yes it mean
 					   //he must use this shader.
 					   
+		Material material; //This material must be Set. To overLoad on a mesh this material, you must set the mesh material
+					   
 		DrawMethod drawMethod = DM_TRIANGLES;
-		Object3DBehaviour behavior = OBJ_STATIC;
 		
 		bool alphaAffected = true;
 		bool lightAffected = true;
 		
-		Material material; //This material must be Set. To overLoad on a mesh this material, you must set the mesh material
-        
-        unsigned int VAO,EBO, VertexVBO, MaterialVBO, MatriceVBO;
-        int NumberOfVertexToDraw = 0;
+		
+	
         
         //Loading 3D Model using Assimp and custom loader
         void ProcessNode(aiNode *node, const aiScene *scene);
@@ -34,9 +33,9 @@ class Object3D : public GameObject
         Object3D(Scene& _scene, Upp::Vector<Mesh>& _meshes);
         Object3D(Scene& _scene, Upp::Vector<float>& Vertices, ReaderParameters readerParameter = ReaderParameters(), ReaderRoutine readerRoutine = ReaderRoutine());
         Object3D(Scene& _scene, const Upp::String& pathOfModel);
-        Object3D(Scene& _scene, Upp::String _name, Upp::Vector<Mesh>& _meshes);
-        Object3D(Scene& _scene, Upp::String _name, Upp::Vector<float>& Vertices, ReaderParameters readerParameter = ReaderParameters(), ReaderRoutine readerRoutine = ReaderRoutine());
-        Object3D(Scene& _scene, Upp::String _name, const Upp::String& pathOfModel);
+        Object3D(Scene& _scene, const Upp::String& _name, Upp::Vector<Mesh>& _meshes);
+        Object3D(Scene& _scene, const Upp::String& _name, Upp::Vector<float>& Vertices, ReaderParameters readerParameter = ReaderParameters(), ReaderRoutine readerRoutine = ReaderRoutine());
+        Object3D(Scene& _scene, const Upp::String& _name, const Upp::String& pathOfModel);
         virtual ~Object3D();
         Object3D(Object3D& _object);//Be carefull of setting the Scene
         Object3D& operator=(Object3D& _object);//Be carefull of setting the Scene
@@ -61,19 +60,6 @@ class Object3D : public GameObject
 		
 		Object3D& SetShader(Shader& _shader);
 		Shader& GetShader();
-		
-		Object3DBehaviour GetBehaviour();
-		Object3D& SetBehaviour(Object3DBehaviour _behaviour);
-		
-		Object3D& SetVAO(unsigned int VAO);
-		Object3D& SetVBO(unsigned int VBO);
-		Object3D& SetEBO(unsigned int EBO);
-		
-		unsigned int GetVAO();
-		unsigned int GetVertexVBO();
-		unsigned int GetMaterialVBO();
-		unsigned int GetMatriceVBO();
-		unsigned int GetEBO();
 		
 		//Override
         void Load();

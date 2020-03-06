@@ -13,9 +13,9 @@ class Scene{
 		
 		Upp::ArrayMap<Upp::String,GameObject> AllGamesObjects;
 		Upp::ArrayMap<Upp::String,Camera> AllCameras;
+		Upp::ArrayMap<Upp::String,Light> AllLights; //Since UOGL V5, light is carried by scene !
 		Camera* ActiveCamera= nullptr;
-		
-		Shader shader;
+
 		Material SkyBox;
 	public:
 		Scene();
@@ -26,15 +26,17 @@ class Scene{
 
 		UltimateOpenGL_Context& GetContext();
 		Upp::String GetName();
-		Shader& GetShader();
 		Material& GetSkyBox();
 		Upp::ArrayMap<Upp::String,GameObject>& GetAllGameObjects();
 		Upp::ArrayMap<Upp::String,Camera>& GetAllCameras();
 		
 		Scene& SetContext(UltimateOpenGL_Context& _context);
 		Scene& SetName(const Upp::String& _name);
-		Scene& SetShader(Shader& _shader);
 		Scene& SetSkyBox(Material& _skyBox);
+		
+		/*
+		* Camera Function
+		*/
 		
 		Camera& CreateCamera(const Upp::String& _CameraName);//if the Camera exists then it will remove it to create new one
 		Camera& AddCamera(const Upp::String& _CameraName, Camera& camera); //Copying camera and give it a new name
@@ -45,6 +47,69 @@ class Scene{
 				                              //If no camera exist then Default camera will be set to NullPtr raising Assertion error on next GetActiveCamera() Call
 		Scene& RemoveCamera(const Upp::String& _CameraName); //if the removed camera is the active one then activeCamera ptr will get the default camera.
 											 //If no camera exist then Default camera will be set to NullPtr raising Assertion error on next GetActiveCamera() Call
+		
+		/*
+		* Light and inheritance function
+		*/
+		template <class T,class... Args>
+		T& CreateLight(const Upp::String& _LightName, Args&&... args){
+			try{
+				if(AllLights.Find(_LightName) == -1){
+					return AllLights.Create<T>(_LightName,*this,_LightName,std::forward<Args>(args)...);
+				}else{
+					RemoveLight(_LightName);
+					return AllLights.Create<T>(_LightName,*this,_LightName,std::forward<Args>(args)...);
+				}
+			}catch(...){
+				throw UOGLException(6,"Error : T& Scene::CreateLight(...) => Error on convertion of the Light !",1);
+			}
+		}
+		template <class T>
+		T& AddLight(const Upp::String& _LightName,T& LightToAdd){
+			try{
+				if(AllLights.Find(_LightName) == -1){
+					auto& type = AllLights.Create<T>(_LightName,LightToAdd);
+					type.SetScene(*this);
+					type.SetName(_LightName);
+					return type;
+				}else{
+					RemoveLight(_LightName);
+					auto& type = AllLights.Create<T>(_LightName,LightToAdd);
+					type.SetScene(*this);
+					type.SetName(_LightName);
+					return type;
+				}
+			}catch(...){
+				throw UOGLException(6,"Error : T& Scene::AddLight(...) => Error on convertion of the Light !",1);
+			}
+		}
+		template <class T>
+		T& GetLight(const Upp::String& _LightName){
+			if(AllLights.Find(_LightName) != -1){
+				try{
+					return dynamic_cast<T&>(AllLights.Get(_LightName));
+				}catch(...){
+					throw UOGLException(6,"Error : T& Scene::GetLight(...) => Error on convertion of the Light !",1);
+				}
+			}
+			throw UOGLException(6,"Error : T& Scene::GetLight(...) => No Light named \""+ _LightName +"\" exists !",1);
+		}
+		template <class T>
+		bool IsLightTypeOf(const Upp::String& _LightName){
+			if(AllLights.Find(_LightName) != -1){
+				try{
+					return (typeid(dynamic_cast<T&>(AllLights.Get(_LightName)))== typeid(T));
+				}catch(...){
+					return false;
+				}
+			}
+			return false;
+		}
+		bool IsLightExist(const Upp::String& _LightName); //Return true if the light  exists
+		Scene& RemoveLight(const Upp::String& _LightName); //Will remove light if it exist
+		/*
+		*	GameObject and inheritance function
+		*/
 		template <class T,class... Args>
 		T& CreateGameObject(const Upp::String& _ObjectName, Args&&... args){//if the game object exists then it will remove it to create new one
 			try{

@@ -17,6 +17,12 @@ class Transform{
 		glm::vec3 Right = glm::vec3(1.0f, 0.0f, 0.0f);
 		glm::vec3 WorldUp = glm::vec3(0.0f, 1.0f, 0.0f);
 		
+		Camera* camera = nullptr;
+		GameObject* gameObject = nullptr;
+		bool eventEnable = true;
+		
+		void LaunchTransformEvent();
+		
 		/*
 		float Yaw = -90.0f;
 		float MaxYaw =+89.99f,MinYaw=-89.99f;
@@ -36,11 +42,19 @@ class Transform{
 		Transform(const Transform& _transform);
 		Transform& operator=(const Transform& _transform);
 		
+		Transform& SetCamera(Camera& _camera);
+		Transform& SetGameObject(GameObject& _gameObject);
+		Transform& EnableTransformEvent();
+		Transform& DisableTransformEvent();
+		bool IsTransformEventEnable();
+		
 		//******************Setter/Getter*******************
 		Transform& SetFront(const glm::vec3& _front);
 		Transform& SetUp(const glm::vec3& _up);
 		Transform& SetRight(const glm::vec3& _right);
 		Transform& SetWorldUp(const glm::vec3& _worldUp);
+		
+		
 		
 
 		const glm::vec3& GetFront()const;

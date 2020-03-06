@@ -5,20 +5,21 @@
 class GameObject{
 	protected:
 		Upp::String name="";
-		GameObjectType type= GOT_UNKNOW;
+		// GameObjectType have been removed
 		Scene* scene = nullptr; //we use ptr because we want be able to create object without attaching it to a scene then load it on multiple scene
+		
 		Transform transform;
 		
-		ACTION_FUNCTION onDraw =nullptr;
+		GAMEOBJECT_FUNCTION onDraw =nullptr;
 		bool onDrawEventActivate = true;
 		
-		ACTION_FUNCTION onTransform=nullptr;
+		GAMEOBJECT_FUNCTION onTransform=nullptr;
 		bool onTransformEventActivate = true;
 	
 		bool drawable = true;
-		GameObject(GameObjectType got); //BeCarefull of setting up the scene;
+		GameObject();
 	public:
-		GameObject(Scene& _scene, GameObjectType got);
+		GameObject(Scene& _scene);
 		GameObject(const GameObject& gameObject);
 		GameObject& operator=(const GameObject& gameObject);
 		virtual ~GameObject();
@@ -29,19 +30,17 @@ class GameObject{
 		//******************Name part**************************
 		Upp::String GetName()const;
 		GameObject& SetName(const Upp::String& _name);
-		//******************Type part**************************
-		GameObjectType GetType();
 		
 		//******************Draw part**************************
-		GameObject& SetOnDrawFunction(ACTION_FUNCTION myFunction);//void (*myFunction)(GameObject& myGameObject));
-		ACTION_FUNCTION GetOnDrawFunction();
+		GameObject& SetOnDrawFunction(GAMEOBJECT_FUNCTION myFunction);//void (*myFunction)(GameObject& myGameObject));
+		GAMEOBJECT_FUNCTION GetOnDrawFunction();
 		GameObject& EnableDrawEvent();
 		GameObject& DisableDrawEvent();
 		bool IsDrawEventActivated();
 		
 		//******************Transform part*********************
-		GameObject& SetOnTransformFunction(ACTION_FUNCTION myFunction);//void (*myFunction)(GameObject& myGameObject));
-		ACTION_FUNCTION GetOnTransformFunction();
+		GameObject& SetOnTransformFunction(GAMEOBJECT_FUNCTION myFunction);//void (*myFunction)(GameObject& myGameObject));
+		GAMEOBJECT_FUNCTION GetOnTransformFunction();
 		GameObject& EnableTransformEvent();
 		GameObject& DisableTransformEvent();
 		bool IsTransformEventActivated();

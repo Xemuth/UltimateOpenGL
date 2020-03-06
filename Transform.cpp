@@ -1,4 +1,7 @@
 #include "Transform.h"
+
+#include "GameObject.h"
+#include "Camera.h"
 Transform::Transform(){}
 Transform::Transform(const Transform& _transform){
 	position = _transform.position;
@@ -36,6 +39,41 @@ Transform& Transform::operator=(const Transform& _transform){
 	Roll = _transform.Roll;*/
 	return *this;
 }
+
+void Transform::LaunchTransformEvent(){
+	if(gameObject && !camera){
+		 if(gameObject->GetOnTransformFunction()){
+		     gameObject->GetOnTransformFunction()(*gameObject);
+		 }
+	}
+	else if(!gameObject && camera){
+		if(camera->GetOnTransformFunction()){
+			camera->GetOnTransformFunction()(*camera);
+		}
+	}
+}
+Transform& Transform::SetCamera(Camera& _camera){
+	if(gameObject)gameObject = nullptr;
+	camera = &_camera;
+	return *this;
+}
+Transform& Transform::SetGameObject(GameObject& _gameObject){
+	if(camera) camera = nullptr;
+	gameObject = &_gameObject;
+	return *this;
+}
+Transform& Transform::EnableTransformEvent(){
+	eventEnable = true;
+	return *this;
+}
+Transform& Transform::DisableTransformEvent(){
+	eventEnable = false;
+	return *this;
+}
+bool Transform::IsTransformEventEnable(){
+	return eventEnable;
+}
+
 //******************Setter/Getter*******************
 Transform& Transform::SetFront(const glm::vec3& _front){
 	Front = _front;
@@ -288,6 +326,7 @@ Transform& Transform::IncreaseRoll(float _Roll,bool updateChildrens){
 */
 //******************Position part******************
 Transform& Transform::Move(glm::vec3 move,bool updateChildrens){//Move the position from the vec3 arg
+	if(eventEnable)LaunchTransformEvent();
 	position  += move;
 	if(updateChildrens){
 		for(Transform* ptr1 : childrens){
@@ -297,6 +336,7 @@ Transform& Transform::Move(glm::vec3 move,bool updateChildrens){//Move the posit
 	return *this;
 }
 Transform& Transform::SetNewPosition(glm::vec3 newPosition,bool updateChildrens){//set the new position of object //It update all the child by : newPose + (old parent pose - old child pos);
+	if(eventEnable)LaunchTransformEvent();
 	glm::vec3 buffer = position;
 	buffer +=newPosition;
 	position = newPosition;
@@ -309,6 +349,7 @@ Transform& Transform::SetNewPosition(glm::vec3 newPosition,bool updateChildrens)
 }
 //******************Scale part*********************
 Transform& Transform::Scale(glm::vec3 scallar,bool updateChildrens){
+	if(eventEnable)LaunchTransformEvent();
 	scale = scallar;
 	modelMatrix =  glm::scale(modelMatrix,scale);
 	if(updateChildrens){
@@ -319,6 +360,7 @@ Transform& Transform::Scale(glm::vec3 scallar,bool updateChildrens){
 	return *this;
 }
 Transform& Transform::SetNewScale(glm::vec3 newScallar,bool updateChildrens){//we ensure the scall is made by mutiply 1.0f model matrix to new scallar
+	if(eventEnable)LaunchTransformEvent();
 	scale = newScallar;
 	modelMatrix =  glm::scale(glm::mat4(1.0f),scale);
 	if(updateChildrens){
@@ -330,6 +372,7 @@ Transform& Transform::SetNewScale(glm::vec3 newScallar,bool updateChildrens){//w
 }
 //******************Rotation part******************
 Transform& Transform::Rotate(glm::quat _quaterion,bool updateChildrens){
+	if(eventEnable)LaunchTransformEvent();
 	quaterion =quaterion *_quaterion ;
 	if(updateChildrens){
 		for(Transform* ptr1 : childrens){
@@ -340,6 +383,7 @@ Transform& Transform::Rotate(glm::quat _quaterion,bool updateChildrens){
 	return *this;
 }
 Transform& Transform::SetNewRotation(glm::quat newQuaterion,bool updateChildrens){
+	if(eventEnable)LaunchTransformEvent();
 	quaterion =newQuaterion;
 	if(updateChildrens){
 		for(Transform* ptr1 : childrens){
@@ -350,6 +394,7 @@ Transform& Transform::SetNewRotation(glm::quat newQuaterion,bool updateChildrens
 	return *this;
 }
 Transform& Transform::RotateFromAngles(float angleInDegree,glm::vec3 EulerAngles,bool updateChildrens){
+	if(eventEnable)LaunchTransformEvent();
 	if(EulerAngles.x > 0){
 		Rotate(glm::angleAxis(glm::radians(angleInDegree), glm::vec3(1.0f,0.0f,0.0f)),updateChildrens);
 	}
@@ -363,6 +408,7 @@ Transform& Transform::RotateFromAngles(float angleInDegree,glm::vec3 EulerAngles
 	return *this;
 }
 Transform& Transform::SetNewRotationFromAngles(float angleInDegree,glm::vec3 EulerAngles,bool updateChildrens){
+	if(eventEnable)LaunchTransformEvent();
 	if(EulerAngles.x > 0){
 		SetNewRotation(glm::angleAxis(glm::radians(angleInDegree), glm::vec3(1.0f,0.0f,0.0f)),updateChildrens);
 	}
@@ -377,6 +423,7 @@ Transform& Transform::SetNewRotationFromAngles(float angleInDegree,glm::vec3 Eul
 }
 //******************Second Rotation part***********
 Transform& Transform::SecondRotate(glm::quat _quaterion,bool updateChildrens){
+	if(eventEnable)LaunchTransformEvent();
 	secondQuaterion =secondQuaterion *_quaterion ;
 	if(updateChildrens){
 		for(Transform* ptr1 : childrens){
@@ -386,6 +433,7 @@ Transform& Transform::SecondRotate(glm::quat _quaterion,bool updateChildrens){
 	return *this;
 }
 Transform& Transform::SetNewSecondRotation(glm::quat newQuaterion,bool updateChildrens){
+	if(eventEnable)LaunchTransformEvent();
 	quaterion =newQuaterion;
 	if(updateChildrens){
 		for(Transform* ptr1 : childrens){
@@ -395,6 +443,7 @@ Transform& Transform::SetNewSecondRotation(glm::quat newQuaterion,bool updateChi
 	return *this;
 }
 Transform& Transform::SecondRotateFromAngles(float angleInDegree,glm::vec3 EulerAngles,bool updateChildrens){
+	if(eventEnable)LaunchTransformEvent();
 	if(EulerAngles.x > 0){
 		SecondRotate(glm::angleAxis(glm::radians(angleInDegree), glm::vec3(1.0f,0.0f,0.0f)),updateChildrens);
 	}
@@ -407,6 +456,7 @@ Transform& Transform::SecondRotateFromAngles(float angleInDegree,glm::vec3 Euler
 	return *this;
 }
 Transform& Transform::SetNewSecondRotationFromAngles(float angleInDegree,glm::vec3 EulerAngles,bool updateChildrens){
+	if(eventEnable)LaunchTransformEvent();
 	if(EulerAngles.x > 0){
 		SetNewSecondRotation(glm::angleAxis(glm::radians(angleInDegree), glm::vec3(1.0f,0.0f,0.0f)),updateChildrens);
 	}

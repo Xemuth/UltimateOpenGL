@@ -7,6 +7,9 @@ class Camera{
 		Upp::String Name="default";
 		
 		Transform transform; //The Camera Transform object
+		
+		CAMERA_FUNCTION onTransform=nullptr;
+		bool onTransformEventActivate = true;
 
 	    float MouvementSpeed = 5.0f;;
 	    float MouseSensitivity = 0.1f;
@@ -51,6 +54,12 @@ class Camera{
 		float GetDrawDistanceMin();
 		float GetMaxFOV();
 		float GetMinFOV();
+		
+		Camera& SetOnTransformFunction(CAMERA_FUNCTION myFunction);
+		CAMERA_FUNCTION GetOnTransformFunction();
+		Camera& EnableTransformEvent();
+		Camera& DisableTransformEvent();
+		bool IsTransformEventActivated();
 		
 		Camera& ProcessKeyboardMouvement(Camera_Movement direction);
 		Camera& ProcessMouveMouvement(float xoffset, float yoffset);

@@ -34,14 +34,19 @@
 	Multiples ENUM used in differentes class
 */
 enum TranslationType{TT_TRANSLATION, TT_ROTATION,TT_SECOND_ROTATION, TT_SCALE};
+
 enum Camera_Movement {CM_FORWARD,CM_BACKWARD,CM_LEFT,CM_RIGHT};// Defines several possible options for camera movement. Used as abstraction to stay away from window-system specific input methods
+
 enum TextureColorSample{TCS_SAMPLE_RGB,TCS_SAMPLE_RGBA}; //Allow to define type of color the texture you want load is
+
 enum TextureType{TT_DIFFUSE,TT_SPECULAR,TT_NORMAL,TT_HEIGHT,TT_AMBIENT};
+
 enum ShaderType{ST_PROGRAMM,ST_VERTEX,ST_FRAGMENT}; //Define type of shader we want
+
 enum DrawMethod{DM_POINTS,DM_LINES,DM_LINE_STRIP,DM_LINE_LOOP,DM_TRIANGLES,DM_TRIANGLE_STRIP,DM_TRIANGLE_FAN,DM_QUADS,DM_QUAD_STRIP,DM_POLYGON};
-enum LightType{LT_DIRLIGHT,LT_SPOTLIGHT,LT_POINTLIGHT};
-enum GameObjectType{GOT_SOUND,GOT_3D,GOT_SPOT_LIGHT,GOT_POINT_LIGHT,GOT_DIR_LIGHT,GOT_UNKNOW};
-enum Object3DBehaviour{OBJ_STATIC,OBJ_DYNAMIC};
+
+enum LightType{LT_DIRLIGHT,LT_POINTLIGHT,LT_SPOTLIGHT,LT_LIGHT};
+
 /*
 PROGRAMM -> GL_POINTS
 Treats each vertex as a single point. Vertex n defines point n. N points are drawn.
@@ -86,7 +91,9 @@ class Object3D;
 class Mesh;
 
 //typedef int TRANSLATION_TYPE;
-typedef void (*ACTION_FUNCTION)(GameObject& myObject);
+typedef void (*GAMEOBJECT_FUNCTION)(GameObject& myObject);
+typedef void (*CAMERA_FUNCTION)(Camera& myCamera);
+typedef void (*LIGHT_FUNCTION)(Light& myLight);
 
 //Both structures is used to read Vector of float used to show multiple shape
 enum ColorFormat{CF_FLOAT,CF_INTEGER};
