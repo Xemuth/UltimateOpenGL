@@ -48,6 +48,32 @@ Material& Material::operator=(const Material& material){
 	
 	return *this;
 }
+GlobalMaterialInformation Material::GetGlobalMaterialInformation(){
+	GlobalMaterialInformation gm;
+	gm.ambient = ambient;
+	gm.diffuse = diffuse;
+	gm.shininess = shininess;
+	gm.specular = specular;
+	if(TextureToUse.GetCount()> 0){
+		gm.TTexture1 = TextureToUse[0].texture.GetId();
+		gm.TSpeculare1 = TextureToUse[0].Specular.GetId();
+		gm.TMix1 = TextureToUse[0].mix;
+	}
+	if(TextureToUse.GetCount()> 1){
+		gm.TTexture2 = TextureToUse[1].texture.GetId();
+		gm.TSpeculare2 = TextureToUse[1].Specular.GetId();
+		gm.TMix2 = TextureToUse[1].mix;
+	}
+	if(TextureToUse.GetCount()> 2){
+		gm.TTexture3 = TextureToUse[2].texture.GetId();
+		gm.TSpeculare3 = TextureToUse[2].Specular.GetId();
+		gm.TMix3 = TextureToUse[2].mix;
+	}
+	gm.UseColor = (whatToUse == COLOR || whatToUse == BOTH)?1.0f:0.0f;
+	gm.UseTexture = (whatToUse == TEXTURE || whatToUse == BOTH)?1.0f:0.0f;
+	
+	return gm;
+}
 Material& Material::UseTextures(){
 	whatToUse = TEXTURE;
 	return *this;
@@ -75,7 +101,7 @@ Material& Material::SetColor(glm::vec3 _color){
 	color = glm::vec4(_color.x,_color.y,_color.z,1.0f);
 	return *this;
 }
-TextureInformation& Material::AddTexture(Texture& t1, float MixValueInPourcentage, Texture tSpeculare ){
+TextureInformation& Material::AddTexture(Texture t1, float MixValueInPourcentage, Texture tSpeculare ){
 	if(t1.IsLoaded()){
 		TextureInformation& t = TextureToUse.Create<TextureInformation>().SetTexture(t1).SetMix(MixValueInPourcentage);
 		if(tSpeculare.IsLoaded())

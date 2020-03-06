@@ -16,11 +16,24 @@ SHADER(330 core,
 	layout (location = 3) in vec3 aTangents;\n
 	layout (location = 4) in vec3 aBiTangents;\n
 	layout (location = 5) in vec4 aColors;\n
-	//layout (location = 6) in int aUseTextures;\n
-	//layout (location = 7) in bool aUseColors;\n
-	//layout (location = 8) in int aTextures;\n
-	//layout (location = 9) in int aSpeculareTextures;\n
-	//layout (location = 10) in mat4 aMatricesModels;\n
+	/*
+	layout (location = 6) in float aUseTextures;\n //Act as boolean
+	layout (location = 7) in float aUseColors;\n //Act as boolean
+	layout (location = 8) in float aShininess;
+	layout (location = 9) in float aDiffuse;
+	layout (location = 10) in vec3 aAmbient;
+	layout (location = 11) in vec3 aSpeculare;
+	layout (location = 12) in sampler2D aTexture;\n
+	layout (location = 13) in sampler2D aSpeculareTextures;\n
+	layout (location = 14) in float aTextureMix;\n
+	layout (location = 15) in sampler2D aTexture2;\n
+	layout (location = 16) in sampler2D aSpeculareTextures2;\n
+	layout (location = 17) in float aTextureMix2;\n
+	layout (location = 18) in sampler2D aTexture3;\n
+	layout (location = 19) in sampler2D aSpeculareTextures3;\n
+	layout (location = 20) in int aTextureMix3;\n
+	*/
+	layout (location = 6) in mat4 aMatricesModels;\n
 	\n
 	out vec4 inColor;\n
 	\n
@@ -31,7 +44,8 @@ SHADER(330 core,
 	void main()\n
 	{\n
 		inColor = aColors;\n
-		gl_Position = projection * view *  model * vec4(aPos, 1.0f);\n
+		//inColor = texture(aTexture, aTextCoords);\n
+		gl_Position = projection * view *  aMatricesModels * vec4(aPos, 1.0f);\n
 		//gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n
 	}\n
 )

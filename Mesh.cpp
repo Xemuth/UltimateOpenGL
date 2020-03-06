@@ -72,7 +72,7 @@ Mesh::Mesh(Object3D& obj): transform(){
 Mesh::Mesh(const Mesh& _mesh){
 	object3D = _mesh.object3D;
 	VAO = _mesh.VAO;
-	VBO = _mesh.VBO;
+	VertexVBO = _mesh.VertexVBO;
 	EBO = _mesh.EBO;
         
     vertices.Append(_mesh.vertices);
@@ -144,6 +144,85 @@ GLint Mesh::ResolveDrawMethod(){
     }
 }
 void Mesh::Load(){
+#ifdef flagUOGLV3
+	if(indices.size() != 0 || vertices.size() != 0){
+		/*if(textures.GetCount() > 0 && materialsTexture.GetCount() == 0){
+			for(Texture& t : textures){
+			//	Upp::Cout() << "Texture of mesh is " + t.GetName() + " with ID of " +  Upp::AsString(t.GetId()) + "\n";
+				MaterialTexture& m =  materialsTexture.Add(t.GetName());
+				m.SetDiffuse(t.GetTextureIterator());
+			}
+		}*/
+		
+		//Juste un test,ne doit pas rester en létat
+		/*for(MaterialTexture& mt : materialsTexture){
+			mt.SetMix((float) (1.0f / materialsTexture.GetCount()));
+		}*/
+		
+		if(!shader.IsCompiled()){
+			LOG("Shader not compiled !, Default shaders loaded !\n");
+			//GenerateAutoShader(object3D->GetScene() ->GetNumberOfDirLight(),  object3D->GetScene() ->GetNumberOfPointLight(),object3D->GetScene()->GetNumberOfSpotLight());
+			GetShader().AssignSimpleShader();
+		}
+		if(indices.size() == 0 && vertices.size() > 0){
+            LOG("No indice defined ! Auto generation of incices !");
+            LoadDefaultIndices();
+        }
+
+
+		// create buffers/arrays
+	    glGenVertexArrays(1, &VAO);
+	    glGenBuffers(1, &VertexVBO);
+	    glGenBuffers(1, &EBO);
+	
+	    glBindVertexArray(VAO);
+	    // load data into vertex buffers
+	    glBindBuffer(GL_ARRAY_BUFFER, VertexVBO);
+	    // A great thing about structs is that their memory layout is sequential for all its items.
+	    // The effect is that we can simply pass a pointer to the struct and it translates perfectly to a glm::vec3/2 array which
+	    // again translates to 3/2 floats which translates to a byte array.
+		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
+	
+	    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+	
+	
+	/*	Upp::Cout() << "SizeOFVertex : " << sizeof(Vertex) << "\n";
+		float* buffer = nullptr;
+		for(Vertex& v : vertices){
+			buffer = (float*)&v;
+			
+			for (int e =0 ; e < 13 ; e++){
+				Upp::Cout() <<Upp::AsString(*buffer) <<",";
+				buffer++;
+			}
+			
+			Upp::Cout() <<  Upp::EOL;
+		}*/
+	
+	    // set the vertex attribute pointers
+	    // vertex Positions
+	    glEnableVertexAttribArray(0);
+	    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+	    // vertex normals
+	    glEnableVertexAttribArray(1);
+	    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Normal));
+	    // vertex texture coords
+	    glEnableVertexAttribArray(2);
+	    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
+	    // vertex tangent
+	    glEnableVertexAttribArray(3);
+	    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Tangent));
+	    // vertex bitangent
+	    glEnableVertexAttribArray(4);
+	    glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Bitangent));
+	
+	    glBindVertexArray(0);
+	   // shader.Use();
+	}else{
+	    LOG("Mesh of object named " + object3D->GetName() + " are error ! or undefined ! nothing to load !");
+	}
+#else
 	if(indices.size() != 0 || vertices.size() != 0){
 		/*if(textures.GetCount() > 0 && materialsTexture.GetCount() == 0){
 			for(Texture& t : textures){
@@ -170,12 +249,12 @@ void Mesh::Load(){
 
 		// create buffers/arrays
 	    glGenVertexArrays(1, &VAO);
-	    glGenBuffers(1, &VBO);
+	    glGenBuffers(1, &VertexVBO);
 	    glGenBuffers(1, &EBO);
 	
 	    glBindVertexArray(VAO);
 	    // load data into vertex buffers
-	    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	    glBindBuffer(GL_ARRAY_BUFFER, VertexVBO);
 	    // A great thing about structs is that their memory layout is sequential for all its items.
 	    // The effect is that we can simply pass a pointer to the struct and it translates perfectly to a glm::vec3/2 array which
 	    // again translates to 3/2 floats which translates to a byte array.
@@ -198,13 +277,13 @@ void Mesh::Load(){
 	
 	    // set the vertex attribute pointers
 	    // vertex Positions
-	    glEnableVertexAttribArray(0);	
+	    glEnableVertexAttribArray(0);
 	    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
 	    // vertex normals
-	    glEnableVertexAttribArray(1);	
+	    glEnableVertexAttribArray(1);
 	    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Normal));
 	    // vertex texture coords
-	    glEnableVertexAttribArray(2);	
+	    glEnableVertexAttribArray(2);
 	    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
 	    // vertex tangent
 	    glEnableVertexAttribArray(3);
@@ -218,9 +297,69 @@ void Mesh::Load(){
 	}else{
 	    LOG("Mesh of object named " + object3D->GetName() + " are error ! or undefined ! nothing to load !");
 	}
+#endif
 }
 void Mesh::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform,Camera& camera){
+#ifdef flagUOGLV3
+	shader.Use();
+	//Cout() << "x: " << Position.x << ", y: " << Position.y << ", z: " << Position.z << "\n";
+	model = glm::translate(model,GetTransform().GetPosition())*glm::mat4_cast(GetTransform().GetQuaterion())*GetTransform().GetModelMatrixScaller();
+
+	//if(ClearOnDraw)transformations.Clear();
+    shader.SetMat4("model",model);
+    shader.SetMat4("transform", transform);
+    shader.SetMat4("view",view);
+    shader.SetMat4("projection", projection);
+    shader.SetVec3("viewPos",GetTransform().GetPosition());
+    int cptTexture =0;
+
 	
+
+
+    glBindVertexArray(VAO);
+    //Draw method can be setted with SetDrawMethod
+    switch(drawMethod){
+		case DM_POINTS:
+			glDrawElements(GL_POINTS, indices.GetCount(), GL_UNSIGNED_INT, 0);
+		break;
+		case DM_LINES:
+			
+			glDrawElements(GL_LINES, indices.GetCount(), GL_UNSIGNED_INT, 0);
+		break;
+		case DM_LINE_STRIP:
+			glDrawElements(GL_LINE_STRIP, indices.GetCount(), GL_UNSIGNED_INT, 0);
+		break;
+		case DM_LINE_LOOP:
+			glDrawElements(GL_LINE_LOOP, indices.GetCount(), GL_UNSIGNED_INT, 0);
+		break;
+		case DM_TRIANGLES:
+			glDrawElements(GL_TRIANGLES, indices.GetCount(), GL_UNSIGNED_INT, 0);
+		break;
+		case DM_TRIANGLE_STRIP:
+			glDrawElements(GL_TRIANGLE_STRIP, indices.GetCount(), GL_UNSIGNED_INT, 0);
+		break;
+		case DM_TRIANGLE_FAN:
+			glDrawElements(GL_TRIANGLE_FAN, indices.GetCount(), GL_UNSIGNED_INT, 0);
+		break;
+		case DM_QUADS:
+			glDrawElements(GL_QUADS, indices.GetCount(), GL_UNSIGNED_INT, 0);
+		break;
+		case DM_QUAD_STRIP:
+			glDrawElements(GL_QUAD_STRIP, indices.GetCount(), GL_UNSIGNED_INT, 0);
+		break;
+		case DM_POLYGON:
+			glDrawElements(GL_POLYGON, indices.GetCount(), GL_UNSIGNED_INT, 0);
+		break;
+		default:
+			LOG("Error : void Mesh::Draw(...) DrawMethod is unknow !");
+    }
+    
+    
+    glBindVertexArray(0);
+    // always good practice to set everything back to defaults once configured.
+	glActiveTexture(GL_TEXTURE0);
+    shader.Unbind();
+#else
 	shader.Use();
 	//Cout() << "x: " << Position.x << ", y: " << Position.y << ", z: " << Position.z << "\n";
 	model = glm::translate(model,GetTransform().GetPosition())*glm::mat4_cast(GetTransform().GetQuaterion())*GetTransform().GetModelMatrixScaller();
@@ -333,6 +472,7 @@ void Mesh::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 tr
     // always good practice to set everything back to defaults once configured.
 	glActiveTexture(GL_TEXTURE0);
     shader.Unbind();
+#endif
 }
 
 /*
@@ -361,8 +501,14 @@ Shader& Mesh::GetShader(){
 unsigned int Mesh::GetVAO(){
 	return VAO;
 }
-unsigned int Mesh::GetVBO(){
-	return VBO;
+unsigned int Mesh::GetVertexVBO(){
+	return VertexVBO;
+}
+unsigned int Mesh::GetMaterialVBO(){
+	return MaterialVBO;
+}
+unsigned int Mesh::GetMatriceVBO(){
+	return MatriceVBO;
 }
 unsigned int Mesh::GetEBO(){
 	return EBO;

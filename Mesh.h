@@ -61,7 +61,7 @@ class Mesh {
 		Object3D* object3D =nullptr;
 		
         /*  Render data  */
-        unsigned int VAO, VBO, EBO;
+        unsigned int VAO, EBO, VertexVBO, MaterialVBO, MatriceVBO;
 
         /*  Mesh Data  */
         Upp::Vector<Vertex> vertices;
@@ -92,7 +92,9 @@ class Mesh {
         Mesh(const Mesh& _mesh); //Dont forget to set z
         
 		unsigned int GetVAO();
-		unsigned int GetVBO();
+		unsigned int GetVertexVBO();
+		unsigned int GetMaterialVBO();
+		unsigned int GetMatriceVBO();
 		unsigned int GetEBO();
 		
 		Upp::Vector<Vertex>& GetVertices();

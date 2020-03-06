@@ -60,6 +60,67 @@ class Texture : Upp::Moveable<Texture>{ //only support 2D textures actually //Do
 };
 
 //*****************Material***********//
+	//layout (location = 6) in bool aUseTextures;\n
+	//layout (location = 7) in bool aUseColors;\n
+	//layout (location = 8) in float aShininess;
+	//layout (location = 9) in float aDiffuse;
+	//layout (location = 10) in vec3 aAmbient;
+	//layout (location = 11) in vec3 aSpeculare;
+	//layout (location = 12) in int aTexture;\n
+	//layout (location = 13) in int aSpeculareTextures;\n
+	//layout (location = 14) in int aTextreMix;\n
+	
+	//layout (location = 15) in int aTexture2;\n
+	//layout (location = 16) in int aSpeculareTextures2;\n
+	//layout (location = 17) in int aTextreMix2;\n
+	
+	//layout (location = 18) in int aTexture3;\n
+	//layout (location = 19) in int aSpeculareTextures3;\n
+	//layout (location = 20) in int aTextreMix3;\n
+struct GlobalMaterialInformation : public Upp::Moveable<GlobalMaterialInformation>{ //Structure used to send data to GC (same as Vertex struct)
+		float UseTexture = 0.0f;
+		float UseColor = 1.0f;
+		
+		float shininess=32.0f; //Brilliance en français
+		float diffuse=0.64f; //Valeur de diffusion
+		glm::vec3 ambient=glm::vec3(1.0f, 0.5f, 0.31f);
+	    glm::vec3 specular=glm::vec3(0.5f, 0.5f, 0.5f);
+	    
+	    int TTexture1 = -1;
+	    int TSpeculare1 = -1;
+	    float TMix1 = 1.0f;
+	    
+	    int TTexture2 = -1;
+	    int TSpeculare2 = -1;
+	    float TMix2 = 1.0f;
+	    
+	    int TTexture3 = -1;
+	    int TSpeculare3 = -1;
+	    float TMix3 = 1.0f;
+
+		GlobalMaterialInformation(const GlobalMaterialInformation& gmi){
+			shininess = gmi.shininess;
+			diffuse = gmi.diffuse;
+			ambient = gmi.ambient;
+			specular = gmi.specular;
+			UseColor = gmi.UseColor;
+			UseTexture = gmi.UseTexture;
+			
+			TTexture1 = gmi.TTexture3;
+			TSpeculare1 = gmi.TSpeculare3;
+			TMix1 = gmi.TMix3;
+			
+			TTexture2 = gmi.TTexture2;
+			TSpeculare2 = gmi.TSpeculare2;
+			TMix2 = gmi.TMix2;
+			
+			TTexture3 = gmi.TTexture3;
+			TSpeculare3 = gmi.TSpeculare3;
+			TMix3 = gmi.TMix3;
+		}
+		GlobalMaterialInformation(){}
+};
+
 struct TextureInformation{
 		Texture texture;
 		Texture Specular;
@@ -71,7 +132,7 @@ struct TextureInformation{
 		TextureInformation& SetSpecular(Texture& _specular);
 		TextureInformation& SetMix(float _mix = 1.0f);
 };
-class Material{
+class Material : public Upp::Moveable<Material>{
 	private:
 		float shininess=32.0f; //Brilliance en français
 		float diffuse=0.64f; //Valeur de diffusion
@@ -110,7 +171,8 @@ class Material{
 		float GetShininess();
 		float GetDiffuse();
 		
-		TextureInformation& AddTexture(Texture& t1, float MixValueInPourcentage = 1.0f, Texture tSpeculare = Texture());
+		TextureInformation& AddTexture(Texture t1, float MixValueInPourcentage = 1.0f, Texture tSpeculare = Texture());
+		GlobalMaterialInformation GetGlobalMaterialInformation();
 		Material& RemoveTexture(int iterator =0);
 		Upp::Array<TextureInformation>& GetTextures();
 		
