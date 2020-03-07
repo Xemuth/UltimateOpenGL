@@ -32,7 +32,7 @@ class Object3D : public GameObject
         Object3D(Scene& _scene, Mesh& _mesh);
         Object3D(Scene& _scene, Upp::Vector<Mesh>& _meshes);
         Object3D(Scene& _scene, Upp::Vector<float>& Vertices, ReaderParameters readerParameter = ReaderParameters(), ReaderRoutine readerRoutine = ReaderRoutine());
-        Object3D(Scene& _scene, const Upp::String& pathOfModel);
+        Object3D(Scene& _scene, const Upp::String& _name);
         Object3D(Scene& _scene, const Upp::String& _name, Upp::Vector<Mesh>& _meshes);
         Object3D(Scene& _scene, const Upp::String& _name, Upp::Vector<float>& Vertices, ReaderParameters readerParameter = ReaderParameters(), ReaderRoutine readerRoutine = ReaderRoutine());
         Object3D(Scene& _scene, const Upp::String& _name, const Upp::String& pathOfModel);

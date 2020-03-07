@@ -164,7 +164,6 @@ void Mesh::Load(){
 	    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
 	
-	
 	    // set the vertex attribute pointers
 	    // vertex Positions
 	    glEnableVertexAttribArray(0);
@@ -191,8 +190,11 @@ void Mesh::Load(){
 	}
 }
 void Mesh::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform,Camera& camera){
+	
+
+	
 	shader.Use();
-	model = glm::translate(model,GetTransform().GetPosition())*glm::mat4_cast(GetTransform().GetQuaterion())*GetTransform().GetModelMatrixScaller();
+	model = GetTransform().GetModelMatrice(); // glm::translate(model,GetTransform().GetPosition())*glm::mat4_cast(GetTransform().GetQuaterion())*GetTransform().GetModelMatrixScaller();
 
     shader.SetMat4("model",model);
     shader.SetMat4("transform", transform);
@@ -200,6 +202,7 @@ void Mesh::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 tr
     shader.SetMat4("projection", projection);
     shader.SetVec3("viewPos",GetTransform().GetPosition());
     int cptTexture =0;
+    
 	/*
 	for(const Upp::String &mtStr : materialsTexture.GetKeys()){
 		materialsTexture.Get(mtStr).diffuse = object3D->GetScene()->GetContext()->GetTextures().Get(mtStr).GetTextureIterator();
@@ -409,7 +412,7 @@ bool Mesh::ReadData(Upp::Vector<float>& data,ReaderParameters& readerParameter,b
 		float float4 = 0.0f;
 		while(iteratorSize < data.GetCount()){
 			Vertex& v =  vertices.Add();
-			v.SaveColor = !useMaterialColorInsteadOfColorRetrieve;
+			//v.SaveColor = !useMaterialColorInsteadOfColorRetrieve;
 			for(const int& iterator  : map.GetKeys()){
 				switch( map.Get(iterator)){
 					case VERTICES:

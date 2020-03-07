@@ -14,8 +14,8 @@ Object3D::Object3D(Scene& _scene, Upp::Vector<Mesh>& _meshes) : GameObject(_scen
 Object3D::Object3D(Scene& _scene, Upp::Vector<float>& Vertices, ReaderParameters readerParameter, ReaderRoutine readerRoutine) : GameObject(_scene){
 	ReadData(Vertices,readerParameter,readerRoutine);
 }
-Object3D::Object3D(Scene& _scene, const Upp::String& pathOfModel) : GameObject(_scene){
-	LoadModel(pathOfModel);
+Object3D::Object3D(Scene& _scene, const Upp::String& _name) : GameObject(_scene){
+	name = _name;
 }
 Object3D::Object3D(Scene& _scene, const Upp::String& _name, Upp::Vector<Mesh>& _meshes) : GameObject(_scene){
 	name = _name;
@@ -295,6 +295,9 @@ Material& Object3D::GetMaterial(){
 }
 Object3D& Object3D::SetDrawMethod(DrawMethod dm){
 	drawMethod = dm;
+	for(Mesh& m : meshes){
+		m.SetDrawMethod(dm);
+	}
 	return *this;
 }
 DrawMethod Object3D::GetDrawMethod(){

@@ -223,6 +223,68 @@ class UOGLException : public std::exception { //classe to managed every exceptio
 			delete [] myChar;
 		}
 };
+
+struct Vertex : public Upp::Moveable<Vertex> {
+    // position
+    glm::vec3 Position=glm::vec3(0.0,0.0,0.0);
+    // normal
+    glm::vec3 Normal=glm::vec3(0.0,0.0,0.0);
+    // texCoords
+    glm::vec2 TexCoords=glm::vec2(0.0,0.0);
+    // tangent
+    glm::vec3 Tangent=glm::vec3(0.0,0.0,0.0);
+    // bitangent
+    glm::vec3 Bitangent=glm::vec3(0.0,0.0,0.0);
+    //Color
+    glm::vec4 Color = glm::vec4(1.0f,1.0f,1.0f,1.0f);
+    //bool SaveColor =false;
+    
+    Vertex(){}
+    Vertex& SetPosition(glm::vec3 _position){
+        Position = _position;
+        return *this;
+    }
+    Vertex& SetNormal(glm::vec3 _normal){
+        Normal = _normal;
+        return *this;
+    }
+    Vertex& SetTexCoords(glm::vec2 _texCoords){
+        TexCoords = _texCoords;
+        return *this;
+    }
+    Vertex& SetTangent(glm::vec3 _tangent){
+        Tangent = _tangent;
+        return *this;
+    }
+    Vertex& SetBitangent(glm::vec3 _bitangent){
+        Bitangent = _bitangent;
+        return *this;
+    }
+    Vertex& SetColor(glm::vec4 _Color){
+        Color = _Color;
+        return *this;
+    }
+    Vertex& SetColor(glm::vec3 _Color){
+		Color = glm::vec4(_Color.x,_Color.y,_Color.z,1.0f);
+		return *this;
+    }
+    Vertex(const Vertex& v){
+		Position = v.Position;
+		Normal = v.Normal;
+		TexCoords = v.TexCoords;
+		Tangent = v.Tangent;
+		Bitangent = v.Bitangent;
+		Color = v.Color;
+    }
+};
+
+static void PrintVertex(Vertex& v){
+	LOG("Position: " + Upp::String( glm::to_string( v.Position))
+	+ " Normal: " +Upp::String( glm::to_string(v.Normal))
+	+ " TextureCoords: " + Upp::String(glm::to_string(v.TexCoords))
+	+ " Color: " + Upp::String(glm::to_string(v.Color)));
+}
+
 //****************Static part **************************
 /*
 	This part give some basic function to do

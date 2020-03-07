@@ -37,7 +37,7 @@ void UltimateOpenGL_Context::Draw(const Upp::String& SceneToDraw,const Upp::Stri
 		}
 		scene.Draw(CameraToUse);
 	}catch(UOGLException exception){
-	//	ASSERT("Error have been raised to UltimateOpenGL_Context::Draw(...), " + Upp::AsString(+ exception.what()));
+		ASSERT_(true,"Error have been raised to UltimateOpenGL_Context::Draw(...), " + Upp::AsString(+ exception.what()));
 	}
 }
 Scene& UltimateOpenGL_Context::CreateScene(const Upp::String& name){
