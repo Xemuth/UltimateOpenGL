@@ -23,7 +23,7 @@ Things are coming :
 
 ## Getting Started and Showing a 3D model 
 
- :warning: **Since 20/01/2020**: Ultimate OpenGL is on complete rewriting to Allow High performance and Smart gestion of High number of Mesh for a single shape ! Getting started tutorial as well will be rewritten soon !
+ :warning: Ultimate OpenGL is actually under V5 and being under developpement, ATM texture and light is not handled, to get a working version get UOGL_V3 : https://github.com/Xemuth/UltimateOpenGL/tree/UltimateOpenGL_V3
 
 ![Ex1](https://i.imgur.com/bI2kepS.png)
 ![Ex2](https://i.imgur.com/KL2ixM6.png)
