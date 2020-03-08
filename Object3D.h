@@ -61,6 +61,8 @@ class Object3D : public GameObject
 		Object3D& SetShader(Shader& _shader);
 		Shader& GetShader();
 		
+		Object3D& AssignSameIndiceAsEveryMesh(int MeshIndicesToGet);
+		
 		//Override
         void Load();
         void Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform,Camera& camera);

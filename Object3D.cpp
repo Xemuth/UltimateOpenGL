@@ -311,6 +311,19 @@ Shader& Object3D::GetShader(){
 	return shader;
 }
 
+Object3D& Object3D::AssignSameIndiceAsEveryMesh(int MeshIndicesToGet){
+	if(MeshIndicesToGet < meshes.GetCount()){
+		if(meshes[MeshIndicesToGet].GetIndices().GetCount() == 0){
+			meshes[MeshIndicesToGet].LoadDefaultIndices();
+		}
+		for(Mesh& m : meshes){
+			if(&meshes[MeshIndicesToGet] != &m)
+				m.SetIndices(meshes[MeshIndicesToGet].GetIndices());
+		}
+	}
+	return *this;
+}
+
 //Override
 void Object3D::Load(){
 	if(!loaded){
