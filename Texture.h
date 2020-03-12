@@ -176,6 +176,10 @@ class Material : public Upp::Moveable<Material>{
 		Material& RemoveTexture(int iterator =0);
 		Upp::Array<TextureInformation>& GetTextures();
 		
+		bool IsColor();
+		bool IsTexture();
+		bool IsColorAndTexture();
+		
 		bool HaveBeenSetUp(); //Used to know if this Material have been setting up (to know if UOGL should use it).
 };
 

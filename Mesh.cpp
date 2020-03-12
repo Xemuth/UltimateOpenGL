@@ -190,9 +190,6 @@ void Mesh::Load(){
 	}
 }
 void Mesh::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform,Camera& camera){
-	
-
-	
 	shader.Use();
 	model = GetTransform().GetModelMatrice(); // glm::translate(model,GetTransform().GetPosition())*glm::mat4_cast(GetTransform().GetQuaterion())*GetTransform().GetModelMatrixScaller();
 
@@ -201,6 +198,19 @@ void Mesh::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 tr
     shader.SetMat4("view",view);
     shader.SetMat4("projection", projection);
     shader.SetVec3("viewPos",GetTransform().GetPosition());
+    
+    if(GetMaterial().HaveBeenSetUp()){
+    }else{
+		if(GetObject3D().GetMaterial().IsColor()){
+			
+		}else if(GetObject3D().GetMaterial().IsTexture()){
+			for(TextureInformation& ti :  GetObject3D().GetMaterial().GetTextures()){
+				ti.texture.Use();
+				shader.SetInt( ti.texture.GetName() + ".diffuse",ti.texture.GetTextureIterator());
+			}
+		}
+    }
+    
     int cptTexture =0;
     
 	/*

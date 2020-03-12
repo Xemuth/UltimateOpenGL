@@ -257,6 +257,7 @@ Shader& Shader::SetSpotLight(Upp::String name, const SpotLight &spotLight,int nu
 	SetFloat(name+".outerCutOff",spotLight.GetOuterCutOff());
 	return *this;
 }
+
 Shader& Shader::SetMaterialColor(Upp::String name, Material &materialColor) const{
 	SetVec3(name+".ambient",materialColor.GetAmbient());
 	SetVec4(name+".diffuse",materialColor.GetColor());

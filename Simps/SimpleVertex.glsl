@@ -38,6 +38,7 @@ SHADER(330 core,
 	out vec4 inColor;\n
 	out vec3 Normal;
 	out vec3 FragPos;\n
+	out vec2 TextureCoordinate;\n
 	\n
 	uniform mat4 view;\n
 	uniform mat4 projection;\n
@@ -49,6 +50,7 @@ SHADER(330 core,
 		//inColor = texture(aTexture, aTextCoords);\n
 		//gl_Position = projection * view * model *  vec4(aPos, 1.0f);\n
 		//gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n
+		 TextureCoordinate = aTextCoords;
 		 FragPos = vec3(model * vec4(aPos, 1.0));
 		 Normal = mat3(transpose(inverse(model))) * aNorm;
 		 gl_Position = projection * view * model * vec4(aPos, 1.0f);

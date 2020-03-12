@@ -142,7 +142,16 @@ Material& Material::SetAmbient(glm::vec3 _ambient){
 }
 Material& Material::SetSpecular(glm::vec3 _specular){
 	specular = _specular;
-	return *this;	
+	return *this;
+}
+bool Material::IsColor(){
+	return (whatToUse == COLOR)?true:false;
+}
+bool Material::IsTexture(){
+	return (whatToUse == TEXTURE)?true:false;
+}
+bool Material::IsColorAndTexture(){
+	return (whatToUse == BOTH)?true:false;
 }
 glm::vec4 Material::GetColor(){
 	return color;
