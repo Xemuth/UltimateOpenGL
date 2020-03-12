@@ -200,6 +200,14 @@ void Mesh::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 tr
     shader.SetVec3("viewPos",GetTransform().GetPosition());
     
     if(GetMaterial().HaveBeenSetUp()){
+        if(GetMaterial().IsColor()){
+			
+		}else if(GetMaterial().IsTexture()){
+			for(TextureInformation& ti :  GetMaterial().GetTextures()){
+				ti.texture.Use();
+				shader.SetInt( ti.texture.GetName() + ".diffuse",ti.texture.GetTextureIterator());
+			}
+		}
     }else{
 		if(GetObject3D().GetMaterial().IsColor()){
 			
