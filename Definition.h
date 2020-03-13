@@ -79,14 +79,12 @@ struct Vertex;
 
 class Camera;
 class Transform;
-class Transform;
-
 class Scene;
-class GameObject;
 class Light;
 class DirLight;
 class PointLight;
 class SpotLight;
+class GameObject;
 class Object3D;
 class Mesh;
 

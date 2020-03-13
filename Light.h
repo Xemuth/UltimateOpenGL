@@ -54,9 +54,11 @@ class DirLight : public Light
 		
 		glm::vec3 direction=glm::vec3(0.0f,-1.0f,0.0f);
 	public:
-		DirLight(Scene& _scene,Upp::String& _name);
-		DirLight(Scene& _scene,Upp::String& _name,glm::vec3 _ambient=glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3 _diffuse=glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3 _specular=glm::vec3(1.0f,1.0f,1.0f), glm::vec3 _direction=glm::vec3(0.0f,-1.0f,0.0f));
-		DirLight(Scene& _scene,Upp::String& _name,glm::vec3 _direction=glm::vec3(0.0f,-1.0f,0.0f));
+		DirLight();
+		DirLight(Scene& _scene);
+		DirLight(Scene& _scene,const Upp::String& _name);
+		DirLight(Scene& _scene,const Upp::String& _name,glm::vec3 _ambient=glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3 _diffuse=glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3 _specular=glm::vec3(1.0f,1.0f,1.0f), glm::vec3 _direction=glm::vec3(0.0f,-1.0f,0.0f));
+		DirLight(Scene& _scene,const Upp::String& _name,glm::vec3 _direction=glm::vec3(0.0f,-1.0f,0.0f));
 		DirLight(glm::vec3 _ambient=glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3 _diffuse=glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3 _specular=glm::vec3(1.0f,1.0f,1.0f), glm::vec3 _direction=glm::vec3(0.0f,-1.0f,0.0f));
 		DirLight(glm::vec3 _direction=glm::vec3(0.0f,-1.0f,0.0f));
 		DirLight(DirLight& dirLight);
@@ -80,9 +82,11 @@ class SpotLight : public Light
 	    float linear=0.09f;
 	    float quadratic=0.032f;
 	public:
-		SpotLight(Scene& _scene,Upp::String& _name);
-		SpotLight(Scene& _scene,Upp::String& _name, glm::vec3 _ambient=glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3 _diffuse=glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3 _specular=glm::vec3(1.0f,1.0f,1.0f), glm::vec3 _position=glm::vec3(0.0f,0.0f,0.0f), glm::vec3 _direction=glm::vec3(0.0f,-1.0f,0.0f), float _cutOff=glm::cos(glm::radians(12.5f)), float _outerCutOff=glm::cos(glm::radians(15.0f)), float _constant=1.0f, float _linear=0.09f, float _quadratic=0.032f);
-		SpotLight(Scene& _scene,Upp::String& _name, glm::vec3 _position=glm::vec3(0.0f,1.0f,0.0f), glm::vec3 _direction=glm::vec3(0.0f,-1.0f,0.0f), float _cutOff=glm::cos(glm::radians(12.5f)), float _outerCutOff=glm::cos(glm::radians(15.0f)), float _constant=1.0f, float _linear=0.09f, float _quadratic=0.032f);
+		SpotLight();
+		SpotLight(Scene& _scene);
+		SpotLight(Scene& _scene,const Upp::String& _name);
+		SpotLight(Scene& _scene,const Upp::String& _name, glm::vec3 _ambient=glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3 _diffuse=glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3 _specular=glm::vec3(1.0f,1.0f,1.0f), glm::vec3 _position=glm::vec3(0.0f,0.0f,0.0f), glm::vec3 _direction=glm::vec3(0.0f,-1.0f,0.0f), float _cutOff=glm::cos(glm::radians(12.5f)), float _outerCutOff=glm::cos(glm::radians(15.0f)), float _constant=1.0f, float _linear=0.09f, float _quadratic=0.032f);
+		SpotLight(Scene& _scene,const Upp::String& _name, glm::vec3 _position=glm::vec3(0.0f,1.0f,0.0f), glm::vec3 _direction=glm::vec3(0.0f,-1.0f,0.0f), float _cutOff=glm::cos(glm::radians(12.5f)), float _outerCutOff=glm::cos(glm::radians(15.0f)), float _constant=1.0f, float _linear=0.09f, float _quadratic=0.032f);
 		SpotLight(glm::vec3 _ambient=glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3 _diffuse=glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3 _specular=glm::vec3(1.0f,1.0f,1.0f), glm::vec3 _position=glm::vec3(0.0f,0.0f,0.0f), glm::vec3 _direction=glm::vec3(0.0f,-1.0f,0.0f), float _cutOff=glm::cos(glm::radians(12.5f)), float _outerCutOff=glm::cos(glm::radians(15.0f)), float _constant=1.0f, float _linear=0.09f, float _quadratic=0.032f);
 		SpotLight(glm::vec3 _position=glm::vec3(0.0f,1.0f,0.0f), glm::vec3 _direction=glm::vec3(0.0f,-1.0f,0.0f), float _cutOff=glm::cos(glm::radians(12.5f)), float _outerCutOff=glm::cos(glm::radians(15.0f)), float _constant=1.0f, float _linear=0.09f, float _quadratic=0.032f);
 		SpotLight(SpotLight& spotLight);//Be carefull of setting the Scene
@@ -115,9 +119,11 @@ class PointLight : public Light
 	    float linear=0.09f;
 	    float quadratic=0.032f;
 	public:
-		PointLight(Scene& _scene,Upp::String& _name);
-		PointLight(Scene& _scene,Upp::String& _name,glm::vec3 _ambient=glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3 _diffuse=glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3 _specular=glm::vec3(1.0f,1.0f,1.0f), glm::vec3 _position=glm::vec3(0.0f,0.0f,0.0f), float _constant=1.0f, float _linear=0.09f, float _quadratic=0.032f);
-		PointLight(Scene& _scene,Upp::String& _name,glm::vec3 _position=glm::vec3(0.0f,1.0f,0.0f), float _constant=1.0f, float _linear=0.09f, float _quadratic=0.032f);
+		PointLight();
+		PointLight(Scene& _scene);
+		PointLight(Scene& _scene,const Upp::String& _name);
+		PointLight(Scene& _scene,const Upp::String& _name,glm::vec3 _ambient=glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3 _diffuse=glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3 _specular=glm::vec3(1.0f,1.0f,1.0f), glm::vec3 _position=glm::vec3(0.0f,0.0f,0.0f), float _constant=1.0f, float _linear=0.09f, float _quadratic=0.032f);
+		PointLight(Scene& _scene,const Upp::String& _name,glm::vec3 _position=glm::vec3(0.0f,1.0f,0.0f), float _constant=1.0f, float _linear=0.09f, float _quadratic=0.032f);
 		PointLight(glm::vec3 _ambient=glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3 _diffuse=glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3 _specular=glm::vec3(1.0f,1.0f,1.0f), glm::vec3 _position=glm::vec3(0.0f,1.0f,0.0f), float _constant=1.0f, float _linear=0.09f, float _quadratic=0.032f);
 		PointLight(glm::vec3 _position=glm::vec3(0.0f,1.0f,0.0f), float _constant=1.0f, float _linear=0.09f, float _quadratic=0.032f);
 		PointLight(PointLight& _pointLight);//Be carefull of setting the Scene

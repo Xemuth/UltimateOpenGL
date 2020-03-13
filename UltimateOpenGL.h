@@ -13,9 +13,10 @@
 #include "Camera.h"
 #include "Texture.h"
 #include "Shader.h"
+#include "Light.h"
 #include "Scene.h"
 #include "GameObject.h"
-#include "Light.h"
+
 #include "Object3D.h"
 #include "Mesh.h"
 

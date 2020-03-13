@@ -67,11 +67,15 @@ glm::vec3 Light::GetSpecular() const{
 	return specular;
 }
 //********************** Dir Light **********************
-DirLight::DirLight(Scene& _scene,Upp::String& _name){
+DirLight::DirLight(){}
+DirLight::DirLight(Scene& _scene){
+	scene = &_scene;
+}
+DirLight::DirLight(Scene& _scene,const Upp::String& _name){
 	scene = &_scene;
 	name = _name;
 }
-DirLight::DirLight(Scene& _scene,Upp::String& _name,glm::vec3 _ambient, glm::vec3 _diffuse, glm::vec3 _specular, glm::vec3 _direction){
+DirLight::DirLight(Scene& _scene,const Upp::String& _name,glm::vec3 _ambient, glm::vec3 _diffuse, glm::vec3 _specular, glm::vec3 _direction){
 	scene = &_scene;
 	name = _name;
 	ambient = _ambient;
@@ -79,7 +83,7 @@ DirLight::DirLight(Scene& _scene,Upp::String& _name,glm::vec3 _ambient, glm::vec
 	specular = _specular;
 	direction = _direction;
 }
-DirLight::DirLight(Scene& _scene,Upp::String& _name,glm::vec3 _direction){
+DirLight::DirLight(Scene& _scene,const Upp::String& _name,glm::vec3 _direction){
 	scene = &_scene;
 	name = _name;
 	direction = _direction;
@@ -119,11 +123,15 @@ glm::vec3 DirLight::GetDirection() const{
 	return direction;
 }
 //******************** Spot Light *************************
-SpotLight::SpotLight(Scene& _scene,Upp::String& _name){
+SpotLight::SpotLight(){}
+SpotLight::SpotLight(Scene& _scene){
+	scene = &_scene;
+}
+SpotLight::SpotLight(Scene& _scene,const Upp::String& _name){
 	scene = &_scene;
 	name = _name;
 }
-SpotLight::SpotLight(Scene& _scene,Upp::String& _name, glm::vec3 _ambient, glm::vec3 _diffuse, glm::vec3 _specular, glm::vec3 _position, glm::vec3 _direction, float _cutOff, float _outerCutOff, float _constant, float _linear, float _quadratic){
+SpotLight::SpotLight(Scene& _scene,const Upp::String& _name, glm::vec3 _ambient, glm::vec3 _diffuse, glm::vec3 _specular, glm::vec3 _position, glm::vec3 _direction, float _cutOff, float _outerCutOff, float _constant, float _linear, float _quadratic){
 	scene = &_scene;
 	name = _name;
 	ambient = _ambient;
@@ -137,7 +145,7 @@ SpotLight::SpotLight(Scene& _scene,Upp::String& _name, glm::vec3 _ambient, glm::
 	linear = _linear;
 	quadratic = _quadratic;
 }
-SpotLight::SpotLight(Scene& _scene,Upp::String& _name, glm::vec3 _position, glm::vec3 _direction, float _cutOff, float _outerCutOff, float _constant, float _linear, float _quadratic){
+SpotLight::SpotLight(Scene& _scene,const Upp::String& _name, glm::vec3 _position, glm::vec3 _direction, float _cutOff, float _outerCutOff, float _constant, float _linear, float _quadratic){
 	scene = &_scene;
 	name = _name;
 	position = _position;
@@ -249,11 +257,15 @@ float SpotLight::GetOuterCutOff() const{
 	return outerCutOff;
 }
 //********************** Point Light ********************
-PointLight::PointLight(Scene& _scene,Upp::String& _name){
+PointLight::PointLight(){}
+PointLight::PointLight(Scene& _scene){
+	scene = &_scene;
+}
+PointLight::PointLight(Scene& _scene,const Upp::String& _name){
 	scene = &_scene;
 	name = _name;
 }
-PointLight::PointLight(Scene& _scene,Upp::String& _name,glm::vec3 _ambient, glm::vec3 _diffuse, glm::vec3 _specular, glm::vec3 _position, float _constant, float _linear, float _quadratic){
+PointLight::PointLight(Scene& _scene,const Upp::String& _name,glm::vec3 _ambient, glm::vec3 _diffuse, glm::vec3 _specular, glm::vec3 _position, float _constant, float _linear, float _quadratic){
 	scene = &_scene;
 	name = _name;
 	ambient = _ambient;
@@ -264,7 +276,7 @@ PointLight::PointLight(Scene& _scene,Upp::String& _name,glm::vec3 _ambient, glm:
 	linear = _linear;
 	quadratic = _quadratic;
 }
-PointLight::PointLight(Scene& _scene,Upp::String& _name,glm::vec3 _position, float _constant, float _linear, float _quadratic){
+PointLight::PointLight(Scene& _scene,const Upp::String& _name,glm::vec3 _position, float _constant, float _linear, float _quadratic){
 	scene = &_scene;
 	name = _name;
 	position = _position;
