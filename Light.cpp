@@ -67,21 +67,12 @@ glm::vec3 Light::GetSpecular() const{
 	return specular;
 }
 //********************** Dir Light **********************
-DirLight::DirLight(){}
 DirLight::DirLight(Scene& _scene){
 	scene = &_scene;
 }
 DirLight::DirLight(Scene& _scene,const Upp::String& _name){
 	scene = &_scene;
 	name = _name;
-}
-DirLight::DirLight(Scene& _scene,const Upp::String& _name,glm::vec3 _ambient, glm::vec3 _diffuse, glm::vec3 _specular, glm::vec3 _direction){
-	scene = &_scene;
-	name = _name;
-	ambient = _ambient;
-	diffuse = _diffuse;
-	specular = _specular;
-	direction = _direction;
 }
 DirLight::DirLight(Scene& _scene,const Upp::String& _name,glm::vec3 _direction){
 	scene = &_scene;
@@ -115,6 +106,33 @@ DirLight& DirLight::operator=(DirLight& dirLight){
 	direction = dirLight.direction;
 	return *this;
 }
+
+const Upp::String& DirLight::GetShaderDataStructure(){ //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+	return LIGHT_DIR_STRUCT();
+}
+const Upp::String& DirLight::GetShaderColorCalculationFunction(){ //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+	return LIGHT_DIR_COLOR_FUNCTION();
+}
+const Upp::String& DirLight::GetShaderColorPrototypeFunction(){//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+	return LIGHT_DIR_COLOR_PROTOTYPE();
+}
+const Upp::String& DirLight::GetShaderTextureCalculationFunction(){ //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+	return LIGHT_DIR_TEXTURE_FUNCTION();
+}
+const Upp::String& DirLight::GetShaderTexturePrototypeFunction(){//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+	return LIGHT_DIR_TEXTURE_PROTOTYPE();
+}
+
+void DirLight::SentToShader(Shader& shader,const Upp::String& CustomName){
+	if(shader.IsCompiled()){
+		Upp::String nameToUse = (CustomName.GetCount()>0)? CustomName : name;
+		shader.SetVec3(nameToUse +".ambient",ambient);
+		shader.SetVec3(nameToUse +".diffuse",diffuse);
+		shader.SetVec3(nameToUse +".specular",specular);
+
+		shader.SetVec3(nameToUse +".direction",direction);
+	}
+}
 DirLight& DirLight::SetDirection(glm::vec3& _direction){
 	direction = _direction;
 	return *this;
@@ -123,27 +141,12 @@ glm::vec3 DirLight::GetDirection() const{
 	return direction;
 }
 //******************** Spot Light *************************
-SpotLight::SpotLight(){}
 SpotLight::SpotLight(Scene& _scene){
 	scene = &_scene;
 }
 SpotLight::SpotLight(Scene& _scene,const Upp::String& _name){
 	scene = &_scene;
 	name = _name;
-}
-SpotLight::SpotLight(Scene& _scene,const Upp::String& _name, glm::vec3 _ambient, glm::vec3 _diffuse, glm::vec3 _specular, glm::vec3 _position, glm::vec3 _direction, float _cutOff, float _outerCutOff, float _constant, float _linear, float _quadratic){
-	scene = &_scene;
-	name = _name;
-	ambient = _ambient;
-	diffuse = _diffuse;
-	specular = _specular;
-	position = _position;
-	direction = _direction;
-	cutOff = _cutOff;
-	outerCutOff = _outerCutOff;
-	constant = _constant;
-	linear = _linear;
-	quadratic = _quadratic;
 }
 SpotLight::SpotLight(Scene& _scene,const Upp::String& _name, glm::vec3 _position, glm::vec3 _direction, float _cutOff, float _outerCutOff, float _constant, float _linear, float _quadratic){
 	scene = &_scene;
@@ -207,6 +210,40 @@ SpotLight& SpotLight::operator=(SpotLight& spotLight){//Be carefull of setting t
 	quadratic = spotLight.quadratic;
 	return *this;
 }
+
+const Upp::String& SpotLight::GetShaderDataStructure(){ //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+	return LIGHT_SPOT_STRUCT();
+}
+const Upp::String& SpotLight::GetShaderColorCalculationFunction(){ //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+	return LIGHT_SPOT_COLOR_FUNCTION();
+}
+const Upp::String& SpotLight::GetShaderColorPrototypeFunction(){//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+	return LIGHT_SPOT_COLOR_PROTOTYPE();
+}
+const Upp::String& SpotLight::GetShaderTextureCalculationFunction(){ //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+	return LIGHT_SPOT_TEXTURE_FUNCTION();
+}
+const Upp::String& SpotLight::GetShaderTexturePrototypeFunction(){//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+	return LIGHT_SPOT_TEXTURE_PROTOTYPE();
+}
+
+void SpotLight::SentToShader(Shader& shader,const Upp::String& CustomName){
+	if(shader.IsCompiled()){
+		Upp::String nameToUse = (CustomName.GetCount()>0)? CustomName : name;
+		shader.SetVec3(nameToUse +".ambient",ambient);
+		shader.SetVec3(nameToUse +".diffuse",diffuse);
+		shader.SetVec3(nameToUse +".specular",specular);
+		
+		shader.SetVec3(nameToUse +".position",position);
+		shader.SetVec3(nameToUse +".direction",direction);
+		shader.SetFloat(nameToUse +".cutOff",cutOff);
+		shader.SetFloat(nameToUse +".outerCutOff",outerCutOff);
+		shader.SetFloat(nameToUse +".constant",constant);
+		shader.SetFloat(nameToUse +".linear",linear);
+		shader.SetFloat(nameToUse +".quadratic",quadratic);
+	}
+}
+
 SpotLight& SpotLight::SetDirection(glm::vec3& _direction){
 	direction = _direction;
 	return *this;
@@ -257,7 +294,6 @@ float SpotLight::GetOuterCutOff() const{
 	return outerCutOff;
 }
 //********************** Point Light ********************
-PointLight::PointLight(){}
 PointLight::PointLight(Scene& _scene){
 	scene = &_scene;
 }
@@ -323,6 +359,37 @@ PointLight& PointLight::operator=(PointLight& _pointLight){//Be carefull of sett
 	quadratic = _pointLight.quadratic;
 	return *this;
 }
+
+const Upp::String& PointLight::GetShaderDataStructure(){ //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+	return LIGHT_POINT_STRUCT();
+}
+const Upp::String& PointLight::GetShaderColorCalculationFunction(){ //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+	return LIGHT_POINT_COLOR_FUNCTION();
+}
+const Upp::String& PointLight::GetShaderColorPrototypeFunction(){//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+	return LIGHT_POINT_COLOR_PROTOTYPE();
+}
+const Upp::String& PointLight::GetShaderTextureCalculationFunction(){ //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+	return LIGHT_POINT_TEXTURE_FUNCTION();
+}
+const Upp::String& PointLight::GetShaderTexturePrototypeFunction(){//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+	return LIGHT_POINT_TEXTURE_PROTOTYPE();
+}
+
+void PointLight::SentToShader(Shader& shader,const Upp::String& CustomName){
+	if(shader.IsCompiled()){
+		Upp::String nameToUse = (CustomName.GetCount()>0)? CustomName : name;
+		shader.SetVec3(nameToUse +".ambient",ambient);
+		shader.SetVec3(nameToUse +".diffuse",diffuse);
+		shader.SetVec3(nameToUse +".specular",specular);
+		
+		shader.SetVec3(nameToUse +".position",position);
+		shader.SetFloat(nameToUse +".constant",constant);
+		shader.SetFloat(nameToUse +".linear",linear);
+		shader.SetFloat(nameToUse +".quadratic",quadratic);
+	}
+}
+
 PointLight& PointLight::SetPosition(glm::vec3& _position){
 	position = _position;
 	return *this;
