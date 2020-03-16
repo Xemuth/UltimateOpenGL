@@ -12,7 +12,7 @@ class Object3D : public GameObject
 		Shader shader; //When scene handle a shader, default behaviour of Object3D is looking if is own shader is compiled. If yes it mean
 					   //he must use this shader.
 					   
-		Material material; //This material must be Set. To overLoad on a mesh this material, you must set the mesh material
+		Upp::One<Material> material; //This material must be Set. To overLoad on a mesh this material, you must set the mesh material
 					   
 		DrawMethod drawMethod = DM_TRIANGLES;
 		
@@ -25,8 +25,8 @@ class Object3D : public GameObject
         //Loading 3D Model using Assimp and custom loader
         void ProcessNode(aiNode *node, const aiScene *scene);
         void ProcessMesh(aiMesh *mesh, const aiScene *scene);
-        void ManageTextures(Upp::Vector<Texture>& vectorToFile, aiMaterial *mat, aiTextureType type);
-        Upp::Vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type,const Upp::String& typeName);
+        void ManageTextures(Upp::Vector<Texture2D>& vectorToFile, aiMaterial *mat, aiTextureType type);
+        Upp::Vector<Texture2D> loadMaterialTextures(aiMaterial *mat, aiTextureType type,const Upp::String& typeName);
     public:
         Object3D(Scene& _scene);
         Object3D(Scene& _scene, Mesh& _mesh);
@@ -53,7 +53,7 @@ class Object3D : public GameObject
         Object3D& DisableAlpha();
         bool IsAlphaEnable();
 
-        Material& GetMaterial();
+        Upp::One<Material>& GetMaterial();
 		
 		Object3D& SetDrawMethod(DrawMethod dm);
 		DrawMethod GetDrawMethod();

@@ -11,7 +11,7 @@
 #include "Definition.h"
 #include "Transform.h"
 #include "Camera.h"
-#include "Texture.h"
+#include "Material.h"
 #include "Shader.h"
 #include "Light.h"
 #include "Scene.h"
@@ -43,18 +43,9 @@ class UltimateOpenGL_Context{
 		
 		double GetTime();
 		void StartTimer();
-		
-		//Textures
-		/*
-			Textures is loaded and carried by context.
-			Thanks to this, we can reuse multiple texture in differente scene
-			without having to load them multiple time.
-			However, if you want to do optimised scene load and unload you must
-			don't forget to load texture and Unload texture using AddTexture and RemoveTexture
-			To retrieve loaded texture in scene or 3D object,  you must use GetTexture(String name);
-		*/
+	
 		inline static int TextureCompteur=0;
-		Upp::ArrayMap<Upp::String,Texture> textures;
+		Upp::ArrayMap<Upp::String,Material> AllMaterials;
 	public:
 		UltimateOpenGL_Context();
 		UltimateOpenGL_Context(float ScreenHeight,float ScreenWidth);
@@ -85,10 +76,74 @@ class UltimateOpenGL_Context{
 		/*
 			See explications above
 		*/
-		Texture AddTexture(const Upp::String& TextureName,const Upp::String& textureFilePath,TextureType  _type = TT_DIFFUSE ,bool loadDefault=false, bool flipLoad=true);
-		bool RemoveTexture(const Upp::String& TextureName);
-		Texture GetTexture(const Upp::String& TextureName);
-		Upp::ArrayMap<Upp::String,Texture>& GetTextures();
+
+		template <class T>
+		T& GetGameObject(const Upp::String& _ObjectName){//Throw exception if gameObject don't exists
+			if(AllGamesObjects.Find(_ObjectName) != -1){
+				try{
+					return dynamic_cast<T&>(AllGamesObjects.Get(_ObjectName));
+				}catch(...){
+					throw UOGLException(6,"Error : T& Scene::GetGameObject(...) => Error on convertion of the game Object !",1);
+				}
+			}
+			throw UOGLException(6,"Error : T& Scene::GetGameObject(...) => No GameObject named \""+ _ObjectName +"\" exists !",1);
+		}
+		template <class T>
+		bool IsGameObjectIsTypeOf(const Upp::String& _ObjectName){//Return true if the game object exits and is type of template, else return false
+			if(AllGamesObjects.Find(_ObjectName) != -1){
+				try{
+					return (typeid(dynamic_cast<T&>(AllGamesObjects.Get(_ObjectName)))== typeid(T));
+				}catch(...){
+					return false;
+				}
+			}
+			return false;
+		}
+		bool IsGameObjectExist(const Upp::String& _ObjectName); //Return true if the game object exists
+		Scene& RemoveGameObject(const Upp::String& _ObjectName); //Will remove gameObject if it exist
+		
+		
+		template <class T,class... Args>
+		T& CreateMaterial(const Upp::String& _MaterialName, Args&&... args){
+			try{
+				if(AllMaterials.Find(_MaterialName) ==-1){
+					return AllMaterials.Create<T>(_MaterialName,std::forward<Args>(args)...).SetName(_MaterialName);
+				}else{
+					RemoveMaterial(_MaterialName);
+					return AllMaterials.Create<T>(_MaterialName,std::forward<Args>(args)...).SetName(_MaterialName);
+				}
+			}catch(...){
+				throw UOGLException(6,"Error : T& UltimateOpenGL_Context::CreateMaterial(...) => Error on convertion of the Material !",1);
+			}
+		}
+		template <class T>
+		T& AddMaterial(const Upp::String& _MaterialName,T& MaterialToAdd){
+			try{
+				if(AllMaterials.Find(_ObjectName) ==-1){
+					auto& type = (AllMaterials.Create<T>(_ObjectName) = ObjectToAdd);
+					type.SetScene(*this);
+					type.SetName(_ObjectName);
+					return type;
+				}else{
+					RemoveGameObject(_ObjectName);
+					auto& type = (AllMaterials.Create<T>(_ObjectName) = ObjectToAdd);
+					type.SetScene(*this);
+					type.SetName(_ObjectName);
+					return type;
+				}
+			}catch(...){
+				throw UOGLException(6,"Error : T& Scene::AddGameObject(...) => Error on convertion of the game Object !",1);
+			}
+		}
+		template <class T>
+		T& GetMaterial(const Upp::String& _MaterialName){
+		}
+		template <class T>
+		bool IsMaterialTypeOf(const Upp::String& _MaterialName){
+		}
+		bool IsMaterialExist(const Upp::String& _MaterialName); //Return true if the light  exists
+		Scene& RemoveMaterial(const Upp::String& _MaterialName); //Will remove light if it exist
+		Upp::ArrayMap<Upp::String,Material>& GetAllMaterials();
 		
 		void Trace(bool b = true);//Log all OpenGL Error
 		void Draw(const Upp::String& SceneToDraw="",const Upp::String& CameraToUse=""); //Draw active scene and active camera or specified Scene and camera to draw

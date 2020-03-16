@@ -6,7 +6,6 @@
 	    vec4 diffuse;\
 	    vec3 specular;\
 	    float shininess;\
-	    int useSpecular;\
 	};\
 )
 #endif

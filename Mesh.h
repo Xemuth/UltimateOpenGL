@@ -13,7 +13,7 @@ class Mesh {
         Upp::Vector<Vertex> vertices;
         Upp::Vector<unsigned int> indices;
         Transform transform;
-        Upp::Vector<Texture> textures;
+        Upp::Vector<Texture2D> textures;
         
         Shader shader;//When Object3D handle a shader, default behaviour of Mesh is looking if is own shader is compiled. If yes it mean
 				      //he must use this shader.
@@ -24,7 +24,7 @@ class Mesh {
 										      //SetDrawMethod() of the mesh to ensure it must
 										      //use a custom drawMethod()
         
-		Material material; //Same as Draw method. If material is completed with texture or something else than default color then it will be used instead of Obect3D material
+		Upp::One<Material> material; //Same as Draw method. If material is completed with texture or something else than default color then it will be used instead of Obect3D material
 		bool useMaterial = false;
 		bool useMaterialColorInsteadOfColorRetrieve = false;
 		
@@ -33,7 +33,7 @@ class Mesh {
     public:
         Mesh();
         Mesh(Object3D& obj);
-        Mesh(Object3D& gameObject, Upp::Vector<Vertex>& vertices, Upp::Vector<unsigned int>& indices, Upp::Vector<Texture>& textures);
+        Mesh(Object3D& gameObject, Upp::Vector<Vertex>& vertices, Upp::Vector<unsigned int>& indices, Upp::Vector<Texture2D>& textures);
         Mesh(const Mesh& _mesh); //Dont forget to set z
         
 		unsigned int GetVAO();

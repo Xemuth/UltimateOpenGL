@@ -324,12 +324,222 @@ bool Shader::Unload(){
 	}
 	return false;
 }
+
+void Shader::IncreasePositionVariable(int position,int lenght){
+	if(LayoutPosition >= position)LayoutPosition += lenght;
+	if(InPosition >= position)InPosition += lenght;
+	if(StructurePosition >= position)StructurePosition += lenght;
+	if(OutPosition >= position)OutPosition += lenght;
+	if(UniformPosition >= position)UniformPosition += lenght;
+	if(MainPosition >= position)MainPosition += lenght;
+	if(FunctionPrototypePosition >= position)FunctionPrototypePosition += lenght;
+	if(FunctionDeclarationPosition >= position)FunctionDeclarationPosition += lenght;
+}
+
+int Shader::InsertInShader(Upp::String& shader, int position,const Upp::String& s){
+	if(position != -1){
+		shader.Insert(position,s);
+		IncreasePositionVariable(position,s.GetCount());
+		return s.GetCount();
+	}
+	return 0;
+}
+
+Upp::String Shader::GenerateVertexShader(unsigned int VertexGenerationOption,const Material*  material,const Upp::Vector<Upp::String>* Layout,const Upp::Vector<Upp::String>* Out,const Upp::Vector<Upp::String>* Uniform,const Upp::Vector<Upp::String>* Structure,const Upp::Vector<Upp::String>* Function,const Upp::String* Main){
+	Upp::String ShadV = BasicShaders.Get("Simple_Vertex_Shader");
+	if(VertexGenerationOption){
+		LayoutPosition = ShadV.FindAfter("//LAYOUT_VARIABLE\n");
+		StructurePosition = ShadV.FindAfter("//STRUCTURE\n");
+		OutPosition = ShadV.FindAfter("//OUT_VARIABLE\n");
+		UniformPosition = ShadV.FindAfter("//UNIFORM\n");
+		MainPosition = ShadV.FindAfter("//CUSTOM_MAIN\n");
+		FunctionPrototypePosition = ShadV.FindAfter("//FUNCTION_PROTOTYPE\n");
+		FunctionDeclarationPosition = ShadV.FindAfter("//FUNCTION_DEFINITION\n");
+		
+		
+		if(LayoutPosition != -1 && StructurePosition != -1 && OutPosition != -1 && FunctionPrototypePosition != -1 && FunctionDeclarationPosition != -1 && UniformPosition != -1 && MainPosition != -1){
+			if(VertexGenerationOption  & VGO_DoBasics){
+				/*
+					Doing Basic mean Assign All necessary layout (Position Normal TextureCoord
+					Tangeant / BiTangeant etc adding all class out like FragPos  and each important
+					Uniform (viex projection and model)
+				*/
+				InsertInShader(ShadV, LayoutPosition,"layout (location = 0) in vec3 aPos;\n");
+				InsertInShader(ShadV, LayoutPosition,"layout (location = 1) in vec3 aNorm;\n");
+				InsertInShader(ShadV, LayoutPosition,"layout (location = 2) in vec2 aTextCoords;\n");
+				InsertInShader(ShadV, LayoutPosition,"layout (location = 3) in vec3 aTangents;\n");
+				InsertInShader(ShadV, LayoutPosition,"layout (location = 4) in vec3 aBiTangents;\n");
+				InsertInShader(ShadV, LayoutPosition,"layout (location = 5) in vec4 aColors;\n");
+				
+				InsertInShader(ShadV, OutPosition,"out vec3 FragPos;\n");
+				
+				InsertInShader(ShadV, UniformPosition,"uniform mat4 view;\n");
+				InsertInShader(ShadV, UniformPosition,"uniform mat4 projection;\n");
+				InsertInShader(ShadV, UniformPosition,"uniform mat4 model;\n");
+				
+				InsertInShader(ShadV, MainPosition,"FragPos = vec3(model * vec4(aPos, 1.0));\n");
+				InsertInShader(ShadV, MainPosition,"gl_Position = projection * view * model * vec4(aPos, 1.0f);\n");
+			}
+			if(VertexGenerationOption & VGO_UseMaterialObject && material){
+				/*
+					Prepare necessary things relative to Material object. If it use texture then
+					prepare necassary out (texture coordinate etc)
+				*/
+			}
+			if(VertexGenerationOption & VGO_CustomLayout && Layout){
+				/*
+					Will ensure layout vector is not nullptr, if not will add different custom
+					layout next to existing
+				*/
+			}
+			if(VertexGenerationOption & VGO_CustomOut && Out){
+				/*
+					Will ensure out vector is not nullptr, if not will add different custom
+					out next to existing
+				*/
+			}
+			if(VertexGenerationOption & VGO_CustomUniform && Uniform){
+				/*
+					Will ensure uniform vector is not nullptr, if not will add different custom
+					uniform next to existing
+				*/
+			}
+			if(VertexGenerationOption & VGO_CustomStructure && Structure ){
+				/*
+					Will ensure structure vector is not nullptr, if not will add different custom
+					structure next to existing
+				*/
+			}
+			if(VertexGenerationOption & VGO_CustomFunction && Function){
+				/*
+					Will ensure function vector is not nullptr, if not will add different custom
+					function prototype (determined by your function declaration (make sure your
+					Function declaration is well formed to allow UOGL to determine the prototype)
+					next to existing and will also add your function déclaration at the end of the
+					shader
+				*/
+			}
+			if(VertexGenerationOption & VGO_CustomMain && Main){
+				/*
+					If defined, will copy paste main String to the main function.
+					You must not declare main into the string :
+						Good things :
+						Upp::String main = "FragColor = texture(cube.diffuse, TextureCoordinate);"
+						Bad things :
+						Upp::String main = "void main()\n
+											{\n
+												FragColor = texture(cube.diffuse, TextureCoordinate);
+											}\n"
+				*/
+			}
+		}
+	}
+	return ShadV;
+}
+Upp::String Shader::GenerateFragmentShader(unsigned int FragmentGenerationOption, const Material* material,const Upp::VectorMap<Upp::String, Light>* AllSceneLights,const Upp::Vector<Upp::String>* In,const Upp::Vector<Upp::String>* Out,const Upp::Vector<Upp::String>* Uniform,const Upp::Vector<Upp::String>* Structure,const Upp::Vector<Upp::String>* Function,const Upp::String* Main){
+	Upp::String ShadF = BasicShaders.Get("Simple_Fragment_Shader");
+	if(FragmentGenerationOption){
+		InPosition = ShadF.FindAfter("//IN_VARIABLE\n");
+		StructurePosition = ShadF.FindAfter("//STRUCTURE\n");
+		OutPosition = ShadF.FindAfter("//OUT_VARIABLE\n");
+		UniformPosition = ShadF.FindAfter("//UNIFORM\n");
+		MainPosition = ShadF.FindAfter("//CUSTOM_MAIN\n");
+		FunctionPrototypePosition = ShadF.FindAfter("//FUNCTION_PROTOTYPE\n");
+		FunctionDeclarationPosition = ShadF.FindAfter("//FUNCTION_DEFINITION\n");
+		
+		if(InPosition != -1 && StructurePosition != -1 && OutPosition != -1 && FunctionPrototypePosition != -1 && FunctionDeclarationPosition != -1 && UniformPosition != -1 && MainPosition != -1){
+			if(FragmentGenerationOption  & FGO_DoBasics){
+				/*
+					Doing Basic mean Assign All necessary layout (Position Normal TextureCoord
+					Tangeant / BiTangeant etc adding all class out like FragPos  and each important
+					Uniform (viex projection and model)
+				*/
+				InsertInShader(ShadF, InPosition,"in vec3 FragPos;\n");
+				InsertInShader(ShadF, OutPosition,"out vec4 FragColor;\n");
+				InsertInShader(ShadF, MainPosition,"FragColor = vec4(1.0f, 0.5f, 0.2f, 0.5f);\n");
+			}
+			if((FragmentGenerationOption & FGO_UseMaterialObject) && material){
+				/*
+					Prepare necessary things relative to Material object. If it use texture then
+					prepare necassary out (texture coordinate etc)
+				*/
+				if(material->IsColor()){
+					
+				}else if(material->IsTexture()){
+					
+				}
+			}
+			if((FragmentGenerationOption & FGO_LoadLight) && AllSceneLights){
+				/*
+					Prepare necessary things relative to Light object (Function / Structure)
+				*/
+			}
+			if((FragmentGenerationOption & FGO_CustomIn) && In){
+				/*
+					Will ensure in vector is not nullptr, if not will add different custom
+					in next to existing
+				*/
+			}
+			if((FragmentGenerationOption & FGO_CustomOut) && Out){
+				/*
+					Will ensure out vector is not nullptr, if not will add different custom
+					out next to existing
+				*/
+			}
+			if((FragmentGenerationOption & FGO_CustomUniform) && Uniform){
+				/*
+					Will ensure uniform vector is not nullptr, if not will add different custom
+					uniform next to existing
+				*/
+			}
+			if((FragmentGenerationOption & FGO_CustomStructure) && Structure ){
+				/*
+					Will ensure structure vector is not nullptr, if not will add different custom
+					structure next to existing
+				*/
+			}
+			if((FragmentGenerationOption & FGO_CustomFunction) && Function){
+				/*
+					Will ensure function vector is not nullptr, if not will add different custom
+					function prototype (determined by your function declaration (make sure your
+					Function declaration is well formed to allow UOGL to determine the prototype)
+					next to existing and will also add your function déclaration at the end of the
+					shader
+				*/
+			}
+			if((FragmentGenerationOption & FGO_CustomMain) && Main){
+				/*
+					If defined, will copy paste main String to the main function.
+					You must not declare main into the string :
+						Good things :
+						Upp::String main = "FragColor = texture(cube.diffuse, TextureCoordinate);"
+						Bad things :
+						Upp::String main = "void main()\n
+											{\n
+												FragColor = texture(cube.diffuse, TextureCoordinate);
+											}\n"
+				*/
+			}
+		}
+	}
+	return ShadF;
+}
+	
 bool Shader::AssignSimpleShader(){
 	Unload();
 	shaders.Clear();
-	AddShader("FRAGMENT",ST_FRAGMENT, BasicShaders.Get("Simple_Fragment_Shader"));
-	AddShader("VERTEX",ST_VERTEX, BasicShaders.Get("Simple_Vertex_Shader"));
+	AddShader("FRAGMENT",ST_FRAGMENT, GenerateFragmentShader(FGO_DoBasics));
+	AddShader("VERTEX",ST_VERTEX, GenerateVertexShader(VGO_DoBasics));
 	return Load(true);
+}
+bool Shader::AssignSimpleShaderWithLight(const Upp::VectorMap<Upp::String, Light>& AllSceneLights){ //Create and Assign a simple shader with light gestion
+	
+}
+bool Shader::AssignSimpleShaderTexture(const Material& material){ //Craete and assign a simple shader wich can show texture
+	
+}
+bool Shader::AssignSimpleShaderTextureLights(const Upp::VectorMap<Upp::String, Light>& AllSceneLights,const Material& material){
+	
 }
 bool Shader::Reload(bool autoGenerated){
 	Unload();

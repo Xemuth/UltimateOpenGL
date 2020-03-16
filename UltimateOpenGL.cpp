@@ -120,32 +120,3 @@ void UltimateOpenGL_Context::Trace(bool b){
 		glDisable( GL_DEBUG_OUTPUT );
 	}
 }
-//Textures
-Texture UltimateOpenGL_Context::AddTexture(const Upp::String& TextureName,const Upp::String& textureFilePath,TextureType _type,bool loadDefault, bool flipLoad){ //Add and load Texture
-	if(textures.Find(TextureName) == -1){
-		Texture& texture =textures.Add(TextureName);
-		texture.SetPath(textureFilePath);
-		texture.SetName(TextureName);
-		if(!texture.Load(TextureCompteur)){
-			textures.RemoveKey(TextureName);
-			LOG("Error : UltimateOpenGL_Context::AddTexture(...) Loading error !\n");
-			return Texture();
-		}else{
-			LOG("Info : UltimateOpenGL_Context::AddTexture(...) Texture " + TextureName +"  number " + Upp::AsString( TextureCompteur) +" Loaded with success with ID of " + Upp::AsString(texture.GetId()) +"!\n");
-			TextureCompteur++;
-			return texture;
-		}
-		return Texture();
-	}
-	LOG("Warning : UltimateOpenGL_Context::AddTexture(...) texture named " +TextureName +" already existe and have been loaded !");
-	return textures.Get(TextureName);
-}
-Texture UltimateOpenGL_Context::GetTexture(const Upp::String& TextureName){
-	if(textures.Find(TextureName)	!=-1)
-		return textures.Get(TextureName);
-	return Texture();
-}
-
-Upp::ArrayMap<Upp::String,Texture>& UltimateOpenGL_Context::GetTextures(){
-	return textures;
-}

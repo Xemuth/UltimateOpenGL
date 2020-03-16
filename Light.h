@@ -1,6 +1,6 @@
 #ifndef _UltimateOpenGL_Light_h_
 #define _UltimateOpenGL_Light_h_
-#include "GameObject.h"
+#include "Shader.h"
 class Light
 {
 	protected:
