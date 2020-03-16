@@ -108,6 +108,23 @@ void UltimateOpenGL_Context::SetScreenSize(float ScreenHeight,float ScreenWidth)
 Upp::Sizef UltimateOpenGL_Context::GetScreenSize(){
 	return ScreenSize;
 }
+
+bool UltimateOpenGL_Context::IsMaterialExist(const Upp::String& _MaterialName){ //Return true if the light  exists
+	if(AllMaterials.Find(_MaterialName) != -1){
+		return true;
+	}
+	return false;
+}
+Scene& UltimateOpenGL_Context::RemoveMaterial(const Upp::String& _MaterialName){ //Will remove light if it exist
+	if(AllMaterials.Find(_MaterialName) != -1){
+		AllMaterials.Remove(_MaterialName);
+	}
+	return *this;
+}
+Upp::ArrayMap<Upp::String,Material>& UltimateOpenGL_Context::GetAllMaterials(){
+	return AllMaterials;
+}
+
 void GLAPIENTRY MessageCallback( GLenum source,GLenum type,GLuint id,GLenum severity,GLsizei length,const GLchar* message, void* userParam ){
 	LOG("GL CALLBACK: " + Upp::String( (type == GL_DEBUG_TYPE_ERROR) ? "** GL ERROR **" : "" ) +" type = 0x" + type +", severity = 0x"+ severity +", message = " + message);
  // fprintf( stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",( type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : "" ), type, severity, message );

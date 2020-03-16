@@ -76,33 +76,6 @@ class UltimateOpenGL_Context{
 		/*
 			See explications above
 		*/
-
-		template <class T>
-		T& GetGameObject(const Upp::String& _ObjectName){//Throw exception if gameObject don't exists
-			if(AllGamesObjects.Find(_ObjectName) != -1){
-				try{
-					return dynamic_cast<T&>(AllGamesObjects.Get(_ObjectName));
-				}catch(...){
-					throw UOGLException(6,"Error : T& Scene::GetGameObject(...) => Error on convertion of the game Object !",1);
-				}
-			}
-			throw UOGLException(6,"Error : T& Scene::GetGameObject(...) => No GameObject named \""+ _ObjectName +"\" exists !",1);
-		}
-		template <class T>
-		bool IsGameObjectIsTypeOf(const Upp::String& _ObjectName){//Return true if the game object exits and is type of template, else return false
-			if(AllGamesObjects.Find(_ObjectName) != -1){
-				try{
-					return (typeid(dynamic_cast<T&>(AllGamesObjects.Get(_ObjectName)))== typeid(T));
-				}catch(...){
-					return false;
-				}
-			}
-			return false;
-		}
-		bool IsGameObjectExist(const Upp::String& _ObjectName); //Return true if the game object exists
-		Scene& RemoveGameObject(const Upp::String& _ObjectName); //Will remove gameObject if it exist
-		
-		
 		template <class T,class... Args>
 		T& CreateMaterial(const Upp::String& _MaterialName, Args&&... args){
 			try{
@@ -120,26 +93,40 @@ class UltimateOpenGL_Context{
 		T& AddMaterial(const Upp::String& _MaterialName,T& MaterialToAdd){
 			try{
 				if(AllMaterials.Find(_ObjectName) ==-1){
-					auto& type = (AllMaterials.Create<T>(_ObjectName) = ObjectToAdd);
-					type.SetScene(*this);
-					type.SetName(_ObjectName);
+					auto& type = (AllMaterials.Create<T>(_MaterialName,MaterialToAdd));
+					type.SetName(_MaterialName);
 					return type;
 				}else{
 					RemoveGameObject(_ObjectName);
-					auto& type = (AllMaterials.Create<T>(_ObjectName) = ObjectToAdd);
-					type.SetScene(*this);
-					type.SetName(_ObjectName);
+					auto& type = (AllMaterials.Create<T>(_MaterialName,MaterialToAdd));
+					type.SetName(_MaterialName);
 					return type;
 				}
 			}catch(...){
-				throw UOGLException(6,"Error : T& Scene::AddGameObject(...) => Error on convertion of the game Object !",1);
+				throw UOGLException(6,"Error : T& Scene::AddGameObject(...) => Error on convertion of the material !",1);
 			}
 		}
 		template <class T>
 		T& GetMaterial(const Upp::String& _MaterialName){
+			if(AllMaterials.Find(_MaterialName) != -1){
+				try{
+					return dynamic_cast<T&>(AllMaterials.Get(_MaterialName));
+				}catch(...){
+					throw UOGLException(6,"Error : T& Scene::GetGameObject(...) => Error on convertion of the material !",1);
+				}
+			}
+			throw UOGLException(6,"Error : T& Scene::GetGameObject(...) => No GameObject named \""+ _MaterialName +"\" exists !",1);
 		}
 		template <class T>
 		bool IsMaterialTypeOf(const Upp::String& _MaterialName){
+			if(AllMaterials.Find(_MaterialName) != -1){
+				try{
+					return (typeid(dynamic_cast<T&>(AllMaterials.Get(_MaterialName)))== typeid(T));
+				}catch(...){
+					return false;
+				}
+			}
+			return false;
 		}
 		bool IsMaterialExist(const Upp::String& _MaterialName); //Return true if the light  exists
 		Scene& RemoveMaterial(const Upp::String& _MaterialName); //Will remove light if it exist
