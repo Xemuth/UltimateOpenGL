@@ -27,11 +27,12 @@ class Material {
 		Upp::String GetName();
 		Material& SetName(const Upp::String& _name);
 		
+		virtual Material& operator=(Material& material)=0;
 		
 		virtual Material& Load() = 0;
 		virtual Material& Unload() = 0;
 		virtual Material& Reload() = 0;
-		virtual Material& IsLoaded() = 0;
+		virtual bool IsLoaded() = 0;
 		virtual Material& Use() = 0;
 		
 		virtual const Upp::String& GetShaderDataStructure() = 0; //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
@@ -57,10 +58,12 @@ class Color_Material : public Material{ //this one is named :Color_Material inst
 		Color_Material& SetColor(glm::vec4 _color);
 		Color_Material& SetColor(glm::vec3 _color);
 		
+		virtual Color_Material& operator=(Material& material);
+		
 		virtual Color_Material& Load();
 		virtual Color_Material& Unload();
 		virtual Color_Material& Reload();
-		virtual Color_Material& IsLoaded();
+		virtual bool IsLoaded();
 		virtual Color_Material& Use();
 		
 		virtual const Upp::String& GetShaderDataStructure(); //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
@@ -88,13 +91,12 @@ class Texture2D : public Material{
 		Texture2D& LoadDefaultname();
 		Upp::Array<TextureParameter> textureParameters; //Vector of parameter. Must be redifed to do custom texture loading
 		Texture2D& LoadTextureParameter();
-		
 	public:
 		Texture2D();
 		Texture2D(const Upp::String& _path);
 		Texture2D(const Upp::String& _path,const Upp::String& _Name);
 		Texture2D(const Texture2D& texture);
-		Texture2D& operator=(const Texture2D& texture);
+		Texture2D& operator=(Texture2D& texture);
 		~Texture2D();
 		
 		Texture2D& LoadDefaultTextureParameter();
@@ -130,7 +132,7 @@ class Texture2D : public Material{
 		virtual Texture2D& Load();
 		virtual Texture2D& Unload();
 		virtual Texture2D& Reload();
-		virtual Texture2D& IsLoaded();
+		virtual bool IsLoaded();
 		virtual Texture2D& Use();
 		
 		virtual const Upp::String& GetShaderDataStructure(); //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)

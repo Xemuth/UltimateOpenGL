@@ -47,7 +47,10 @@ Color_Material::Color_Material(glm::vec4 _color){
 Color_Material::Color_Material(glm::vec3 _color){
 	color =glm::vec4(_color,1.0f);
 }
-
+Color_Material& Color_Material::operator=(Material& material){
+	color = material.color;
+	return *this;
+}
 Color_Material& Color_Material::SetColor(int red,int green, int blue, int alpha){
 	color = TransformRGBAToFloatColor(red,green,blue,alpha);
 }
@@ -121,7 +124,7 @@ Texture2D::Texture2D(const Texture2D& texture){
 	TextureIterator = texture.TextureIterator;
 	textureParameters.Append(texture.textureParameters);
 }
-Texture2D& Texture2D::operator=(const Texture2D& texture){
+Texture2D& Texture2D::operator=(Texture2D& texture){
 	Path = texture.Path;
 	SpecularPath = SpecularID;
 	name = texture.name;
@@ -144,6 +147,8 @@ Texture2D::~Texture2D(){
 		glDeleteTextures(1, &ID);
 	}*/
 }
+
+
 Texture2D& Texture2D::LoadDefaultname(){
 	name = Path.Right(Path.GetCount()- Path.ReverseFind("/") -1);
 	name = name.Left(name.Find("."));
@@ -331,18 +336,18 @@ Texture2D& Texture2D::Reload(){
 	}
 	return *this;
 }
-Texture2D& Texture2D::IsLoaded(){
+bool Texture2D::IsLoaded(){
 	return loaded;
 }
 Texture2D& Texture2D::Use(){
 	if(Loaded){
 		glActiveTexture(GL_TEXTURE0 +TextureIterator);
 		glBindTexture(GL_TEXTURE_2D, ID);
-		return true;
+		return *this;
 	}else{
 		LOG("Warning Use(): Can't use an Unloaded texture !");
 	}
-	return false;
+	return *this;
 }
 
 const Upp::String& Texture2D::GetShaderDataStructure(){ //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)

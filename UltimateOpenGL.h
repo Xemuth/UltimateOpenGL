@@ -92,12 +92,12 @@ class UltimateOpenGL_Context{
 		template <class T>
 		T& AddMaterial(const Upp::String& _MaterialName,T& MaterialToAdd){
 			try{
-				if(AllMaterials.Find(_ObjectName) ==-1){
+				if(AllMaterials.Find(_MaterialName) ==-1){
 					auto& type = (AllMaterials.Create<T>(_MaterialName,MaterialToAdd));
 					type.SetName(_MaterialName);
 					return type;
 				}else{
-					RemoveGameObject(_ObjectName);
+					RemoveMaterial(_MaterialName);
 					auto& type = (AllMaterials.Create<T>(_MaterialName,MaterialToAdd));
 					type.SetName(_MaterialName);
 					return type;
