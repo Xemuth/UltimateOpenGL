@@ -40,7 +40,7 @@ Object3D::Object3D(Object3D& _object) : GameObject(_object){//Be carefull of set
 	drawMethod = _object.drawMethod;
 	material = _object.material;
     for(Mesh& m : meshes){
-		transform.AddChildren(m.GetTransform());
+		transsform.AddChildren(m.GetTransform());
     }
 }
 Object3D::~Object3D(){

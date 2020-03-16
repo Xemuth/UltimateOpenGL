@@ -463,11 +463,6 @@ Upp::String Shader::GenerateFragmentShader(unsigned int FragmentGenerationOption
 					Prepare necessary things relative to Material object. If it use texture then
 					prepare necassary out (texture coordinate etc)
 				*/
-				if(material->IsColor()){
-					
-				}else if(material->IsTexture()){
-					
-				}
 			}
 			if((FragmentGenerationOption & FGO_LoadLight) && AllSceneLights){
 				/*
