@@ -54,8 +54,8 @@ Shader& Mesh::GetShader(){
 Transform& Mesh::GetTransform(){
 	return transform;
 }
-Material* Mesh::GetMaterial(){
-	return material.Get();
+Upp::One<Material>& Mesh::GetMaterial(){
+	return material;
 }
 bool Mesh::IsLoaded(){
 	return loaded;

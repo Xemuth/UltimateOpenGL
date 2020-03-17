@@ -23,7 +23,7 @@ class Material {
 		glm::vec3 GetSpecular();
 		Material& SetSpecular(glm::vec3 _Specular);
 		
-		Upp::String GetName();
+		Upp::String GetName()const;
 		Material& SetName(const Upp::String& _name);
 		
 		virtual ~Material();
@@ -35,10 +35,12 @@ class Material {
 		virtual bool IsLoaded() = 0;
 		virtual Material& Use() = 0;
 		
-		virtual const Upp::String& GetShaderDataStructure() = 0; //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
-		virtual const Upp::String& GetShaderMaterialFunction() = 0; //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
-		virtual const Upp::String& GetShaderMaterialPrototypeFunction() = 0;//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
-		virtual void SentToShader(Shader& shader,const Upp::String& CustomName = "") = 0; //This function MUST be rewritted in inherrited class, It will allow UOGL to send good data to a shader
+		virtual Upp::String GetNameOfStructure()= 0;
+		virtual Upp::String GetCalculationCode(const Upp::String& CustomName ="")= 0;
+		virtual Upp::String GetShaderDataStructure()= 0; //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+		virtual Upp::String GetShaderMaterialFunction()= 0; //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+		virtual Upp::String GetShaderMaterialPrototypeFunction()= 0;//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+		virtual void SentToShader(Shader& shader,const Upp::String& CustomName = "")= 0; //This function MUST be rewritted in inherrited class, It will allow UOGL to send good data to a shader
 };
 
 class Color_Material : public Material{ //this one is named :Color_Material instead of Color becasue Color already exist in Upp Namespace
@@ -69,9 +71,11 @@ class Color_Material : public Material{ //this one is named :Color_Material inst
 		virtual bool IsLoaded();
 		virtual Color_Material& Use();
 		
-		virtual const Upp::String& GetShaderDataStructure(); //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
-		virtual const Upp::String& GetShaderMaterialFunction(); //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
-		virtual const Upp::String& GetShaderMaterialPrototypeFunction();//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+		virtual Upp::String GetNameOfStructure();
+		virtual Upp::String GetCalculationCode(const Upp::String& CustomName ="");
+		virtual Upp::String GetShaderDataStructure(); //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+		virtual Upp::String GetShaderMaterialFunction(); //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+		virtual Upp::String GetShaderMaterialPrototypeFunction();//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 		virtual void SentToShader(Shader& shader,const Upp::String& CustomName = ""); //This function MUST be rewritted in inherrited class, It will allow UOGL to send good data to a shader
 };
 
@@ -137,9 +141,11 @@ class Texture2D : public Material{
 		virtual bool IsLoaded();
 		virtual Texture2D& Use();
 		
-		virtual const Upp::String& GetShaderDataStructure(); //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
-		virtual const Upp::String& GetShaderMaterialFunction(); //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
-		virtual const Upp::String& GetShaderMaterialPrototypeFunction();//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+		virtual Upp::String GetNameOfStructure();
+		virtual Upp::String GetCalculationCode(const Upp::String& CustomName ="");
+		virtual Upp::String GetShaderDataStructure(); //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+		virtual Upp::String GetShaderMaterialFunction(); //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+		virtual Upp::String GetShaderMaterialPrototypeFunction();//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 		virtual void SentToShader(Shader& shader,const Upp::String& CustomName = ""); //This function MUST be rewritted in inherrited class, It will allow UOGL to send good data to a shader
 };
 #endif

@@ -31,7 +31,7 @@ class Mesh{
         
         Shader& GetShader();
         Transform& GetTransform();
-        Material* GetMaterial();
+        Upp::One<Material>& GetMaterial();
         
         bool IsLoaded();
         

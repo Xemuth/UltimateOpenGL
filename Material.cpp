@@ -12,8 +12,9 @@ Material& Material::operator=(Material& material){
     specular = material.specular;
     
     loaded = material.loaded;
+    return  *this;
 }
-Upp::String Material::GetName(){
+Upp::String Material::GetName()const{
 	return name;
 }
 Material& Material::SetName(const Upp::String& _name){
@@ -101,14 +102,23 @@ bool Color_Material::IsLoaded(){
 }
 Color_Material& Color_Material::Use(){
 	//since color don't need to be store in GPU their is not reason to bind anythings
+	return  *this;
 }
-const Upp::String& Color_Material::GetShaderDataStructure(){//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+
+Upp::String Color_Material::GetNameOfStructure(){
+	return "MaterialColor";
+}
+Upp::String Color_Material::GetCalculationCode(const Upp::String& CustomName){
+	Upp::String nameToUse = (CustomName.GetCount()>0)? CustomName : name;
+	return "FragColor = " + nameToUse + ".diffuse;";
+}
+Upp::String Color_Material::GetShaderDataStructure(){//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 	return MATERIAL_COLOR_STRUCT();
 }
-const Upp::String& Color_Material::GetShaderMaterialFunction(){//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+Upp::String Color_Material::GetShaderMaterialFunction(){//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 	return "";
 }
-const Upp::String& Color_Material::GetShaderMaterialPrototypeFunction(){//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+Upp::String Color_Material::GetShaderMaterialPrototypeFunction(){//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 	return "";
 }
 void Color_Material::SentToShader(Shader& shader,const Upp::String& CustomName){//This function MUST be rewritted in inherrited class, It will allow UOGL to send good data to a shader
@@ -219,6 +229,7 @@ Upp::String Texture2D::GetPath(){
 }
 Texture2D& Texture2D::SetType(TextureType _type){
 	type = _type;
+	return  *this;
 }
 TextureType Texture2D::GetType(){
 	return type;
@@ -380,15 +391,23 @@ Texture2D& Texture2D::Use(){
 	}
 	return *this;
 }
-
-const Upp::String& Texture2D::GetShaderDataStructure(){ //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+Upp::String Texture2D::GetCalculationCode(const Upp::String& CustomName){
+	Upp::String nameToUse = (CustomName.GetCount()>0)? CustomName : name;
+	return "FragColor = texture(" + nameToUse + ".diffuse, TextureCoordinate);";
+}
+Upp::String Texture2D::GetNameOfStructure(){
+	return "MaterialTexture";
+}
+Upp::String Texture2D::GetShaderDataStructure(){ //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 	return MATERIAL_TEXTURE_STRUCT();
 }
-const Upp::String& Texture2D::GetShaderMaterialFunction(){ //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+Upp::String Texture2D::GetShaderMaterialFunction(){ //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 	//TODO
+	return "";
 }
-const Upp::String& Texture2D::GetShaderMaterialPrototypeFunction(){//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+Upp::String Texture2D::GetShaderMaterialPrototypeFunction(){//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 	//TODO
+	return "";
 }
 void Texture2D::SentToShader(Shader& shader,const Upp::String& CustomName){//This function MUST be rewritted in inherrited class, It will allow UOGL to send good data to a shader
 	//TODO

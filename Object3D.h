@@ -27,6 +27,8 @@ class Object3D : public GameObject
 		Upp::String GetModelDirectory(); //Return Model directory if it have been loaded one time at least
 		bool IsLoaded(); //Return true if the object is loaded
 		
+		Object3D& SetMaterialForMeshes(Material& material);
+		
 		void LoadModel(const Upp::String& path); //Used to load 3D Model
         void ReadData(Upp::Vector<float>& data ,ReaderParameters readerParameter = ReaderParameters(),ReaderRoutine readerRoutine = ReaderRoutine()); //Used to read vector<Float>
 		

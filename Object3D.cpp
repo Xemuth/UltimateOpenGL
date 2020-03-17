@@ -46,6 +46,13 @@ bool Object3D::IsLoaded(){ //Return true if the object is loaded
 	return loaded;
 }
 
+Object3D& Object3D::SetMaterialForMeshes(Material& material){
+	for(Mesh& m : meshes){
+		m.GetMaterial() = &material;
+	}
+	return *this;
+}
+
 void Object3D::LoadModel(const Upp::String& path){ //Used to load 3D Model
 	Upp::String realPath =TransformFilePath(path);
     // read file via ASSIMP
