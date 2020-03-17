@@ -265,7 +265,7 @@ int Texture2D::GetNrChannels(){
 	return nrChannels;
 }
 
-Texture2D& Texture2D::SetSpecularPath(Upp::String& _SpecularePath){
+Texture2D& Texture2D::SetSpecularPath(const Upp::String& _SpecularePath){
 	if(FileExists(_SpecularePath)){
 		SpecularPath = _SpecularePath;
 	}else{
@@ -331,7 +331,7 @@ Texture2D& Texture2D::Load(){
 			        }
 					glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 					if(MipMap)glGenerateMipmap(GL_TEXTURE_2D);
-						SpecularLoaded =true;
+					SpecularLoaded =true;
 				}
 				
 			}else{

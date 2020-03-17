@@ -128,8 +128,7 @@ class Texture2D : public Material{
 		int GetHeight();
 		int GetNrChannels();
 		
-		
-		Texture2D& SetSpecularPath(Upp::String& _SpecularePath);
+		Texture2D& SetSpecularPath(const Upp::String& _SpecularePath);
 		Upp::String GetSpecularPath();
 		
 		virtual Texture2D& Load();
