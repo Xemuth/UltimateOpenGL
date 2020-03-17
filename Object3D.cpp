@@ -1,66 +1,159 @@
 #include "Object3D.h"
 #include "Mesh.h"
-Object3D::Object3D(Scene& _scene) : GameObject(_scene) {}
-Object3D::Object3D(Scene& _scene, Mesh& _mesh) : GameObject(_scene){
+#include <plugin/assimp/assimp.h>
+Object3D::Object3D(){}
+Object3D::Object3D(Mesh& _mesh){
 	Mesh& m =meshes.Create<Mesh>(_mesh);
 	transform.AddChildren(m.GetTransform());
 }
-Object3D::Object3D(Scene& _scene, Upp::Vector<Mesh>& _meshes) : GameObject(_scene){
+Object3D::Object3D(Upp::Vector<Mesh>& _meshes){
 	for(Mesh& m : _meshes){
 		Mesh& m2 =meshes.Create<Mesh>(m);
+		m2.SetObject3D(*this);
 		transform.AddChildren(m2.GetTransform());
 	}
 }
-Object3D::Object3D(Scene& _scene, Upp::Vector<float>& Vertices, ReaderParameters readerParameter, ReaderRoutine readerRoutine) : GameObject(_scene){
+Object3D::Object3D(Upp::Vector<float>& Vertices, ReaderParameters readerParameter, ReaderRoutine readerRoutine){ //way of reading a floating point vector
 	ReadData(Vertices,readerParameter,readerRoutine);
 }
-Object3D::Object3D(Scene& _scene, const Upp::String& _name) : GameObject(_scene){
-	name = _name;
-}
-Object3D::Object3D(Scene& _scene, const Upp::String& _name, Upp::Vector<Mesh>& _meshes) : GameObject(_scene){
-	name = _name;
-	for(Mesh& m : _meshes){
-		Mesh& m2 =meshes.Create<Mesh>(m);
-		transform.AddChildren(m2.GetTransform());
-	}
-}
-Object3D::Object3D(Scene& _scene, const Upp::String& _name, Upp::Vector<float>& Vertices, ReaderParameters readerParameter, ReaderRoutine readerRoutine) : GameObject(_scene){
-	name = _name;
-	ReadData(Vertices,readerParameter,readerRoutine);
-}
-Object3D::Object3D(Scene& _scene, const Upp::String& _name, const Upp::String& pathOfModel) : GameObject(_scene){
-	name = _name;
+Object3D::Object3D(const Upp::String& pathOfModel){//Path of model to load
 	LoadModel(pathOfModel);
 }
-Object3D::Object3D(Object3D& _object) : GameObject(_object){//Be carefull of setting the Scene
-	meshes.Append(_object.meshes);
+Object3D::Object3D(Object3D& _object){//Be carefull of setting the Scene
+	*this = _object;
+}
+Object3D& Object3D::operator=(Object3D& _object){//Be carefull of setting the Scene
+	for(Mesh& m : _object.meshes){
+		Mesh& m2 =meshes.Create<Mesh>(m);
+		m2.SetObject3D(*this);
+		transform.AddChildren(m2.GetTransform());
+	}
 	directory= _object.directory;
 	loaded = _object.loaded;
-	shader = _object.shader;
-	drawMethod = _object.drawMethod;
-	material = _object.material;
-    for(Mesh& m : meshes){
-		transsform.AddChildren(m.GetTransform());
-    }
+	return *this;
 }
 Object3D::~Object3D(){
 	meshes.Clear();
 }
-Object3D& Object3D::operator=(Object3D& _object){//Be carefull of setting the Scene
-	*static_cast<GameObject*>(this)=_object;
-	meshes.Append(_object.meshes);
-	directory= _object.directory;
-	loaded = _object.loaded;
-	shader = _object.shader;
-	drawMethod = _object.drawMethod;
-	material = _object.material;
-    for(Mesh& m : meshes){
-		transform.AddChildren(m.GetTransform());
-    }
-    return *this;
+
+Upp::Array<Mesh>& Object3D::GetMeshes(){//Return Array of Mesh
+	return meshes;
 }
+Upp::String Object3D::GetModelDirectory(){ //Return Model directory if it have been loaded one time at least
+	return directory;
+}
+bool Object3D::IsLoaded(){ //Return true if the object is loaded
+	return loaded;
+}
+
+void Object3D::LoadModel(const Upp::String& path){ //Used to load 3D Model
+	Upp::String realPath =TransformFilePath(path);
+    // read file via ASSIMP
+    Assimp::Importer importer;
+    //  const aiScene* scene = importer.ReadFile(realPath, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace |aiProcess_GenNormals );
+    const aiScene* scene = importer.ReadFile(realPath,aiProcess_JoinIdenticalVertices |		// join identical vertices/ optimize indexing
+		aiProcess_ValidateDataStructure |		// perform a full validation of the loader's output
+		aiProcess_ImproveCacheLocality |		// improve the cache locality of the output vertices
+		aiProcess_RemoveRedundantMaterials |	// remove redundant materials
+		aiProcess_GenUVCoords |					// convert spherical, cylindrical, box and planar mapping to proper UVs
+		aiProcess_TransformUVCoords |			// pre-process UV transformations (scaling, translation ...)
+		//aiProcess_FindInstances |				// search for instanced meshes and remove them by references to one master
+		aiProcess_LimitBoneWeights |			// limit bone weights to 4 per vertex
+		aiProcess_OptimizeMeshes |				// join small meshes, if possible;
+		//aiProcess_PreTransformVertices |
+		aiProcess_GenSmoothNormals |			// generate smooth normal vectors if not existing
+		aiProcess_SplitLargeMeshes |			// split large, unrenderable meshes into sub-meshes
+		aiProcess_Triangulate |					// triangulate polygons with more than 3 edges
+		aiProcess_ConvertToLeftHanded |			// convert everything to D3D left handed space
+		aiProcess_SortByPType);
+    // check for errors
+    if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
+    {
+        LOG("ERROR::ASSIMP:: " << Upp::String(importer.GetErrorString()));
+        return;
+    }
+    // retrieve the directory path of the filepath
+    directory = realPath.Left( realPath.ReverseFind('/'));
+
+    // process ASSIMP's root node recursively
+    ProcessNode(scene->mRootNode, scene);
+}
+void Object3D::ReadData(Upp::Vector<float>& data ,ReaderParameters readerParameter,ReaderRoutine readerRoutine){ //Used to read vector<Float>
+	Mesh* m =nullptr;
+	int start = readerRoutine.startMesh;
+	Upp::Vector<float> Copie;
+	Copie.Append(data);
+	Upp::Vector<float> dataBuffer;
+	bool stop = false;
+	bool created = false;
+	
+	int NumberOfFloatByLine = 0;
+	if(readerParameter.coordinatesPosition !=-1) NumberOfFloatByLine+=3;
+	if(readerParameter.normalPosition != -1)NumberOfFloatByLine+=3;
+	if(readerParameter.textureCoordinatePosition != -1)NumberOfFloatByLine+=2;
+	if(readerParameter.tangentPosition != -1)NumberOfFloatByLine+=3;
+	if(readerParameter.bitangentPosition != -1)	NumberOfFloatByLine+=3;
+	if(readerParameter.colorPosition != -1 && readerParameter.colorType == CT_RGB) NumberOfFloatByLine+=3;
+	else if(readerParameter.colorPosition != -1 && readerParameter.colorType == CT_RGBA)NumberOfFloatByLine+=4;
+		
+	while(!stop){
+		if(readerRoutine.verticesPerMesh != -1){
+			if(Copie.GetCount() >= NumberOfFloatByLine*readerRoutine.verticesPerMesh){
+				for(int r = 0; r < NumberOfFloatByLine*readerRoutine.verticesPerMesh;r++){
+					dataBuffer.Add(Copie[r]);
+				}
+				Copie.Remove(0,NumberOfFloatByLine*readerRoutine.verticesPerMesh);
+			}
+			if(dataBuffer.GetCount()<NumberOfFloatByLine*readerRoutine.verticesPerMesh)stop=true;
+		}else{
+			dataBuffer.Append(Copie);
+			stop=true;
+		}
+		if(start != -1){
+			for(int e = 0; e < meshes.GetCount();e++){
+				if(e == readerRoutine.startMesh){
+					m = &meshes[e];
+					start++;
+					break;
+				}
+			}
+		}else{
+			if(readerRoutine.allowCreation){
+				if(dataBuffer.GetCount() > 0){
+					m = &(meshes.Create<Mesh>(*this)); // Original line, Here happen a memory violation
+				}
+				created=true;
+			}else{
+				LOG("Warning : void Object3D::ReadData(...) No starting mesh defined in readerRoutine and allowCreation set to false... First Mesh is mesh selected by default");
+				if(meshes.GetCount()>0) m = &meshes[0];
+			}
+		}
+		if(m){
+			if(dataBuffer.GetCount() > 0){
+				if(m->ReadData(dataBuffer,readerParameter, readerRoutine.useMaterialColor)){
+					m->SetObject3D(*this);
+					transform.AddChildren(m->GetTransform());
+				//LOG("Log : void Object3D::ReadData(...) Data have been readed succesfully !");
+				}else{
+					if(created){
+						meshes.Remove(meshes.GetCount()-1);
+						created=false;
+					}
+					LOG("Error : void Object3D::ReadData(...) Error during process of data !");
+				}
+				dataBuffer.Clear();
+			}
+			m = nullptr;
+		}else if(created){
+			//Useless
+		}else{
+			LOG("Error : void Object3D::ReadData(...) Error during resolution of mesh to affect !");
+		}
+	}
+}
+
 //Loading 3D Model using Assimp and custom loader
-void Object3D::ProcessNode(aiNode *node, const aiScene *scene){
+void Object3D::ProcessNode(aiNode *node, const aiScene *scene){//Used to load 3D Model
 	// process all the node's meshes (if any)
     for(unsigned int i = 0; i < node->mNumMeshes; i++)
     {
@@ -77,7 +170,7 @@ void Object3D::ProcessMesh(aiMesh *mesh, const aiScene *scene){
 	// data to fill
     Upp::Vector<Vertex> vertices;
     Upp::Vector<unsigned int> indices;
-    Upp::Vector<Texture> textures;
+    //Upp::Vector<Texture> textures;
 
     // Walk through each of the mesh's vertices
     for(unsigned int i = 0; i < mesh->mNumVertices; i++)
@@ -153,182 +246,15 @@ void Object3D::ProcessMesh(aiMesh *mesh, const aiScene *scene){
     }else{
         LOG("Warning : cant load and Bind texture since no context is linked to object3D : " + name );
     }
-    
     // return a mesh object created from the extracted mesh data
-    Mesh& m =  meshes.Create<Mesh>(*this ,vertices, indices, textures);
+    Mesh& m =  meshes.Create<Mesh>(vertices, indices); //, textures);
     m.SetObject3D(*this);
 	GetTransform().AddChildren(m.GetTransform());
 }
-void Object3D::LoadModel(const Upp::String& path){//Used to load 3D Model
-	Upp::String realPath =TransformFilePath(path);
-    // read file via ASSIMP
-    Assimp::Importer importer;
-    //  const aiScene* scene = importer.ReadFile(realPath, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace |aiProcess_GenNormals );
-    const aiScene* scene = importer.ReadFile(realPath,aiProcess_JoinIdenticalVertices |		// join identical vertices/ optimize indexing
-		aiProcess_ValidateDataStructure |		// perform a full validation of the loader's output
-		aiProcess_ImproveCacheLocality |		// improve the cache locality of the output vertices
-		aiProcess_RemoveRedundantMaterials |	// remove redundant materials
-		aiProcess_GenUVCoords |					// convert spherical, cylindrical, box and planar mapping to proper UVs
-		aiProcess_TransformUVCoords |			// pre-process UV transformations (scaling, translation ...)
-		//aiProcess_FindInstances |				// search for instanced meshes and remove them by references to one master
-		aiProcess_LimitBoneWeights |			// limit bone weights to 4 per vertex
-		aiProcess_OptimizeMeshes |				// join small meshes, if possible;
-		//aiProcess_PreTransformVertices |
-		aiProcess_GenSmoothNormals |			// generate smooth normal vectors if not existing
-		aiProcess_SplitLargeMeshes |			// split large, unrenderable meshes into sub-meshes
-		aiProcess_Triangulate |					// triangulate polygons with more than 3 edges
-		aiProcess_ConvertToLeftHanded |			// convert everything to D3D left handed space
-		aiProcess_SortByPType);
-    // check for errors
-    if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
-    {
-        LOG("ERROR::ASSIMP:: " << Upp::String(importer.GetErrorString()));
-        return;
-    }
-    // retrieve the directory path of the filepath
-    directory = realPath.Left( realPath.ReverseFind('/'));
-
-    // process ASSIMP's root node recursively
-    ProcessNode(scene->mRootNode, scene);
-}
-void Object3D::ReadData(Upp::Vector<float>& data ,ReaderParameters readerParameter ,ReaderRoutine readerRoutine){//Used to read vector<Float>
-	Mesh* m =nullptr;
-	int start = readerRoutine.startMesh;
-	Upp::Vector<float> Copie;
-	Copie.Append(data);
-	Upp::Vector<float> dataBuffer;
-	bool stop = false;
-	bool created = false;
-	
-	int NumberOfFloatByLine = 0;
-	if(readerParameter.coordinatesPosition !=-1) NumberOfFloatByLine+=3;
-	if(readerParameter.normalPosition != -1)NumberOfFloatByLine+=3;
-	if(readerParameter.textureCoordinatePosition != -1)NumberOfFloatByLine+=2;
-	if(readerParameter.tangentPosition != -1)NumberOfFloatByLine+=3;
-	if(readerParameter.bitangentPosition != -1)	NumberOfFloatByLine+=3;
-	if(readerParameter.colorPosition != -1 && readerParameter.colorType == CT_RGB) NumberOfFloatByLine+=3;
-	else if(readerParameter.colorPosition != -1 && readerParameter.colorType == CT_RGBA)NumberOfFloatByLine+=4;
-		
-	while(!stop){
-		if(readerRoutine.verticesPerMesh != -1){
-			if(Copie.GetCount() >= NumberOfFloatByLine*readerRoutine.verticesPerMesh){
-				for(int r = 0; r < NumberOfFloatByLine*readerRoutine.verticesPerMesh;r++){
-					dataBuffer.Add(Copie[r]);
-				}
-				Copie.Remove(0,NumberOfFloatByLine*readerRoutine.verticesPerMesh);
-			}
-			if(dataBuffer.GetCount()<NumberOfFloatByLine*readerRoutine.verticesPerMesh)stop=true;
-		}else{
-			dataBuffer.Append(Copie);
-			stop=true;
-		}
-		
-		if(start != -1){
-			for(int e = 0; e < meshes.GetCount();e++){
-				if(e == readerRoutine.startMesh){
-					m = &meshes[e];
-					start++;
-					break;
-				}
-			}
-		}else{
-			if(readerRoutine.allowCreation){
-				if(dataBuffer.GetCount() > 0){
-					m = &(meshes.Create<Mesh>(*this)); // Original line, Here happen a memory violation
-				}
-				created=true;
-			}else{
-				LOG("Warning : void Object3D::ReadData(...) No starting mesh defined in readerRoutine and allowCreation set to false... First Mesh is mesh selected by default");
-				if(meshes.GetCount()>0) m = &meshes[0];
-			}
-		}
-		if(m){
-			if(dataBuffer.GetCount() > 0){
-				if(m->ReadData(dataBuffer,readerParameter, readerRoutine.useMaterialColor)){
-					m->SetObject3D(*this);
-					transform.AddChildren(m->GetTransform());
-				//LOG("Log : void Object3D::ReadData(...) Data have been readed succesfully !");
-				}else{
-					if(created){
-						meshes.Remove(meshes.GetCount()-1);
-						created=false;
-					}
-					LOG("Error : void Object3D::ReadData(...) Error during process of data !");
-				}
-				dataBuffer.Clear();
-			}
-			m = nullptr;
-		}else if(created){
-			//Useless
-		}else{
-			LOG("Error : void Object3D::ReadData(...) Error during resolution of mesh to affect !");
-		}
-	}
-}
-Upp::Array<Mesh>& Object3D::GetMeshes(){
-	return meshes;
-}
-Object3D& Object3D::EnableLightCalculation(){
-	lightAffected = true;
-	return *this;
-}
-Object3D& Object3D::DisableLightCalculation(){
-	lightAffected = false;
-	return *this;
-}
-bool Object3D::IsLightCalculationEnable(){
-	return lightAffected;
-}
-Object3D& Object3D::EnableAlpha(){
-	alphaAffected = true;
-	return *this;
-}
-Object3D& Object3D::DisableAlpha(){
-	alphaAffected = false;
-	return *this;
-}
-bool Object3D::IsAlphaEnable(){
-	return alphaAffected;
-}
-Material& Object3D::GetMaterial(){
-	return material;
-}
-Object3D& Object3D::SetDrawMethod(DrawMethod dm){
-	drawMethod = dm;
-	for(Mesh& m : meshes){
-		m.SetDrawMethod(dm);
-	}
-	return *this;
-}
-DrawMethod Object3D::GetDrawMethod(){
-	return drawMethod;
-}
-Object3D& Object3D::SetShader(Shader& _shader){
-	shader = _shader;
-	return *this;
-}
-Shader& Object3D::GetShader(){
-	return shader;
-}
-
-Object3D& Object3D::AssignSameIndiceAsEveryMesh(int MeshIndicesToGet){
-	if(MeshIndicesToGet < meshes.GetCount()){
-		if(meshes[MeshIndicesToGet].GetIndices().GetCount() == 0){
-			meshes[MeshIndicesToGet].LoadDefaultIndices();
-		}
-		for(Mesh& m : meshes){
-			if(&meshes[MeshIndicesToGet] != &m)
-				m.SetIndices(meshes[MeshIndicesToGet].GetIndices());
-		}
-	}
-	return *this;
-}
-
 //Override
 void Object3D::Load(){
 	if(!loaded){
 		for(int i = 0 ; i < meshes.size(); i++){//Changement made by Iñaki
-			if(shader.IsCompiled())meshes[i].SetShader(shader);
 			meshes[i].Load();
 		}
 		loaded =true;

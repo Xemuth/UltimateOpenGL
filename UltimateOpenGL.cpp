@@ -115,9 +115,9 @@ bool UltimateOpenGL_Context::IsMaterialExist(const Upp::String& _MaterialName){ 
 	}
 	return false;
 }
-Scene& UltimateOpenGL_Context::RemoveMaterial(const Upp::String& _MaterialName){ //Will remove light if it exist
+UltimateOpenGL_Context& UltimateOpenGL_Context::RemoveMaterial(const Upp::String& _MaterialName){ //Will remove light if it exist
 	if(AllMaterials.Find(_MaterialName) != -1){
-		AllMaterials.Remove(_MaterialName);
+		AllMaterials.Remove(AllMaterials.Find(_MaterialName));
 	}
 	return *this;
 }

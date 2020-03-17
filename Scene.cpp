@@ -1,5 +1,5 @@
-#include "Scene.h"
 #include "UltimateOpenGL.h"
+
 Scene::Scene(){}
 Scene::Scene(UltimateOpenGL_Context& _context){
 	context = &_context;
@@ -23,7 +23,6 @@ Scene& Scene::operator=(Scene& _scene){
 		if(&_scene.AllCameras.Get(cam) == _scene.ActiveCamera) ActiveCamera = &e;
 		e.SetScene(*this);
 	}
-	
 	SkyBox = _scene.SkyBox;
 	return *this;
 }
@@ -37,7 +36,7 @@ UltimateOpenGL_Context& Scene::GetContext(){
 Upp::String Scene::GetName(){
 	return name;
 }
-Material& Scene::GetSkyBox(){
+Color_Material& Scene::GetSkyBox(){
 	return SkyBox;
 }
 Upp::ArrayMap<Upp::String,GameObject>& Scene::GetAllGameObjects(){
@@ -54,7 +53,7 @@ Scene& Scene::SetName(const Upp::String& _name){
 	name = _name;
 	return *this;
 }
-Scene& Scene::SetSkyBox(Material& _skyBox){
+Scene& Scene::SetSkyBox(Color_Material& _skyBox){
 	SkyBox = _skyBox;
 	return *this;
 }
@@ -66,18 +65,18 @@ bool Scene::IsCameraExist(const Upp::String& _CameraName){ //Return true if the 
 }
 Scene& Scene::RemoveCamera(const Upp::String& _CameraName){ //Will remove gameObject if it exist
 	if(AllCameras.Find(_CameraName) != -1){
-		if(&AllCameras.Get<Camera>(_CameraName) == ActiveCamera) ActiveCamera = nullptr;
+		if(&AllCameras.Get(_CameraName) == ActiveCamera) ActiveCamera = nullptr;
 		AllCameras.Remove(AllCameras.Find(_CameraName));
 	}
 	return *this;
 }
 Scene& Scene::SetActiveCamera(const Upp::String& _CameraName){//If name is incorrect then LOG will raise warning and active Camera will be set to the default one.
 	if(AllCameras.Find(_CameraName) != -1){
-		ActiveCamera = &AllCameras.Get<Camera>(_CameraName);
+		ActiveCamera =  &AllCameras.Get(_CameraName);
 	}
-	if!(ActiveCamera){
-		ASSERT(AllCameras.GetCount() == 0, "ActiveCamera is NullPtr, SetActive Have been called when AllCamera is empty, ensure you create a camera before tryng to set active or get one");
-		ActiveCamera = &AllCameras.Get<Camera>(AllCameras.GetKey<Upp::String>(0));
+	if(!ActiveCamera){
+		ASSERT_(AllCameras.GetCount() == 0, "ActiveCamera is NullPtr, SetActive Have been called when AllCamera is empty, ensure you create a camera before tryng to set active or get one");
+		ActiveCamera = &AllCameras.Get(AllCameras.GetKey(0));
 	}
 	return *this;
 }

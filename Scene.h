@@ -17,7 +17,7 @@ class Scene{
 		Upp::ArrayMap<Upp::String,Light> AllLights; //Since UOGL V5, light is carried by scene !
 		Camera* ActiveCamera= nullptr;
 		
-		Upp::One<Material> SkyBox;
+		Color_Material SkyBox;
 		
 	public:
 		Scene();
@@ -28,41 +28,48 @@ class Scene{
 
 		UltimateOpenGL_Context& GetContext();
 		Upp::String GetName();
-		Material& GetSkyBox();
+		Color_Material& GetSkyBox();
 		Upp::ArrayMap<Upp::String,GameObject>& GetAllGameObjects();
 		Upp::ArrayMap<Upp::String,Camera>& GetAllCameras();
 		
 		Scene& SetContext(UltimateOpenGL_Context& _context);
 		Scene& SetName(const Upp::String& _name);
-		Scene& SetSkyBox(Material& _skyBox);
-		
-										 
+		Scene& SetSkyBox(Color_Material& _skyBox);
+								 
 		template <class T,class... Args>
 		T& CreateCamera(const Upp::String& _CameraName, Args&&... args){//if the game object exists then it will remove it to create new one
 			try{
 				if(AllCameras.Find(_CameraName) ==-1){
-					T& camera =  AllCameras.Create<T>(_CameraName,*this,_CameraName,std::forward<Args>(args)...);
+					T& camera =  AllCameras.Create<T>(_CameraName,std::forward<Args>(args)...);
+					camera.SetName(_CameraName);
+					camera.SetScene(*this);
 					if(!ActiveCamera) ActiveCamera = &camera;
+					return camera;
 				}else{
 					RemoveCamera(_CameraName);
-					return AllCameras.Create<T>(_CameraName,*this,_CameraName,std::forward<Args>(args)...);
+					T& camera =  AllCameras.Create<T>(_CameraName,std::forward<Args>(args)...);
+					camera.SetName(_CameraName);
+					camera.SetScene(*this);
+					if(!ActiveCamera) ActiveCamera = &camera;
+					return camera;
 				}
 			}catch(...){
 				throw UOGLException(6,"Error : T& Scene::CreateCamera(...) => Error on convertion of the camera !",1);
 			}
 		}
+		
 		template <class T>
 		T& AddCamera(const Upp::String& _CameraName,T& CameraToAdd){//if the game object exists then it will remove it to create new one
 			try{
 				if(AllCameras.Find(_CameraName) ==-1){
-					T& type = (AllCameras.Create<T>(_CameraName) = CameraToAdd);
+					T& type = AllCameras.Create<T>(_CameraName,CameraToAdd);
 					type.SetScene(*this);
 					type.SetName(_CameraName);
 					if(!ActiveCamera) ActiveCamera = &type;
 					return type;
 				}else{
 					RemoveCamera(_CameraName);
-					T& type = (AllCameras.Create<T>(_CameraName) = CameraToAdd);
+					T& type = AllCameras.Create<T>(_CameraName,CameraToAdd);
 					type.SetScene(*this);
 					type.SetName(_CameraName);
 					if(!ActiveCamera) ActiveCamera = &type;
@@ -72,6 +79,7 @@ class Scene{
 				throw UOGLException(6,"Error : T& Scene::AddCamera(...) => Error on convertion of the camera !",1);
 			}
 		}
+		
 		template <class T>
 		T& GetCamera(const Upp::String& _CameraName){//Throw exception if gameObject don't exists
 			if(AllCameras.Find(_CameraName) != -1){
@@ -83,6 +91,7 @@ class Scene{
 			}
 			throw UOGLException(6,"Error : T& Scene::GetCamera(...) => No GameObject named \""+ _CameraName +"\" exists !",1);
 		}
+		
 		template <class T>
 		bool IsCameraIsTypeOf(const Upp::String& _CameraName){//Return true if the game object exits and is type of template, else return false
 			if(AllCameras.Find(_CameraName) != -1){
@@ -99,6 +108,7 @@ class Scene{
 		Scene& RemoveCamera(const Upp::String& _CameraName);//Will remove camera if it exist
 		Scene& SetActiveCamera(const Upp::String& _CameraName);//If name is incorrect then LOG will raise warning and active Camera will be set to the default one.
 		Camera& GetActiveCamera();//Raise Assertion if active camera has not been set !
+		
 		/*
 		*	GameObject and inheritance function
 		*/
@@ -106,34 +116,42 @@ class Scene{
 		T& CreateGameObject(const Upp::String& _ObjectName, Args&&... args){//if the game object exists then it will remove it to create new one
 			try{
 				if(AllGamesObjects.Find(_ObjectName) ==-1){
-					return AllGamesObjects.Create<T>(_ObjectName,*this,_ObjectName,std::forward<Args>(args)...);
+					T& gameObject =  AllGamesObjects.Create<T>(_ObjectName,std::forward<Args>(args)...);
+					gameObject.SetScene(*this);
+					gameObject.SetName(_ObjectName);
+					return gameObject;
 				}else{
 					RemoveGameObject(_ObjectName);
-					return AllGamesObjects.Create<T>(_ObjectName,*this,_ObjectName,std::forward<Args>(args)...);
+					T& gameObject =  AllGamesObjects.Create<T>(_ObjectName,std::forward<Args>(args)...);
+					gameObject.SetScene(*this);
+					gameObject.SetName(_ObjectName);
+					return gameObject;
 				}
 			}catch(...){
 				throw UOGLException(6,"Error : T& Scene::CreateGameObject(...) => Error on convertion of the game Object !",1);
 			}
 		}
+		
 		template <class T>
 		T& AddGameObject(const Upp::String& _ObjectName,T& ObjectToAdd){//if the game object exists then it will remove it to create new one
 			try{
 				if(AllGamesObjects.Find(_ObjectName) ==-1){
-					auto& type = (AllGamesObjects.Create<T>(_ObjectName) = ObjectToAdd);
-					type.SetScene(*this);
-					type.SetName(_ObjectName);
-					return type;
+					T& gameObject  = AllGamesObjects.Create<T>(ObjectToAdd);
+					gameObject.SetScene(*this);
+					gameObject.SetName(_ObjectName);
+					return gameObject;
 				}else{
 					RemoveGameObject(_ObjectName);
-					auto& type = (AllGamesObjects.Create<T>(_ObjectName) = ObjectToAdd);
-					type.SetScene(*this);
-					type.SetName(_ObjectName);
-					return type;
+					T& gameObject  = AllGamesObjects.Create<T>(ObjectToAdd);
+					gameObject.SetScene(*this);
+					gameObject.SetName(_ObjectName);
+					return gameObject;
 				}
 			}catch(...){
 				throw UOGLException(6,"Error : T& Scene::AddGameObject(...) => Error on convertion of the game Object !",1);
 			}
 		}
+		
 		template <class T>
 		T& GetGameObject(const Upp::String& _ObjectName){//Throw exception if gameObject don't exists
 			if(AllGamesObjects.Find(_ObjectName) != -1){
@@ -145,6 +163,7 @@ class Scene{
 			}
 			throw UOGLException(6,"Error : T& Scene::GetGameObject(...) => No GameObject named \""+ _ObjectName +"\" exists !",1);
 		}
+		
 		template <class T>
 		bool IsGameObjectIsTypeOf(const Upp::String& _ObjectName){//Return true if the game object exits and is type of template, else return false
 			if(AllGamesObjects.Find(_ObjectName) != -1){

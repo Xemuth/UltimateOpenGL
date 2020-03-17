@@ -1,5 +1,5 @@
 #include "Shader.h"
-#include "Definition.h"
+#include "Material.h"
 
 Upp::String IncludeShader(Upp::String& shader){
 	shader.Replace("MATERIAL_TEXTURE_STRUCT()",MATERIAL_TEXTURE_STRUCT());
@@ -372,12 +372,14 @@ Upp::String Shader::GenerateVertexShader(unsigned int VertexGenerationOption,con
 				InsertInShader(ShadV, LayoutPosition,"layout (location = 5) in vec4 aColors;\n");
 				
 				InsertInShader(ShadV, OutPosition,"out vec3 FragPos;\n");
+				InsertInShader(ShadV, OutPosition,"out vec4 Colors;\n");
 				
 				InsertInShader(ShadV, UniformPosition,"uniform mat4 view;\n");
 				InsertInShader(ShadV, UniformPosition,"uniform mat4 projection;\n");
 				InsertInShader(ShadV, UniformPosition,"uniform mat4 model;\n");
 				
 				InsertInShader(ShadV, MainPosition,"FragPos = vec3(model * vec4(aPos, 1.0));\n");
+				InsertInShader(ShadV, MainPosition,"Colors = aColors;\n");
 				InsertInShader(ShadV, MainPosition,"gl_Position = projection * view * model * vec4(aPos, 1.0f);\n");
 			}
 			if(VertexGenerationOption & VGO_UseMaterialObject && material){
@@ -455,8 +457,9 @@ Upp::String Shader::GenerateFragmentShader(unsigned int FragmentGenerationOption
 					Uniform (viex projection and model)
 				*/
 				InsertInShader(ShadF, InPosition,"in vec3 FragPos;\n");
+				InsertInShader(ShadF, InPosition,"in vec4 Colors;\n");
 				InsertInShader(ShadF, OutPosition,"out vec4 FragColor;\n");
-				InsertInShader(ShadF, MainPosition,"FragColor = vec4(1.0f, 0.5f, 0.2f, 0.5f);\n");
+				InsertInShader(ShadF, MainPosition,"FragColor = Colors;\n");
 			}
 			if((FragmentGenerationOption & FGO_UseMaterialObject) && material){
 				/*

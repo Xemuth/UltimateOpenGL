@@ -1,8 +1,7 @@
 #ifndef _UltimateOpenGL_Material_h_
 #define _UltimateOpenGL_Material_h_
 #include "Definition.h"
-#include "Shader.h"
-
+class Shader;
 class Material {
 	protected:
 		Upp::String name = "default";
@@ -27,7 +26,8 @@ class Material {
 		Upp::String GetName();
 		Material& SetName(const Upp::String& _name);
 		
-		virtual Material& operator=(Material& material)=0;
+		virtual ~Material();
+		virtual Material& operator=(Material& material); //YOU MUST ADD COPY OPERATOR IN INHERITTED CLASS
 		
 		virtual Material& Load() = 0;
 		virtual Material& Unload() = 0;
@@ -57,8 +57,11 @@ class Color_Material : public Material{ //this one is named :Color_Material inst
 		Color_Material& SetColor(int red,int green, int blue);
 		Color_Material& SetColor(glm::vec4 _color);
 		Color_Material& SetColor(glm::vec3 _color);
+
+		glm::vec4 GetColor(){return color;}
 		
-		virtual Color_Material& operator=(Material& material);
+		virtual ~Color_Material();
+		virtual Color_Material& operator=(Color_Material& material);
 		
 		virtual Color_Material& Load();
 		virtual Color_Material& Unload();
@@ -76,6 +79,8 @@ class Texture2D : public Material{
 	private:
 		Upp::String Path = "";
 		Upp::String SpecularPath = "";
+		
+		inline static int TextureCount =0;
 		
 		GLenum format=GL_RGB;
 		TextureType type =TT_DIFFUSE;
@@ -97,7 +102,7 @@ class Texture2D : public Material{
 		Texture2D(const Upp::String& _path,const Upp::String& _Name);
 		Texture2D(const Texture2D& texture);
 		Texture2D& operator=(Texture2D& texture);
-		~Texture2D();
+		virtual ~Texture2D();
 		
 		Texture2D& LoadDefaultTextureParameter();
 		TextureParameter& AddTextureParameter(const TextureParameter& parameter);
@@ -105,8 +110,6 @@ class Texture2D : public Material{
 
 		Texture2D& SetPath(const Upp::String& _path);
 		Upp::String GetPath();
-		Texture2D& SetName(const Upp::String& _name); //By Default the name of the texture gonna be is name from loading files
-		Upp::String GetName();
 		Texture2D& SetType(TextureType _type);
 		TextureType GetType();
 

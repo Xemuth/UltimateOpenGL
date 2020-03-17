@@ -11,10 +11,12 @@
 #include "Definition.h"
 #include "Transform.h"
 #include "Camera.h"
-#include "Material.h"
 #include "Shader.h"
-#include "Light.h"
+#include "Material.h"
+
 #include "Scene.h"
+
+#include "Light.h"
 #include "GameObject.h"
 
 #include "Object3D.h"
@@ -44,7 +46,7 @@ class UltimateOpenGL_Context{
 		double GetTime();
 		void StartTimer();
 	
-		inline static int TextureCompteur=0;
+	
 		Upp::ArrayMap<Upp::String,Material> AllMaterials;
 	public:
 		UltimateOpenGL_Context();
@@ -80,10 +82,14 @@ class UltimateOpenGL_Context{
 		T& CreateMaterial(const Upp::String& _MaterialName, Args&&... args){
 			try{
 				if(AllMaterials.Find(_MaterialName) ==-1){
-					return AllMaterials.Create<T>(_MaterialName,std::forward<Args>(args)...).SetName(_MaterialName);
+					T& material =  AllMaterials.Create<T>(_MaterialName,std::forward<Args>(args)...);
+					material.SetName(_MaterialName);
+					return material;
 				}else{
 					RemoveMaterial(_MaterialName);
-					return AllMaterials.Create<T>(_MaterialName,std::forward<Args>(args)...).SetName(_MaterialName);
+					T& material =  AllMaterials.Create<T>(_MaterialName,std::forward<Args>(args)...);
+					material.SetName(_MaterialName);
+					return material;
 				}
 			}catch(...){
 				throw UOGLException(6,"Error : T& UltimateOpenGL_Context::CreateMaterial(...) => Error on convertion of the Material !",1);
@@ -129,7 +135,7 @@ class UltimateOpenGL_Context{
 			return false;
 		}
 		bool IsMaterialExist(const Upp::String& _MaterialName); //Return true if the light  exists
-		Scene& RemoveMaterial(const Upp::String& _MaterialName); //Will remove light if it exist
+		UltimateOpenGL_Context& RemoveMaterial(const Upp::String& _MaterialName); //Will remove light if it exist
 		Upp::ArrayMap<Upp::String,Material>& GetAllMaterials();
 		
 		void Trace(bool b = true);//Log all OpenGL Error

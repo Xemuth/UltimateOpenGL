@@ -1,9 +1,24 @@
 #include "Material.h"
+#include "Shader.h"
+
+Material::~Material(){}
+Material& Material::operator=(Material& material){
+	name = material.name;
+	
+	shininess = material.shininess; //Brilliance en français
+	diffuse = material.diffuse; //Valeur de diffusion
+
+	ambient = material.ambient;
+    specular = material.specular;
+    
+    loaded = material.loaded;
+}
 Upp::String Material::GetName(){
 	return name;
 }
 Material& Material::SetName(const Upp::String& _name){
 	name = _name;
+	return *this;
 }
 float Material::GetShininess(){
 	return shininess;
@@ -47,30 +62,41 @@ Color_Material::Color_Material(glm::vec4 _color){
 Color_Material::Color_Material(glm::vec3 _color){
 	color =glm::vec4(_color,1.0f);
 }
-Color_Material& Color_Material::operator=(Material& material){
+Color_Material::~Color_Material(){}
+Color_Material& Color_Material::operator=(Color_Material& material){
 	color = material.color;
 	return *this;
 }
 Color_Material& Color_Material::SetColor(int red,int green, int blue, int alpha){
 	color = TransformRGBAToFloatColor(red,green,blue,alpha);
+	return *this;
 }
 Color_Material& Color_Material::SetColor(int red,int green, int blue){
 	color = glm::vec4(TransformRGBToFloatColor(red,green,blue),1.0f);
+	return *this;
 }
 Color_Material& Color_Material::SetColor(glm::vec4 _color){
 	color = _color;
+	return *this;
 }
 Color_Material& Color_Material::SetColor(glm::vec3 _color){
 	color =glm::vec4(_color,1.0f);
+	return *this;
 }
 
 Color_Material& Color_Material::Load(){
+	
+	return *this;
 }
 Color_Material& Color_Material::Unload(){
+	
+	return *this;
 }
 Color_Material& Color_Material::Reload(){
+	
+	return *this;
 }
-Color_Material& Color_Material::IsLoaded(){
+bool Color_Material::IsLoaded(){
 	return true; //Color don't need loading
 }
 Color_Material& Color_Material::Use(){
@@ -119,20 +145,20 @@ Texture2D::Texture2D(const Texture2D& texture){
 	height = texture.height;
 	nrChannels = texture.nrChannels;
 	MipMap = texture.MipMap;
-	Loaded = texture.Loaded;
-	if(Loaded)ID = texture.ID;
+	loaded = texture.loaded;
+	if(loaded)ID = texture.ID;
 	TextureIterator = texture.TextureIterator;
 	textureParameters.Append(texture.textureParameters);
 }
 Texture2D& Texture2D::operator=(Texture2D& texture){
 	Path = texture.Path;
-	SpecularPath = SpecularID;
+	SpecularPath = texture.SpecularPath;
 	name = texture.name;
 	width = texture.width;
 	height = texture.height;
 	nrChannels = texture.nrChannels;
 	MipMap = texture.MipMap;
-	Loaded = texture.loaded;
+	loaded = texture.loaded;
 	if(loaded)ID = texture.ID;
 	if(SpecularLoaded)SpecularID = texture.SpecularID;
 	TextureIterator = texture.TextureIterator;
@@ -164,7 +190,13 @@ Texture2D& Texture2D::LoadDefaultTextureParameter(){
 		TextureParameter(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,(int) GL_LINEAR_MIPMAP_LINEAR),
 		TextureParameter(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,(int) GL_NEAREST),
 	});
-	LOG("Info : Texture::LoadDefaultTextureParameter() Default Texture parameter have been loaded for texture named : \""+ Name +"\"");
+	LOG("Info : Texture::LoadDefaultTextureParameter() Default Texture parameter have been loaded for texture named : \""+ name +"\"");
+	return *this;
+}
+Texture2D& Texture2D::LoadTextureParameter(){
+	for(TextureParameter& param :textureParameters){
+		glTexParameteri(param.target,param.pname,param.params);
+	}
 	return *this;
 }
 TextureParameter& Texture2D::AddTextureParameter(const TextureParameter& parameter){
@@ -242,7 +274,7 @@ Texture2D& Texture2D::SetSpecularPath(Upp::String& _SpecularePath){
 	return *this;
 }
 Upp::String Texture2D::GetSpecularPath(){
-	return SpecularePath;
+	return SpecularPath;
 }
 
 Texture2D& Texture2D::Load(){
@@ -308,11 +340,11 @@ Texture2D& Texture2D::Load(){
 			stbi_image_free(data);
 		}else{
 			LOG("Error : Texture2D::Load(...) Texture named : \""+ name +"\" is already loaded ! Use Unload() Function to Unload or Reload() to reload the texture");
-			return false;
+			return *this;
 		}
 	}else{
 		LOG("Error : Texture2D::Load(...) FilePath : \""+ Path +"\" of texture named : \""+ name +"\" is incorrect !");
-		Loaded =false;
+		loaded =false;
 	}
 	return *this;
 }
@@ -320,14 +352,13 @@ Texture2D& Texture2D::Unload(){
 	if(loaded){
 		glDeleteTextures(1, &ID);
 		loaded = false;
-		return true;
 	}else{
 		LOG("Warning : Texture2D::Unload() Nothing to remove !");
 	}
 	return *this;
 }
 Texture2D& Texture2D::Reload(){
-	if(Loaded){
+	if(loaded){
 		glDeleteTextures(1, &ID);
 		loaded = false;
 		Load();
@@ -340,7 +371,7 @@ bool Texture2D::IsLoaded(){
 	return loaded;
 }
 Texture2D& Texture2D::Use(){
-	if(Loaded){
+	if(loaded){
 		glActiveTexture(GL_TEXTURE0 +TextureIterator);
 		glBindTexture(GL_TEXTURE_2D, ID);
 		return *this;

@@ -48,28 +48,6 @@ enum DrawMethod{DM_POINTS,DM_LINES,DM_LINE_STRIP,DM_LINE_LOOP,DM_TRIANGLES,DM_TR
 enum LightType{LT_DIRLIGHT,LT_POINTLIGHT,LT_SPOTLIGHT,LT_LIGHT};
 
 /*
-PROGRAMM -> GL_POINTS
-Treats each vertex as a single point. Vertex n defines point n. N points are drawn.
-UOGL_LINES -> GL_LINES
-Treats each pair of vertices as an independent line segment. Vertices 2 ⁢ n - 1 and 2 ⁢ n define line n. N 2 lines are drawn.
-UOGL_LINE_STRIP - > GL_LINE_STRIP
-Draws a connected group of line segments from the first vertex to the last. Vertices n and n + 1 define line n. N - 1 lines are drawn.
-UOGL_LINE_LOOP -> GL_LINE_LOOP
-Draws a connected group of line segments from the first vertex to the last, then back to the first. Vertices n and n + 1 define line n. The last line, however, is defined by vertices N and 1 . N lines are drawn.
-UOGL_TRIANGLE -> GL_TRIANGLES (Default USED)
-Treats each triplet of vertices as an independent triangle. Vertices 3 ⁢ n - 2 , 3 ⁢ n - 1 , and 3 ⁢ n define triangle n. N 3 triangles are drawn.
-UOGL_TRIANGLE_STRIP -> GL_TRIANGLE_STRIP
-Draws a connected group of triangles. One triangle is defined for each vertex presented after the first two vertices. For odd n, vertices n, n + 1 , and n + 2 define triangle n. For even n, vertices n + 1 , n, and n + 2 define triangle n. N - 2 triangles are drawn.
-UOGL_TRIANGLE_FAN -> GL_TRIANGLE_FAN
-Draws a connected group of triangles. One triangle is defined for each vertex presented after the first two vertices. Vertices 1 , n + 1 , and n + 2 define triangle n. N - 2 triangles are drawn.
-UOGL_QUADS -> GL_QUADS
-Treats each group of four vertices as an independent quadrilateral. Vertices 4 ⁢ n - 3 , 4 ⁢ n - 2 , 4 ⁢ n - 1 , and 4 ⁢ n define quadrilateral n. N 4 quadrilaterals are drawn.
-UOGL_QUAD_STRIP -> GL_QUAD_STRIP
-Draws a connected group of quadrilaterals. One quadrilateral is defined for each pair of vertices presented after the first pair. Vertices 2 ⁢ n - 1 , 2 ⁢ n , 2 ⁢ n + 2 , and 2 ⁢ n + 1 define quadrilateral n. N 2 - 1 quadrilaterals are drawn. Note that the order in which vertices are used to construct a quadrilateral from strip data is different from that used with independent data.
-UOGL_POLYGON -> GL_POLYGON
-Draws a single, convex polygon. Vertices 1 through N define this polygon
-*/
-/*
 	Definition of all defaults class used in UOGL
 */
 class UltimateOpenGL_Context;
@@ -78,6 +56,7 @@ struct TextureInformation;
 struct Vertex;
 
 class Camera;
+class Material;
 class Transform;
 class Scene;
 class Light;
@@ -331,6 +310,4 @@ static glm::vec4 TransformVectorToFloatColorAlpha(Upp::Vector<int> rgba){
 	}
 	return glm::vec4(((float)ColorUniformisation(rgba[0]))/255.0f ,((float)ColorUniformisation(rgba[1]))/255.0f,((float)ColorUniformisation(rgba[2]))/255.0f,((float)ColorUniformisation(rgba[3]))/255.0f);
 }
-
-
 #endif
