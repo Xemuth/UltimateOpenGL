@@ -19,7 +19,7 @@ GameObject::GameObject(const GameObject& gameObject) : transform(){
 }
 GameObject::~GameObject(){}
 GameObject& GameObject::operator=(const GameObject& gameObject){
-	name=gameObject.name; 
+	name=gameObject.name;
 	scene=nullptr;//gameObject.scene;
 	transform=gameObject.transform;
 	transform.ClearChildrens();

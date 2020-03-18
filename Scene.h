@@ -31,6 +31,7 @@ class Scene{
 		Color_Material& GetSkyBox();
 		Upp::ArrayMap<Upp::String,GameObject>& GetAllGameObjects();
 		Upp::ArrayMap<Upp::String,Camera>& GetAllCameras();
+		Upp::ArrayMap<Upp::String,Light>& GetAllLights();
 		
 		Scene& SetContext(UltimateOpenGL_Context& _context);
 		Scene& SetName(const Upp::String& _name);

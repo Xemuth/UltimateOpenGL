@@ -46,12 +46,46 @@ bool Object3D::IsLoaded(){ //Return true if the object is loaded
 	return loaded;
 }
 
-Object3D& Object3D::SetMaterialForMeshes(Material& material){
+Object3D& Object3D::SetMaterialForMeshes(const Material* material){
 	for(Mesh& m : meshes){
-		m.GetMaterial() = &material;
+		m.SetMaterial( material);
 	}
 	return *this;
 }
+Object3D& Object3D::SetMaterialForMeshes(Material& material){
+	for(Mesh& m : meshes){
+		m.SetMaterial( material);
+	}
+	return *this;
+}
+Object3D& Object3D::SetDrawMethodForMeshes(unsigned int GL_DRAW_METHOD){
+	for(Mesh& m : meshes){
+		m.SetDrawMethod(GL_DRAW_METHOD);
+	}
+	return *this;
+}
+
+Object3D& Object3D::AssignShaderToMeshes(Shader& shader){
+	if(shader.IsCompiled()){
+		for(Mesh& m : meshes){
+			m.GetShader() = shader;
+		}
+	}
+	return *this;
+}
+Object3D& Object3D::UseSameShaderMeshes(int MeshToUse){
+	if(meshes.GetCount() > MeshToUse &&  meshes[MeshToUse].GetShader().IsCompiled()){
+		int cpt = 0;
+		for(Mesh& m : meshes){
+			if(MeshToUse != cpt) m.GetShader() = meshes[MeshToUse].GetShader();
+			cpt++;
+		}
+	}
+	return *this;
+}
+Object3D& Object3D::EnableSlowDraw(){SlowDraw = true;return *this;}
+Object3D& Object3D::DisableSlowDraw(){SlowDraw = false;return *this;}
+bool Object3D::IsSlowDraw(){return SlowDraw;}
 
 void Object3D::LoadModel(const Upp::String& path){ //Used to load 3D Model
 	Upp::String realPath =TransformFilePath(path);
@@ -262,7 +296,7 @@ void Object3D::ProcessMesh(aiMesh *mesh, const aiScene *scene){
 void Object3D::Load(){
 	if(!loaded){
 		for(int i = 0 ; i < meshes.size(); i++){//Changement made by Iñaki
-			meshes[i].Load();
+			meshes[i].Load(i);
 		}
 		loaded =true;
 	}else{
@@ -273,6 +307,9 @@ void Object3D::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat
 	if(onDraw != nullptr){
 		onDraw(*this);
 	}
-	for(int i = 0; i < meshes.size(); i++) // meshes.size(); i++)//Changement made by Iñaki
-		meshes[i].Draw(model,view,projection,transform,camera);
+	for(int i = 0; i < meshes.size(); i++){ // meshes.size(); i++)//Changement made by Iñaki
+		bool DifferentShader = (i > 0 && meshes[i-1].GetShader().GetId() != meshes[i].GetShader().GetId());
+		bool DifferentMaterial = (i > 0 && meshes[i-1].GetMaterial()->GetName() != meshes[i].GetMaterial()->GetName());
+		meshes[i].Draw(i,model,view,projection,transform,camera,DifferentShader,DifferentMaterial);
+	}
 }

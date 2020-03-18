@@ -45,6 +45,9 @@ Upp::ArrayMap<Upp::String,GameObject>& Scene::GetAllGameObjects(){
 Upp::ArrayMap<Upp::String,Camera>& Scene::GetAllCameras(){
 	return AllCameras;
 }
+Upp::ArrayMap<Upp::String,Light>& Scene::GetAllLights(){
+	return AllLights;
+}
 Scene& Scene::SetContext(UltimateOpenGL_Context& _context){
 	context = &_context;
 	return *this;

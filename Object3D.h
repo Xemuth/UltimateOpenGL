@@ -9,6 +9,10 @@ class Object3D : public GameObject
 		Upp::String directory="";
 		bool loaded=false;
 		
+		bool SlowDraw = true; //SlowDraw mean , for each mesh, UOGL will take time to sent ALL data about material to the shader, wich meaan for a strong amount of data, it can hugly decrase amount of FPS
+							  //By setting it to false, it will never refresh uniform data in
+							  //the shader, wich make the draw routine fatest !
+
 	    //Loading 3D Model using Assimp and custom loader
 	    void ProcessNode(aiNode *node, const aiScene *scene);
 	    void ProcessMesh(aiMesh *mesh, const aiScene *scene);
@@ -26,8 +30,17 @@ class Object3D : public GameObject
 		Upp::Array<Mesh>& GetMeshes(); //Return Array of Mesh
 		Upp::String GetModelDirectory(); //Return Model directory if it have been loaded one time at least
 		bool IsLoaded(); //Return true if the object is loaded
-		
+	
+		Object3D& EnableSlowDraw();
+		Object3D& DisableSlowDraw();
+		bool IsSlowDraw();
+	
+		Object3D& SetMaterialForMeshes(const Material* material);
 		Object3D& SetMaterialForMeshes(Material& material);
+		Object3D& SetDrawMethodForMeshes(unsigned int GL_DRAW_METHOD);
+		
+		Object3D& AssignShaderToMeshes(Shader& shader);
+		Object3D& UseSameShaderMeshes(int MeshToUse = 0);
 		
 		void LoadModel(const Upp::String& path); //Used to load 3D Model
         void ReadData(Upp::Vector<float>& data ,ReaderParameters readerParameter = ReaderParameters(),ReaderRoutine readerRoutine = ReaderRoutine()); //Used to read vector<Float>

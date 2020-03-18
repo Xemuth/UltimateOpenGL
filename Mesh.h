@@ -12,15 +12,18 @@ class Mesh{
 		
         unsigned int VAO = 0, EBO = 0, VBO = 0;
         
+        unsigned int DrawMethod = GL_TRIANGLES;
+        
         Shader shader;
         Transform transform;
-        Upp::One<Material> material;
+        const Material* material = nullptr;
     public:
         Mesh();
         Mesh(Object3D& obj);
         Mesh(Upp::Vector<Vertex>& vertices);
         Mesh(Upp::Vector<Vertex>& vertices, Upp::Vector<unsigned int>& indices);
         Mesh(Mesh& mesh);
+        ~Mesh();
         Mesh& operator=(Mesh& mesh);
         
         Upp::Vector<Vertex>& GetVertices();
@@ -30,14 +33,18 @@ class Mesh{
         Mesh& SetObject3D(Object3D& obj);
         
         Shader& GetShader();
+        Mesh& GenerateAutomaticShader();
+        Mesh& SetDrawMethod(unsigned int GL_DRAW_METHOD);
         Transform& GetTransform();
-        Upp::One<Material>& GetMaterial();
+        const Material* GetMaterial();
+        Mesh& SetMaterial(const Material* _mat);
+        Mesh& SetMaterial(Material& _mat);
         
         bool IsLoaded();
         
         bool ReadData(Upp::Vector<float>& data, ReaderParameters& readerParameter, bool UseMaterialColor = false);
-        Mesh& Load();
+        Mesh& Load(int MeshNumber);
         Mesh& LoadDefaultIndices();
-        Mesh& Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform,Camera& camera);
+        Mesh& Draw(int MeshNumber,glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform,Camera& camera,bool DifferentShader = false, bool DifferentMaterial = false);
 };
 #endif

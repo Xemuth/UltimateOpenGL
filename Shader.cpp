@@ -356,7 +356,7 @@ int Shader::RemoveInsertInShader(Upp::String& shader, const Upp::String& remove,
 	return 0;
 }
 
-Upp::String Shader::GenerateVertexShader(unsigned int VertexGenerationOption, Material*  material,const Upp::Vector<Upp::String>* Layout,const Upp::Vector<Upp::String>* Out,const Upp::Vector<Upp::String>* Uniform,const Upp::Vector<Upp::String>* Structure,const Upp::Vector<Upp::String>* Function,const Upp::String* Main){
+Upp::String Shader::GenerateVertexShader(unsigned int VertexGenerationOption,const Material* material,const Upp::Vector<Upp::String>* Layout,const Upp::Vector<Upp::String>* Out,const Upp::Vector<Upp::String>* Uniform,const Upp::Vector<Upp::String>* Structure,const Upp::Vector<Upp::String>* Function,const Upp::String* Main){
 	Upp::String ShadV = BasicShaders.Get("Simple_Vertex_Shader");
 	if(VertexGenerationOption){
 		LayoutPosition = ShadV.FindAfter("//LAYOUT_VARIABLE\n");
@@ -451,7 +451,7 @@ Upp::String Shader::GenerateVertexShader(unsigned int VertexGenerationOption, Ma
 	}
 	return ShadV;
 }
-Upp::String Shader::GenerateFragmentShader(unsigned int FragmentGenerationOption, Material* material,const Upp::VectorMap<Upp::String, Light>* AllSceneLights,const Upp::Vector<Upp::String>* In,const Upp::Vector<Upp::String>* Out,const Upp::Vector<Upp::String>* Uniform,const Upp::Vector<Upp::String>* Structure,const Upp::Vector<Upp::String>* Function,const Upp::String* Main){
+Upp::String Shader::GenerateFragmentShader(unsigned int FragmentGenerationOption,const Material* material,const Upp::VectorMap<Upp::String, Light>* AllSceneLights,const Upp::Vector<Upp::String>* In,const Upp::Vector<Upp::String>* Out,const Upp::Vector<Upp::String>* Uniform,const Upp::Vector<Upp::String>* Structure,const Upp::Vector<Upp::String>* Function,const Upp::String* Main){
 	Upp::String ShadF = BasicShaders.Get("Simple_Fragment_Shader");
 	if(FragmentGenerationOption){
 		InPosition = ShadF.FindAfter("//IN_VARIABLE\n");
@@ -547,18 +547,14 @@ bool Shader::AssignSimpleShader(){
 	AddShader("VERTEX",ST_VERTEX, GenerateVertexShader(VGO_DoBasics));
 	return Load(true);
 }
-bool Shader::AssignSimpleShaderWithLight(const Upp::VectorMap<Upp::String, Light>& AllSceneLights){ //Create and Assign a simple shader with light gestion
-	
-	return false;
-}
-bool Shader::AssignSimpleShaderTexture(Material* material){ //Craete and assign a simple shader wich can show texture
+bool Shader::AssignSimpleShaderMaterial(const Material* material){ //Craete and assign a simple shader wich can show texture
 	Unload();
 	shaders.Clear();
 	AddShader("FRAGMENT",ST_FRAGMENT, GenerateFragmentShader(FGO_DoBasics | FGO_UseMaterialObject,material));
 	AddShader("VERTEX",ST_VERTEX, GenerateVertexShader(VGO_DoBasics| VGO_UseMaterialObject,material));
 	return Load(true);
 }
-bool Shader::AssignSimpleShaderTextureLights(const Upp::VectorMap<Upp::String, Light>& AllSceneLights,const Material& material){
+bool Shader::AssignSimpleShaderMaterialLights(Upp::ArrayMap<Upp::String, Light>& AllSceneLights,const Material* material){
 	
 	return false;
 }

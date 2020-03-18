@@ -97,31 +97,31 @@ Color_Material& Color_Material::Reload(){
 	
 	return *this;
 }
-bool Color_Material::IsLoaded(){
+bool Color_Material::IsLoaded()const{
 	return true; //Color don't need loading
 }
-Color_Material& Color_Material::Use(){
+const Color_Material& Color_Material::Use()const{
 	//since color don't need to be store in GPU their is not reason to bind anythings
 	return  *this;
 }
 
-Upp::String Color_Material::GetNameOfStructure(){
+Upp::String Color_Material::GetNameOfStructure()const{
 	return "MaterialColor";
 }
-Upp::String Color_Material::GetCalculationCode(const Upp::String& CustomName){
+Upp::String Color_Material::GetCalculationCode(const Upp::String& CustomName)const{
 	Upp::String nameToUse = (CustomName.GetCount()>0)? CustomName : name;
 	return "FragColor = " + nameToUse + ".diffuse;";
 }
-Upp::String Color_Material::GetShaderDataStructure(){//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+Upp::String Color_Material::GetShaderDataStructure()const{//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 	return MATERIAL_COLOR_STRUCT();
 }
-Upp::String Color_Material::GetShaderMaterialFunction(){//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+Upp::String Color_Material::GetShaderMaterialFunction()const{//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 	return "";
 }
-Upp::String Color_Material::GetShaderMaterialPrototypeFunction(){//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+Upp::String Color_Material::GetShaderMaterialPrototypeFunction()const{//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 	return "";
 }
-void Color_Material::SentToShader(Shader& shader,const Upp::String& CustomName){//This function MUST be rewritted in inherrited class, It will allow UOGL to send good data to a shader
+void Color_Material::SentToShader(Shader& shader,const Upp::String& CustomName)const{//This function MUST be rewritted in inherrited class, It will allow UOGL to send good data to a shader
 	if(shader.IsCompiled()){
 		Upp::String nameToUse = (CustomName.GetCount()>0)? CustomName : name;
 		shader.SetVec3(nameToUse +".ambient",ambient);
@@ -292,7 +292,9 @@ Texture2D& Texture2D::Load(){
 	if(Upp::FileExists(Path)){
 		if(!loaded){
 			ID=0;
+			
 			glGenTextures(1, &ID);
+			TextureIterator = TextureCount;
 			glActiveTexture(GL_TEXTURE0 + TextureIterator);
 			glBindTexture(GL_TEXTURE_2D, ID);
 			TextureIterator++;
@@ -310,21 +312,19 @@ Texture2D& Texture2D::Load(){
 		            format = GL_RGB;
 		        else if (nrChannels == 4)
 		            format = GL_RGBA;
-		        if(format ==GL_RGBA){
-					glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-					glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		        }
 				glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 				if(MipMap)glGenerateMipmap(GL_TEXTURE_2D);
-					loaded =true;
+				loaded =true;
+				TextureCount++;
 			}else{
 				LOG("Error : Texture2D::Load(...) Error on loading texture named : \""+ name +"\" !");
 				loaded=false;
 			}
 			stbi_image_free(data); //If we manage to use class attribute, we must dont forget to clean it in class destructor ! it's very important to prevent memory leak
-			if(SpecularPath.GetCount()> 0){
+			if(SpecularPath.GetCount() > 0){
 				SpecularID = 0;
 				glGenTextures(1, &SpecularID);
+				TextureIterator = TextureCount;
 				glActiveTexture(GL_TEXTURE0 + TextureIterator);
 				glBindTexture(GL_TEXTURE_2D, SpecularID);
 				TextureIterator++;
@@ -343,12 +343,12 @@ Texture2D& Texture2D::Load(){
 					glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 					if(MipMap)glGenerateMipmap(GL_TEXTURE_2D);
 					SpecularLoaded =true;
+					TextureCount++;
+				}else{
+					LOG("Error : Texture2D::Load(...) Error on loading Speculare texture named : \""+ name +"\" !");
 				}
-				
-			}else{
-				LOG("Error : Texture2D::Load(...) Error on loading Speculare texture named : \""+ name +"\" !");
+				stbi_image_free(data);
 			}
-			stbi_image_free(data);
 		}else{
 			LOG("Error : Texture2D::Load(...) Texture named : \""+ name +"\" is already loaded ! Use Unload() Function to Unload or Reload() to reload the texture");
 			return *this;
@@ -362,6 +362,7 @@ Texture2D& Texture2D::Load(){
 Texture2D& Texture2D::Unload(){
 	if(loaded){
 		glDeleteTextures(1, &ID);
+		TextureCount--;
 		loaded = false;
 	}else{
 		LOG("Warning : Texture2D::Unload() Nothing to remove !");
@@ -371,6 +372,7 @@ Texture2D& Texture2D::Unload(){
 Texture2D& Texture2D::Reload(){
 	if(loaded){
 		glDeleteTextures(1, &ID);
+		TextureCount--;
 		loaded = false;
 		Load();
 	}else{
@@ -378,37 +380,47 @@ Texture2D& Texture2D::Reload(){
 	}
 	return *this;
 }
-bool Texture2D::IsLoaded(){
+bool Texture2D::IsLoaded()const{
 	return loaded;
 }
-Texture2D& Texture2D::Use(){
+const Texture2D& Texture2D::Use()const{
 	if(loaded){
 		glActiveTexture(GL_TEXTURE0 +TextureIterator);
 		glBindTexture(GL_TEXTURE_2D, ID);
+		if(SpecularLoaded){
+			glActiveTexture(GL_TEXTURE0 +TextureIterator+1);
+			glBindTexture(GL_TEXTURE_2D, SpecularID);
+		}
 		return *this;
 	}else{
 		LOG("Warning Use(): Can't use an Unloaded texture !");
 	}
 	return *this;
 }
-Upp::String Texture2D::GetCalculationCode(const Upp::String& CustomName){
+Upp::String Texture2D::GetCalculationCode(const Upp::String& CustomName)const{
 	Upp::String nameToUse = (CustomName.GetCount()>0)? CustomName : name;
 	return "FragColor = texture(" + nameToUse + ".diffuse, TextureCoordinate);";
 }
-Upp::String Texture2D::GetNameOfStructure(){
+Upp::String Texture2D::GetNameOfStructure()const{
 	return "MaterialTexture";
 }
-Upp::String Texture2D::GetShaderDataStructure(){ //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+Upp::String Texture2D::GetShaderDataStructure()const{ //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 	return MATERIAL_TEXTURE_STRUCT();
 }
-Upp::String Texture2D::GetShaderMaterialFunction(){ //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+Upp::String Texture2D::GetShaderMaterialFunction()const{ //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 	//TODO
 	return "";
 }
-Upp::String Texture2D::GetShaderMaterialPrototypeFunction(){//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+Upp::String Texture2D::GetShaderMaterialPrototypeFunction()const{//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 	//TODO
 	return "";
 }
-void Texture2D::SentToShader(Shader& shader,const Upp::String& CustomName){//This function MUST be rewritted in inherrited class, It will allow UOGL to send good data to a shader
-	//TODO
+void Texture2D::SentToShader(Shader& shader,const Upp::String& CustomName)const{//This function MUST be rewritted in inherrited class, It will allow UOGL to send good data to a shader
+	if(shader.IsCompiled()){
+		Upp::String nameToUse = (CustomName.GetCount()>0)? CustomName : name;
+		shader.SetInt(nameToUse +".diffuse",TextureIterator);
+		shader.SetInt(nameToUse +".specular",TextureIterator+1);
+		shader.SetFloat(nameToUse +".shininess",shininess);
+		shader.SetInt(nameToUse +".useSpecular",(SpecularLoaded)?1:0);
+	}
 }

@@ -15,6 +15,9 @@ Mesh::Mesh(Upp::Vector<Vertex>& vertices, Upp::Vector<unsigned int>& indices){
 Mesh::Mesh(Mesh& mesh){
 	*this = mesh;
 }
+Mesh::~Mesh(){
+	material = nullptr;
+}
 Mesh& Mesh::operator=(Mesh& mesh){
 	object3D = mesh.object3D;
 	loaded = mesh.loaded;
@@ -30,8 +33,8 @@ Mesh& Mesh::operator=(Mesh& mesh){
 	
 	shader = mesh.shader;
 	transform = mesh.transform;
-	if( mesh.material.Get())
-		material =  Upp::clone(~mesh.material);
+	if(mesh.material)
+		material =  mesh.material;
 	return *this;
 }
 Upp::Vector<Vertex>& Mesh::GetVertices(){
@@ -54,7 +57,7 @@ Shader& Mesh::GetShader(){
 Transform& Mesh::GetTransform(){
 	return transform;
 }
-Upp::One<Material>& Mesh::GetMaterial(){
+const Material* Mesh::GetMaterial(){
 	return material;
 }
 bool Mesh::IsLoaded(){
@@ -196,15 +199,39 @@ bool Mesh::ReadData(Upp::Vector<float>& data, ReaderParameters& readerParameter,
 		return false;
 	}
 }
-Mesh& Mesh::Load(){
+Mesh& Mesh::GenerateAutomaticShader(){
+	Upp::ArrayMap<Upp::String,Light>& allLights = GetObject3D().GetScene().GetAllLights();
+	if(material && allLights.GetCount() > 0){
+		shader.AssignSimpleShaderMaterialLights(allLights,material);
+	}else if(material){
+		shader.AssignSimpleShaderMaterial(material);
+	}else{
+		shader.AssignSimpleShader();
+	}
+	return *this;
+}
+Mesh& Mesh::SetMaterial(const Material* _mat){
+	if(_mat)material = _mat;
+	return *this;
+}
+Mesh& Mesh::SetMaterial(Material& _mat){
+	material = &_mat;
+	return *this;
+}
+Mesh& Mesh::SetDrawMethod(unsigned int GL_DRAW_METHOD){
+	DrawMethod = GL_DRAW_METHOD;
+	return *this;
+}
+
+Mesh& Mesh::Load(int MeshNumber){
 	if(vertices.size() != 0){
 		if(!shader.IsCompiled()){
-			LOG("Shader not compiled !, Default shaders loaded !\n");
+			//LOG("Shader not compiled, Generating default shader !");
 			//GenerateAutoShader(object3D->GetScene() ->GetNumberOfDirLight(),  object3D->GetScene() ->GetNumberOfPointLight(),object3D->GetScene()->GetNumberOfSpotLight());
-			shader.AssignSimpleShader();
+			GenerateAutomaticShader();
 		}
 		if(indices.size() == 0 && vertices.size() > 0){
-            LOG("No indice defined ! Auto generation of incices !");
+            //LOG("No indice defined ! Auto generation of incices !");
             LoadDefaultIndices();
         }
 	    glGenVertexArrays(1, &VAO);
@@ -228,6 +255,7 @@ Mesh& Mesh::Load(){
 		glEnableVertexAttribArray(5);
 	    glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Color));
 	    glBindVertexArray(0);
+	    loaded = true;
 	}else{
 	    LOG("Mesh of object named " + GetObject3D().GetName() + " are error ! or undefined ! nothing to load !");
 	}
@@ -240,22 +268,29 @@ Mesh& Mesh::LoadDefaultIndices(){
     }
     return *this;
 }
-Mesh& Mesh::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform,Camera& camera){
-	shader.Use();
-	model = GetTransform().GetModelMatrice(); // glm::translate(model,GetTransform().GetPosition())*glm::mat4_cast(GetTransform().GetQuaterion())*GetTransform().GetModelMatrixScaller();
-    shader.SetMat4("model",model);
-    shader.SetMat4("transform", transform);
-    shader.SetMat4("view",view);
-    shader.SetMat4("projection", projection);
-    shader.SetVec3("viewPos",GetTransform().GetPosition());
-    if(material.Get()){
-		material->SentToShader(shader);
-    }
-    //glLineWidth(2.5); //Allow user to change LineWidth
-    glBindVertexArray(VAO);
-	glDrawElements(GL_TRIANGLES, indices.GetCount(), GL_UNSIGNED_INT, 0);
-    glBindVertexArray(0);
-	glActiveTexture(GL_TEXTURE0);
-    shader.Unbind();
-    return *this;
+Mesh& Mesh::Draw(int MeshNumber,glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform,Camera& camera,bool DifferentShader, bool DifferentMaterial){
+	if(IsLoaded()){
+		shader.Use();
+		model = GetTransform().GetModelMatrice(); // glm::translate(model,GetTransform().GetPosition())*glm::mat4_cast(GetTransform().GetQuaterion())*GetTransform().GetModelMatrixScaller();
+	    if(MeshNumber == 0 || DifferentShader){
+		    shader.SetMat4("model",model);
+		    shader.SetMat4("transform", transform);
+		    shader.SetMat4("view",view);
+		    shader.SetMat4("projection", projection);
+		    shader.SetVec3("viewPos",GetTransform().GetPosition());
+	    }
+		if(MeshNumber == 0 || DifferentMaterial || DifferentShader){
+		    if(material && material->IsLoaded()){
+		        material->Use();
+				material->SentToShader(shader);
+		    }
+	    }
+	    //glLineWidth(2.5); //Allow user to change LineWidth
+	    glBindVertexArray(VAO);
+		glDrawElements(DrawMethod, indices.GetCount(), GL_UNSIGNED_INT, 0);
+	    glBindVertexArray(0);
+		glActiveTexture(GL_TEXTURE0);
+	    shader.Unbind();
+	}
+	return *this;
 }

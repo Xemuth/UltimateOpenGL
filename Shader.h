@@ -68,9 +68,8 @@ class Shader {
 		bool Unload();
 		
 		bool AssignSimpleShader(); //Assign a simple shader wich just get model matrix and view matrix
-		bool AssignSimpleShaderWithLight(const Upp::VectorMap<Upp::String, Light>& AllSceneLights); //Create and Assign a simple shader with light gestion
-		bool AssignSimpleShaderTexture(Material* material); //Craete and assign a simple shader wich can show texture
-		bool AssignSimpleShaderTextureLights(const Upp::VectorMap<Upp::String, Light>& AllSceneLights,const Material& material);
+		bool AssignSimpleShaderMaterial(const Material* material); //Craete and assign a simple shader wich can show texture
+		bool AssignSimpleShaderMaterialLights(Upp::ArrayMap<Upp::String, Light>& AllSceneLights,const Material* material);
 		
 		Shader& Use();
 		Shader& Unbind();
@@ -89,7 +88,7 @@ class Shader {
 			
 			VGO_CustomMain = 0x80
 		};
-		Upp::String GenerateVertexShader(unsigned int VertexGenerationOption,Material*  material = nullptr,const Upp::Vector<Upp::String>* Layout = nullptr,const Upp::Vector<Upp::String>* Out = nullptr,const Upp::Vector<Upp::String>* Uniform = nullptr,const Upp::Vector<Upp::String>* Structure = nullptr,const Upp::Vector<Upp::String>* Function = nullptr,const Upp::String* Main = nullptr);
+		Upp::String GenerateVertexShader(unsigned int VertexGenerationOption,const Material* material = nullptr,const Upp::Vector<Upp::String>* Layout = nullptr,const Upp::Vector<Upp::String>* Out = nullptr,const Upp::Vector<Upp::String>* Uniform = nullptr,const Upp::Vector<Upp::String>* Structure = nullptr,const Upp::Vector<Upp::String>* Function = nullptr,const Upp::String* Main = nullptr);
 		
 		enum FragmentGenerationOption{
 			FGO_DoBasics = 0x1,
@@ -106,7 +105,7 @@ class Shader {
 			
 			FGO_CustomMain = 0x200
 		};
-		Upp::String GenerateFragmentShader(unsigned int FragmentGenerationOption, Material* material = nullptr,const Upp::VectorMap<Upp::String, Light>* AllSceneLights = nullptr,const Upp::Vector<Upp::String>* In = nullptr,const Upp::Vector<Upp::String>* Out = nullptr,const Upp::Vector<Upp::String>* Uniform = nullptr,const Upp::Vector<Upp::String>* Structure = nullptr,const Upp::Vector<Upp::String>* Function = nullptr,const Upp::String* Main = nullptr);
+		Upp::String GenerateFragmentShader(unsigned int FragmentGenerationOption,const Material* material = nullptr,const Upp::VectorMap<Upp::String, Light>* AllSceneLights = nullptr,const Upp::Vector<Upp::String>* In = nullptr,const Upp::Vector<Upp::String>* Out = nullptr,const Upp::Vector<Upp::String>* Uniform = nullptr,const Upp::Vector<Upp::String>* Structure = nullptr,const Upp::Vector<Upp::String>* Function = nullptr,const Upp::String* Main = nullptr);
 		
 		
 };

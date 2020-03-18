@@ -74,10 +74,6 @@ class UltimateOpenGL_Context{
 		bool SetActiveScene(const Upp::String& name);
 		bool RemoveScene(const Upp::String& nameOfScene);
 		
-		//Texture Management
-		/*
-			See explications above
-		*/
 		template <class T,class... Args>
 		T& CreateMaterial(const Upp::String& _MaterialName, Args&&... args){
 			try{
