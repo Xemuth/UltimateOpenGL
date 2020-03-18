@@ -24,8 +24,7 @@ Things are coming :
 ## Getting Started and Showing a 3D model 
 
  :warning: Ultimate OpenGL is actually under V5 wich is still in developpement, ATM light is not handled
-
-![Ex0](https://www.youtube.com/watch?v=9ht6UD0pNF4)
+[![Exemple](https://img.youtube.com/vi/9ht6UD0pNF4/0.jpg)](https://www.youtube.com/watch?v=9ht6UD0pNF4)
 
 ![Ex1](https://i.imgur.com/bI2kepS.png)
 ![Ex2](https://i.imgur.com/KL2ixM6.png)
