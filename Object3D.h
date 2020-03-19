@@ -16,12 +16,14 @@ class Object3D : public GameObject
 	    //Loading 3D Model using Assimp and custom loader
 	    void ProcessNode(aiNode *node, const aiScene *scene);
 	    void ProcessMesh(aiMesh *mesh, const aiScene *scene);
+	    const Material* CreateAndBindMaterial(aiMaterial *mat, aiTextureType type);
     public:
         Object3D();
         Object3D(Mesh& _mesh);
         Object3D(Upp::Vector<Mesh>& _meshes);
         Object3D(Upp::Vector<float>& Vertices, ReaderParameters readerParameter = ReaderParameters(), ReaderRoutine readerRoutine = ReaderRoutine()); //way of reading a floating point vector
-        Object3D(const Upp::String& pathOfModel); //Path of model to load
+        //Object3D(const Upp::String& pathOfModel); //Path of model to load || METHOD ONLY
+        //since Model loading requiere to have a scene binded
         
         Object3D(Object3D& _object);//Be carefull of setting the Scene
         Object3D& operator=(Object3D& _object);//Be carefull of setting the Scene

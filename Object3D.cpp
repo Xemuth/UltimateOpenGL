@@ -1,5 +1,6 @@
 #include "Object3D.h"
 #include "Mesh.h"
+#include "UltimateOpenGL.h"
 #include <plugin/assimp/assimp.h>
 Object3D::Object3D(){}
 Object3D::Object3D(Mesh& _mesh){
@@ -16,9 +17,9 @@ Object3D::Object3D(Upp::Vector<Mesh>& _meshes){
 Object3D::Object3D(Upp::Vector<float>& Vertices, ReaderParameters readerParameter, ReaderRoutine readerRoutine){ //way of reading a floating point vector
 	ReadData(Vertices,readerParameter,readerRoutine);
 }
-Object3D::Object3D(const Upp::String& pathOfModel){//Path of model to load
+/*Object3D::Object3D(const Upp::String& pathOfModel){//Path of model to load || METHOD ONLY since Model loading requiere to have a scene binded
 	LoadModel(pathOfModel);
-}
+}*/
 Object3D::Object3D(Object3D& _object){//Be carefull of setting the Scene
 	*this = _object;
 }
@@ -271,26 +272,44 @@ void Object3D::ProcessMesh(aiMesh *mesh, const aiScene *scene){
 
 
     // 1. diffuse maps
+    const Material* mat =nullptr;
     if(this->scene != nullptr){
-        /*
-	    ManageTextures(textures,material,aiTextureType_DIFFUSE);
-	     //	Upp::Cout() << "Nb diffuse " << Upp::AsString(textures.GetCount()) << Upp::EOL;
-	    ManageTextures(textures,material,aiTextureType_SPECULAR);
-	     //	Upp::Cout() << "Nb speculare + diffuse " << Upp::AsString(textures.GetCount()) << Upp::EOL;
-	    ManageTextures(textures,material,aiTextureType_HEIGHT);
-	    //Upp::Cout() << "Nb Height +  speculare + diffuse " << Upp::AsString(textures.GetCount()) << Upp::EOL;
-	    ManageTextures(textures,material,aiTextureType_AMBIENT);
-	    //Upp::Cout() << "Nb  AMBIENT + Height +  speculare + diffuse " << Upp::AsString(textures.GetCount()) << Upp::EOL;
-	    ManageTextures(textures,material,aiTextureType_NORMALS);
-	     //	Upp::Cout() << "Nb  NORMAL  + AMBIENT + Height +  speculare + diffuse " << Upp::AsString(textures.GetCount()) << Upp::EOL;
-	     */
+        mat = CreateAndBindMaterial(material,aiTextureType_DIFFUSE);
+	    CreateAndBindMaterial(material,aiTextureType_SPECULAR);
+	    CreateAndBindMaterial(material,aiTextureType_HEIGHT);
+	    CreateAndBindMaterial(material,aiTextureType_AMBIENT);
+	    CreateAndBindMaterial(material,aiTextureType_NORMALS);
     }else{
         LOG("Warning : cant load and Bind texture since no context is linked to object3D : " + name );
     }
     // return a mesh object created from the extracted mesh data
     Mesh& m =  meshes.Create<Mesh>(vertices, indices); //, textures);
     m.SetObject3D(*this);
+    if(mat)m.SetMaterial(mat);
 	GetTransform().AddChildren(m.GetTransform());
+}
+const Material* Object3D::CreateAndBindMaterial(aiMaterial *mat, aiTextureType type){
+	for(unsigned int i = 0; i < mat->GetTextureCount(type); i++)
+	{
+		aiString str;
+		mat->GetTexture(type, i, &str);
+		Upp::String name = Upp::String(str.C_Str());
+		Upp::String NameClear = (name.Find(".") != -1)? name.Left(name.Find(".")) : name;
+		if(GetScene().GetContext().IsMaterialExist(NameClear)){
+			return &(GetScene().GetContext().GetAllMaterials().Get(NameClear));
+		}else{
+			if(type == aiTextureType_DIFFUSE)
+				return &(GetScene().GetContext().CreateMaterial<Texture2D>(NameClear,directory+"/"+ name).DisableFlipOnLoad().Load());
+			else if(type == aiTextureType_SPECULAR)
+			    return nullptr;
+			else if(type == aiTextureType_HEIGHT)
+			    return nullptr;
+			else if(type == aiTextureType_NORMALS)
+				return nullptr;
+		}
+		//vectorToFile.Add(GetScene()->GetContext()->AddTexture(Upp::String(str.C_Str()),directory+"/"+ Upp::String(str.C_Str()),t,false,false));      
+	}
+	return nullptr;
 }
 //Override
 void Object3D::Load(){
@@ -309,7 +328,7 @@ void Object3D::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat
 	}
 	for(int i = 0; i < meshes.size(); i++){ // meshes.size(); i++)//Changement made by Iñaki
 		bool DifferentShader = (i > 0 && meshes[i-1].GetShader().GetId() != meshes[i].GetShader().GetId());
-		bool DifferentMaterial = (i > 0 && meshes[i-1].GetMaterial()->GetName() != meshes[i].GetMaterial()->GetName());
+		bool DifferentMaterial = (i > 0 && meshes[i-1].GetMaterial() && meshes[i-1].GetMaterial()->GetName() != meshes[i].GetMaterial()->GetName());
 		meshes[i].Draw(i,model,view,projection,transform,camera,DifferentShader,DifferentMaterial);
 	}
 }

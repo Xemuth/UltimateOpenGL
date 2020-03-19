@@ -4,13 +4,13 @@ Mesh::Mesh(){}
 Mesh::Mesh(Object3D& obj){
 	object3D = &obj;
 }
-Mesh::Mesh(Upp::Vector<Vertex>& vertices){
+Mesh::Mesh(Upp::Vector<Vertex>& _vertices){
 	vertices.Append(vertices);
 	LoadDefaultIndices();
 }
-Mesh::Mesh(Upp::Vector<Vertex>& vertices, Upp::Vector<unsigned int>& indices){
-	vertices.Append(vertices);
-    indices.Append(indices);
+Mesh::Mesh(Upp::Vector<Vertex>& _vertices, Upp::Vector<unsigned int>& _indices){
+	vertices.Append(_vertices);
+    indices.Append(_indices);
 }
 Mesh::Mesh(Mesh& mesh){
 	*this = mesh;

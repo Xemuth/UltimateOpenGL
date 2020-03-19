@@ -20,8 +20,8 @@ class Mesh{
     public:
         Mesh();
         Mesh(Object3D& obj);
-        Mesh(Upp::Vector<Vertex>& vertices);
-        Mesh(Upp::Vector<Vertex>& vertices, Upp::Vector<unsigned int>& indices);
+        Mesh(Upp::Vector<Vertex>& _vertices);
+        Mesh(Upp::Vector<Vertex>& _vertices, Upp::Vector<unsigned int>& _indices);
         Mesh(Mesh& mesh);
         ~Mesh();
         Mesh& operator=(Mesh& mesh);
