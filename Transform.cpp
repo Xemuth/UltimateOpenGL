@@ -511,14 +511,32 @@ Transform& Transform::UpdateQuaterion(float Pitch, float Yaw, float Roll,bool up
 	return *this;
 }
 
-Transform&  Transform::LookAt(glm::vec3 direction,bool updateChildrens){
-	glm::quat buffer = RotationBetweenVectors(direction, position);
-	SetNewRotation(buffer);
-	if(updateChildrens){
+//Taken from https://stackoverflow.com/questions/18172388/glm-quaternion-lookat-function
+glm::quat Transform::SafeQuatLookAt(glm::vec3 const& lookFrom,glm::vec3 const& lookTo,glm::vec3 const& up){
+    glm::vec3  direction       = lookTo - lookFrom;
+    float      directionLength = glm::length(direction);
+
+    // Check if the direction is valid; Also deals with NaN
+    if(!(directionLength > 0.0001))
+        return glm::quat(1, 0, 0, 0); // Just return identity
+
+    // Normalize direction
+    direction /= directionLength;
+
+    // Is the normal up (nearly) parallel to direction?
+    return glm::quatLookAt(direction, up);
+}
+
+
+Transform&  Transform::LookAt(glm::vec3 const& lookTo,bool updateChildrens){
+//	glm::quat buffer = RotationBetweenVectors(direction, position);
+	glm::quat buffer = glm::inverse(SafeQuatLookAt(position,lookTo,Up));
+	SetNewRotation(buffer,updateChildrens);
+	/*if(updateChildrens){
 		for(Transform* ptr1 :childrens){
-			ptr1->SetNewRotation(buffer);
+			ptr1->Rotate(buffer,updateChildrens);
 		}
-	}
+	}*/
 	return *this;
 }
 glm::quat Transform::RotationBetweenVectors(glm::vec3 start, glm::vec3 dest){

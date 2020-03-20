@@ -88,7 +88,7 @@ Object3D& Object3D::EnableSlowDraw(){SlowDraw = true;return *this;}
 Object3D& Object3D::DisableSlowDraw(){SlowDraw = false;return *this;}
 bool Object3D::IsSlowDraw(){return SlowDraw;}
 
-void Object3D::LoadModel(const Upp::String& path){ //Used to load 3D Model
+Object3D& Object3D::LoadModel(const Upp::String& path){ //Used to load 3D Model
 	Upp::String realPath =TransformFilePath(path);
     // read file via ASSIMP
     Assimp::Importer importer;
@@ -112,15 +112,16 @@ void Object3D::LoadModel(const Upp::String& path){ //Used to load 3D Model
     if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
     {
         LOG("ERROR::ASSIMP:: " << Upp::String(importer.GetErrorString()));
-        return;
+        return *this;
     }
     // retrieve the directory path of the filepath
     directory = realPath.Left( realPath.ReverseFind('/'));
 
     // process ASSIMP's root node recursively
     ProcessNode(scene->mRootNode, scene);
+    return *this;
 }
-void Object3D::ReadData(Upp::Vector<float>& data ,ReaderParameters readerParameter,ReaderRoutine readerRoutine){ //Used to read vector<Float>
+Object3D& Object3D::ReadData(Upp::Vector<float>& data ,ReaderParameters readerParameter,ReaderRoutine readerRoutine){ //Used to read vector<Float>
 	Mesh* m =nullptr;
 	int start = readerRoutine.startMesh;
 	Upp::Vector<float> Copie;
@@ -192,6 +193,7 @@ void Object3D::ReadData(Upp::Vector<float>& data ,ReaderParameters readerParamet
 			LOG("Error : void Object3D::ReadData(...) Error during resolution of mesh to affect !");
 		}
 	}
+	return *this;
 }
 
 //Loading 3D Model using Assimp and custom loader

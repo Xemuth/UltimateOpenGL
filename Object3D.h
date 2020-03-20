@@ -44,8 +44,8 @@ class Object3D : public GameObject
 		Object3D& AssignShaderToMeshes(Shader& shader);
 		Object3D& UseSameShaderMeshes(int MeshToUse = 0);
 		
-		void LoadModel(const Upp::String& path); //Used to load 3D Model
-        void ReadData(Upp::Vector<float>& data ,ReaderParameters readerParameter = ReaderParameters(),ReaderRoutine readerRoutine = ReaderRoutine()); //Used to read vector<Float>
+		Object3D& LoadModel(const Upp::String& path); //Used to load 3D Model
+        Object3D& ReadData(Upp::Vector<float>& data ,ReaderParameters readerParameter = ReaderParameters(),ReaderRoutine readerRoutine = ReaderRoutine()); //Used to read vector<Float>
 		
     //Override
         virtual void Load();

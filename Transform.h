@@ -133,7 +133,8 @@ class Transform{
 		//******************Quick function part*************
 		//Transform& RecalculateEulerAngles(bool updateChildrens = true);
 		Transform& UpdateQuaterion(float Pitch, float Yaw, float Roll =0.0f,bool updateChildrens = true);
-		Transform& LookAt(glm::vec3 direction,bool updateChildrens = true);
+		Transform& LookAt(glm::vec3 const& lookTo,bool updateChildrens = true);
+		glm::quat SafeQuatLookAt(glm::vec3 const& lookFrom,glm::vec3 const& lookTo,glm::vec3 const& up);
 		glm::quat RotationBetweenVectors(glm::vec3 start, glm::vec3 dest);
 		glm::mat4 GetModelMatrice();
 		glm::mat4 GetViewMatrix();
