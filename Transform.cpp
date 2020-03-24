@@ -559,10 +559,10 @@ glm::quat Transform::RotationBetweenVectors(glm::vec3 start, glm::vec3 dest){
     float invs = 1 / s;
     return glm::quat(s*0.5f,rotationAxis.x * invs,rotationAxis.y * invs,rotationAxis.z * invs);
 }
-glm::mat4 Transform::GetModelMatrice(){
+glm::mat4 Transform::GetModelMatrice()const{
 	return glm::translate(glm::mat4(1.0f),position) * glm::mat4_cast(quaterion) * modelMatrix;
 }
-glm::mat4 Transform::GetViewMatrix(){
+glm::mat4 Transform::GetViewMatrix()const{
 	//return glm::lookAt(position,position + Front, Up);
 	//temporary frame quaternion from pitch,yaw,roll
 	//here roll is not used

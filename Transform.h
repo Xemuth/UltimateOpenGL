@@ -53,9 +53,6 @@ class Transform{
 		Transform& SetUp(const glm::vec3& _up);
 		Transform& SetRight(const glm::vec3& _right);
 		Transform& SetWorldUp(const glm::vec3& _worldUp);
-		
-		
-		
 
 		const glm::vec3& GetFront()const;
 		const glm::vec3& GetUp()const;
@@ -75,7 +72,7 @@ class Transform{
 		Transform& RemoveChildrens(const Upp::Vector<Transform*>& _childrens);
 		Transform& RemoveChildren(Transform& _ptr);
 		int NumberOfChildrens();
-		
+
 		/*// Yaw Pitch Roll manipulation
 		Transform& EnableLimiteYaw();
 		Transform& DisableLimiteYaw();
@@ -109,7 +106,7 @@ class Transform{
 		Transform& IncreaseYaw(float _Yaw,bool updateChildrens = true);
 		Transform& IncreasePitch(float _Pitch,bool updateChildrens = true);
 		Transform& IncreaseRoll(float _Roll,bool updateChildrens = true);*/
-		
+
 		//******************Position part******************
 		Transform& Move(glm::vec3 move,bool updateChildrens = true); //Move the position from the vec3 arg
 		Transform& SetNewPosition(glm::vec3 newPosition,bool updateChildrens = true);//set the new position of object //It update all the child by : newPose + (old parent pose - old child pos);
@@ -136,7 +133,7 @@ class Transform{
 		Transform& LookAt(glm::vec3 const& lookTo,bool updateChildrens = true);
 		glm::quat SafeQuatLookAt(glm::vec3 const& lookFrom,glm::vec3 const& lookTo,glm::vec3 const& up);
 		glm::quat RotationBetweenVectors(glm::vec3 start, glm::vec3 dest);
-		glm::mat4 GetModelMatrice();
-		glm::mat4 GetViewMatrix();
+		glm::mat4 GetModelMatrice()const;
+		glm::mat4 GetViewMatrix()const;
 };
 #endif

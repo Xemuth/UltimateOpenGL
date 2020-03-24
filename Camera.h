@@ -1,69 +1,98 @@
 #ifndef _UltimateOpenGL_Camera_h_
 #define _UltimateOpenGL_Camera_h_
 #include "Transform.h"
-class Camera{
-	private:
-		Scene* scene = nullptr;
-		Upp::String Name="default";
-		
-		Transform transform; //The Camera Transform object
-		
-		CAMERA_FUNCTION onTransform=nullptr;
-		bool onTransformEventActivate = true;
 
-	    float MouvementSpeed = 5.0f;;
-	    float MouseSensitivity = 0.1f;
-	    float FOV =90.0f;
-	    
-	    float MaxFOV = 130.0f;
+class Camera{
+	protected:
+		Scene* scene = nullptr;
+		Upp::String Name="defaultCamera";
+	
+		Transform transform; //The Camera Transform object
+	
+		CameraType type = CT_PERSPECTIVE;
+		
+		CAMERA_FUNCTION OnTransform=nullptr;
+		bool OnTransformEventActivate = true;
+		
+		float MaxFOV = 130.0f;
 	    float MinFOV = 10.0f;
 	    bool  LimiteFOV = true;
-	    
-		float DrawDisanceMax = 300.0f;
+	    float FOV =90.0f;
+
+	    float DrawDisanceMax = 300.0f;
 		float DrawDistanceMin = 0.1f;
-		
-		float GetRealMouseSensitivity();
-		
 	public:
-		Camera(); //be carefull of setting scene correctly
-		Camera(Scene& _scene);
-		Camera(Scene& _scene,const Upp::String& _name);
+		Camera& operator=(Camera& camera);
+		virtual ~Camera(){}
 		
 		Camera& SetScene(Scene& _scene);
-		Camera& SetName(const Upp::String& value ="default");
-		Camera& SetMouvementSpeed(float value = 15.0f);
-		Camera& SetMouseSensitivity(float value = 0.01f);
-		Camera& SetFOV(float value = 90.0f);
+		Scene& GetScene(); //Raise Assertion if Scene have not been set
 		
-		Camera& SetMaxFOV(float value = 130.0f);
-		Camera& SetMinFOV(float value = 10.0f);
-
-		Camera& EnableLimiteFOV();
-		Camera& DisableLimiteFOV();
-		bool IsFOVLimited();
-		Camera& SetDrawDisanceMax(float value = 300.0f);
-		Camera& SetDrawDistanceMin(float value = 0.1f);
+		Camera& SetName(const Upp::String& _name);
+		Upp::String GetName()const;
 		
-		Scene& GetScene();
-		Upp::String GetName();
+		Camera& SetTransform(Transform& value);
 		Transform& GetTransform();
-		float GetMouvementSpeed();
-		float GetMouseSensitivity();
-		float GetFOV();
-		float GetDrawDisanceMax();
-		float GetDrawDistanceMin();
-		float GetMaxFOV();
-		float GetMinFOV();
+		
+		Camera& SetCameraType(CameraType value);
+		CameraType GetCameraType()const;
 		
 		Camera& SetOnTransformFunction(CAMERA_FUNCTION myFunction);
-		CAMERA_FUNCTION GetOnTransformFunction();
+		CAMERA_FUNCTION GetOnTransformFunction()const;
 		Camera& EnableTransformEvent();
 		Camera& DisableTransformEvent();
 		bool IsTransformEventActivated();
+				
+		Camera& SetFOV(float value);
+		float GetFOV()const;
+		Camera& SetMaxFOV(float value);
+		float GetMaxFOV()const;
+		Camera& SetMinFOV(float value);
+		float GetMinFOV()const;
 		
-		Camera& ProcessKeyboardMouvement(Camera_Movement direction);
-		Camera& ProcessMouveMouvement(float xoffset, float yoffset);
-		Camera& ProcessMouseScroll(float yoffset);
+		Camera& EnableLimiteFOV();
+		Camera& DisableLimiteFOV();
+		bool IsFOVLimited()const;
+		
+		Camera& SetDrawDisanceMax(float value);
+		float GetDrawDisanceMax()const;
+		Camera& SetDrawDistanceMin(float value);
+		float GetDrawDistanceMin()const;
+		
+		virtual glm::mat4 GetProjectionMatrix(Upp::Sizef ScreenSize)const =0;
+		virtual glm::mat4 GetViewMatrix()const =0;
+		
+		virtual Camera& ProcessKeyboardMouvement(Camera_Movement direction)=0;
+		virtual Camera& ProcessMouveMouvement(float xoffset, float yoffset)=0;
+		virtual Camera& ProcessMouseScroll(float yoffset)=0;
+};
+
+class CameraQuaterion : public Camera{
+	private:
+	    float MouvementSpeed = 5.0f;;
+	    float MouseSensitivity = 0.1f;
+		float GetRealMouseSensitivity();
+	public:
+		CameraQuaterion(); //be carefull of setting scene correctly
+		CameraQuaterion(Scene& _scene);
+		CameraQuaterion(Scene& _scene,const Upp::String& _name);
+		CameraQuaterion(CameraQuaterion& cameraQuaterion);
+		
+		CameraQuaterion& SetMouvementSpeed(float value = 15.0f);
+		float GetMouvementSpeed();
+		CameraQuaterion& SetMouseSensitivity(float value = 0.01f);
+		float GetMouseSensitivity();
+		
+		virtual glm::mat4 GetProjectionMatrix(Upp::Sizef ScreenSize)const;
+		virtual glm::mat4 GetViewMatrix()const;
+		
+		virtual CameraQuaterion& ProcessKeyboardMouvement(Camera_Movement direction);
+		virtual CameraQuaterion& ProcessMouveMouvement(float xoffset, float yoffset);
+		virtual CameraQuaterion& ProcessMouseScroll(float yoffset);
+};
+
+class CameraEuler : public Camera{
+	//TODO
 };
 
 #endif

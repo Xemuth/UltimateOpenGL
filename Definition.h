@@ -47,6 +47,7 @@ enum DrawMethod{DM_POINTS,DM_LINES,DM_LINE_STRIP,DM_LINE_LOOP,DM_TRIANGLES,DM_TR
 
 enum LightType{LT_DIRLIGHT,LT_POINTLIGHT,LT_SPOTLIGHT,LT_LIGHT};
 
+enum CameraType{CT_PERSPECTIVE,CT_ORTHOGRAPHIC,CT_FRUSTUM}; //Type of camera rendering
 /*
 	Definition of all defaults class used in UOGL
 */

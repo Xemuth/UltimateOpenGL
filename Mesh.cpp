@@ -268,7 +268,7 @@ Mesh& Mesh::LoadDefaultIndices(){
     }
     return *this;
 }
-Mesh& Mesh::Draw(int MeshNumber,glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform,Camera& camera,bool DifferentShader, bool DifferentMaterial){
+Mesh& Mesh::Draw(int MeshNumber,glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform,bool DifferentShader, bool DifferentMaterial){
 	if(IsLoaded()){
 		shader.Use();
 		model = GetTransform().GetModelMatrice(); // glm::translate(model,GetTransform().GetPosition())*glm::mat4_cast(GetTransform().GetQuaterion())*GetTransform().GetModelMatrixScaller();

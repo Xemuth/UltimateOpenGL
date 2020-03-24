@@ -12,17 +12,18 @@ Scene& Scene::operator=(Scene& _scene){
 	context = _scene.context;
 	name = _scene.name;
 	loaded = _scene.loaded;
-	//Object cant be copied
+	
+	
+	//Object MUST BE COPIED //TO FIX //TODO //WARNING
+	
+	//TO FIX //TODO //WARNING
 	/*
-	for(const Upp::String& gm :  _scene.AllGamesObjects.GetKeys()){
-		auto& e = AllGamesObjects.Add(gm,_scene.AllGamesObjects.Get(gm));
-		e.SetScene(*this);
-	}*/
-	for(const Upp::String& cam : _scene.AllCameras.GetKeys()){
-		auto& e = AllCameras.Add(cam, _scene.AllCameras.Get(cam));
-		if(&_scene.AllCameras.Get(cam) == _scene.ActiveCamera) ActiveCamera = &e;
-		e.SetScene(*this);
+	AllCameras = Upp::clone(_scene.AllCameras);
+	for(const Upp::String& cam : AllCameras.GetKeys()){
+		AllCameras.Get(cam).SetScene(*this);
+		if(&_scene.AllCameras.Get(cam) == _scene.ActiveCamera) ActiveCamera = &AllCameras.Get(cam);
 	}
+	*/
 	SkyBox = _scene.SkyBox;
 	return *this;
 }
@@ -129,16 +130,10 @@ Scene& Scene::Draw(const Upp::String& CameraToUse){
 		glm::mat4 model = glm::mat4(1.0f);
 		glm::mat4 transform = glm::mat4(1.0f);
 		glm::mat4 view = glm::mat4(1.0f);
-		view = camera.GetTransform().GetViewMatrix();
+		view = camera.GetViewMatrix();
 		//LOG(Upp::String(glm::to_string(view)));
 		
-		glm::mat4 projection = glm::mat4(1.0f);
-		float screenSizeX = 800.0f;
-		float screenSizeY = 600.0f;
-		screenSizeX=(float) GetContext().GetScreenSize().cx;
-		screenSizeY=(float) GetContext().GetScreenSize().cy;
-
-		projection = glm::perspective(glm::radians(camera.GetFOV()),(float)( screenSizeX / screenSizeY),camera.GetDrawDistanceMin(),camera.GetDrawDisanceMax());//We calculate Projection here since multiple camera can have different FOV
+		glm::mat4 projection =camera.GetProjectionMatrix(GetContext().GetScreenSize());
 
 		//I will also provide différent camera parameter in futur
 		glClearColor(SkyBox.GetColor().x,SkyBox.GetColor().y,SkyBox.GetColor().z,SkyBox.GetColor().w);//définie la couleur de fond dans la fenetre graphique

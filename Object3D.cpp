@@ -331,6 +331,6 @@ void Object3D::Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat
 	for(int i = 0; i < meshes.size(); i++){ // meshes.size(); i++)//Changement made by Iñaki
 		bool DifferentShader = (i > 0 && meshes[i-1].GetShader().GetId() != meshes[i].GetShader().GetId());
 		bool DifferentMaterial = (i > 0 && meshes[i-1].GetMaterial() && meshes[i-1].GetMaterial()->GetName() != meshes[i].GetMaterial()->GetName());
-		meshes[i].Draw(i,model,view,projection,transform,camera,DifferentShader,DifferentMaterial);
+		meshes[i].Draw(i,model,view,projection,transform,DifferentShader,DifferentMaterial);
 	}
 }
