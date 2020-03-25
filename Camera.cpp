@@ -149,6 +149,9 @@ CameraQuaterion::CameraQuaterion(CameraQuaterion& cameraQuaterion){
 	MouvementSpeed = cameraQuaterion.MouvementSpeed;
 	MouseSensitivity = cameraQuaterion.MouseSensitivity;
 }
+CameraQuaterion* CameraQuaterion::Clone(){
+	return new CameraQuaterion(*this);
+}
 CameraQuaterion& CameraQuaterion::SetMouvementSpeed(float value){
 	MouvementSpeed = value;
 	return *this;

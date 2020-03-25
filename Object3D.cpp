@@ -314,6 +314,9 @@ const Material* Object3D::CreateAndBindMaterial(aiMaterial *mat, aiTextureType t
 	return nullptr;
 }
 //Override
+Object3D* Object3D::Clone(){
+	return new Object3D(*this);
+}
 void Object3D::Load(){
 	if(!loaded){
 		for(int i = 0 ; i < meshes.size(); i++){//Changement made by Iñaki

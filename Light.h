@@ -20,7 +20,7 @@ class Light
 	    
 	public:
 		virtual ~Light();
-		
+		virtual Light* Clone() =0;
 		/*
 			All This function is attended to be rewritted in inherrited class,
 			It will allow UOGL to retrieve the good data structure and all good function
@@ -82,7 +82,7 @@ class DirLight : public Light
 		virtual ~DirLight();
 		
 		DirLight& operator=(DirLight& dirLight);
-		
+		virtual DirLight* Clone();
 		virtual const Upp::String& GetShaderDataStructure(); //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 		
 		virtual const Upp::String& GetShaderColorCalculationFunction(); //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
@@ -118,7 +118,7 @@ class SpotLight : public Light
 		virtual ~SpotLight();
 		
 		SpotLight& operator=(SpotLight& spotLight);//Be carefull of setting the Scene
-		
+		virtual SpotLight* Clone();
 		virtual const Upp::String& GetShaderDataStructure(); //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 		
 		virtual const Upp::String& GetShaderColorCalculationFunction(); //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
@@ -163,7 +163,7 @@ class PointLight : public Light
 		PointLight(glm::vec3 _position=glm::vec3(0.0f,1.0f,0.0f), float _constant=1.0f, float _linear=0.09f, float _quadratic=0.032f);
 		PointLight(PointLight& _pointLight);//Be carefull of setting the Scene
 		virtual ~PointLight();
-		
+		virtual PointLight* Clone();
 		PointLight& operator=(PointLight& _pointLight);//Be carefull of setting the Scene
 		
 		virtual const Upp::String& GetShaderDataStructure(); //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)

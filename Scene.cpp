@@ -13,17 +13,15 @@ Scene& Scene::operator=(Scene& _scene){
 	name = _scene.name;
 	loaded = _scene.loaded;
 	
+	for (int i = 0; i < _scene.AllGamesObjects.GetCount(); ++i)
+		AllGamesObjects.Add(_scene.AllGamesObjects.GetKey(i), Upp::pick(_scene.AllGamesObjects[i].Clone()));
 	
-	//Object MUST BE COPIED //TO FIX //TODO //WARNING
+	for (int i = 0; i < _scene.AllLights.GetCount(); ++i)
+		AllLights.Add(_scene.AllLights.GetKey(i), Upp::pick(_scene.AllLights[i].Clone()));
 	
-	//TO FIX //TODO //WARNING
-	/*
-	AllCameras = Upp::clone(_scene.AllCameras);
-	for(const Upp::String& cam : AllCameras.GetKeys()){
-		AllCameras.Get(cam).SetScene(*this);
-		if(&_scene.AllCameras.Get(cam) == _scene.ActiveCamera) ActiveCamera = &AllCameras.Get(cam);
-	}
-	*/
+	for (int i = 0; i < _scene.AllCameras.GetCount(); ++i)
+		AllCameras.Add(_scene.AllCameras.GetKey(i), Upp::pick(_scene.AllCameras[i].Clone()));
+
 	SkyBox = _scene.SkyBox;
 	return *this;
 }

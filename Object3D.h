@@ -48,6 +48,7 @@ class Object3D : public GameObject
         Object3D& ReadData(Upp::Vector<float>& data ,ReaderParameters readerParameter = ReaderParameters(),ReaderRoutine readerRoutine = ReaderRoutine()); //Used to read vector<Float>
 		
     //Override
+		virtual Object3D* Clone();
         virtual void Load();
         virtual void Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform,Camera& camera);
 };

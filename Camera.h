@@ -23,6 +23,7 @@ class Camera{
 		float DrawDistanceMin = 0.1f;
 	public:
 		Camera& operator=(Camera& camera);
+		virtual Camera* Clone()=0;
 		virtual ~Camera(){}
 		
 		Camera& SetScene(Scene& _scene);
@@ -77,6 +78,7 @@ class CameraQuaterion : public Camera{
 		CameraQuaterion(Scene& _scene);
 		CameraQuaterion(Scene& _scene,const Upp::String& _name);
 		CameraQuaterion(CameraQuaterion& cameraQuaterion);
+		virtual CameraQuaterion* Clone();
 		
 		CameraQuaterion& SetMouvementSpeed(float value = 15.0f);
 		float GetMouvementSpeed();

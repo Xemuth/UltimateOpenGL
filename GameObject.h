@@ -54,7 +54,7 @@ class GameObject{
 		Transform& GetTransform();
 		GameObject& SetTransform(const Transform& _transform);
 
-		
+		virtual GameObject* Clone() =0;
 		virtual void Draw(glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform,Camera& camera) = 0;//Force override
 		virtual void Load() = 0;//Force override
 };

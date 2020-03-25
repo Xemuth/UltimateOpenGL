@@ -106,7 +106,9 @@ DirLight& DirLight::operator=(DirLight& dirLight){
 	direction = dirLight.direction;
 	return *this;
 }
-
+DirLight* DirLight::Clone(){
+	return new DirLight(*this);
+}
 const Upp::String& DirLight::GetShaderDataStructure(){ //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 	return LIGHT_DIR_STRUCT();
 }
@@ -210,7 +212,9 @@ SpotLight& SpotLight::operator=(SpotLight& spotLight){//Be carefull of setting t
 	quadratic = spotLight.quadratic;
 	return *this;
 }
-
+SpotLight* SpotLight::Clone(){
+	return new SpotLight(*this);
+}
 const Upp::String& SpotLight::GetShaderDataStructure(){ //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 	return LIGHT_SPOT_STRUCT();
 }
@@ -359,7 +363,9 @@ PointLight& PointLight::operator=(PointLight& _pointLight){//Be carefull of sett
 	quadratic = _pointLight.quadratic;
 	return *this;
 }
-
+PointLight* PointLight::Clone(){
+	return new PointLight(*this);
+}
 const Upp::String& PointLight::GetShaderDataStructure(){ //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 	return LIGHT_POINT_STRUCT();
 }
