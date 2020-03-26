@@ -40,17 +40,7 @@ void UltimateOpenGL_Context::Draw(const Upp::String& SceneToDraw,const Upp::Stri
 		ASSERT_(true,"Error have been raised to UltimateOpenGL_Context::Draw(...), " + Upp::AsString(+ exception.what()));
 	}
 }
-Scene& UltimateOpenGL_Context::CreateScene(const Upp::String& name){
-	if(AllScenes.Find(name) ==-1){
-		Scene& s= AllScenes.Create<Scene>(name);
-		s.SetName(name);
-		s.SetContext(*this);
-		if(ActiveScene == nullptr) ActiveScene = &s;
-		return s;
-	}else{
-		return AllScenes.Get(name);
-	}
-}
+
 Scene& UltimateOpenGL_Context::GetActiveScene(){
 	ASSERT_(!(!ActiveScene && AllScenes.GetCount() == 0),"UltimateOpenGL_Context have nullptr ActiveScene and don't have any scenes created");
 	if(!ActiveScene){ 

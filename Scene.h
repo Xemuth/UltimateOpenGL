@@ -23,6 +23,7 @@ class Scene{
 		Scene();
 		Scene(UltimateOpenGL_Context& _context);
 		Scene(UltimateOpenGL_Context& _context, const Upp::String& _name);
+		Scene(Scene& _scene);
 		Scene& operator= (Scene& _scene); //Context will be copied. So don't forget to redefine context if you wnat to use different one
 		~Scene();
 

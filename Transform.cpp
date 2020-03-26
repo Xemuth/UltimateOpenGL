@@ -532,11 +532,19 @@ Transform&  Transform::LookAt(glm::vec3 const& lookTo,bool updateChildrens){
 //	glm::quat buffer = RotationBetweenVectors(direction, position);
 	glm::quat buffer = glm::inverse(SafeQuatLookAt(position,lookTo,Up));
 	SetNewRotation(buffer,updateChildrens);
-	/*if(updateChildrens){
-		for(Transform* ptr1 :childrens){
-			ptr1->Rotate(buffer,updateChildrens);
-		}
-	}*/
+	return *this;
+}
+Transform& Transform::UpdateByEuler(float Pitch,float Yaw,float Roll){
+	glm::vec3 front;
+	front.x = cos(glm::radians(Yaw)) * cos(glm::radians(Pitch));
+	front.y = sin(glm::radians(Pitch));
+	front.z = sin(glm::radians(Yaw)) * cos(glm::radians(Pitch));
+	//Cout() << front.x << " , " << front.y <<" , " << front.z << "\n";
+	Front = glm::normalize(front);
+	quaterion =glm::quat(glm::vec3(front.x, front.y, front.z));
+	// Also re-calculate the Right and Up vector
+	Right = glm::normalize(glm::cross(Front, WorldUp));  // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
+	Up    = glm::normalize(glm::cross(Right, Front));
 	return *this;
 }
 glm::quat Transform::RotationBetweenVectors(glm::vec3 start, glm::vec3 dest){
@@ -559,6 +567,34 @@ glm::quat Transform::RotationBetweenVectors(glm::vec3 start, glm::vec3 dest){
     float invs = 1 / s;
     return glm::quat(s*0.5f,rotationAxis.x * invs,rotationAxis.y * invs,rotationAxis.z * invs);
 }
+glm::vec3 Transform::GetEulerAngleFromQuaterion(){
+	//Taken from : http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToEuler/index.htm
+	/** quaterion can be non-normalised quaternion */
+	glm::vec3 returnValue;
+	glm::quat Inversedquaterion = glm::inverse(this->quaterion);
+	double sqw = Inversedquaterion.w*Inversedquaterion.w;
+    double sqx = Inversedquaterion.x*Inversedquaterion.x;
+    double sqy = Inversedquaterion.y*Inversedquaterion.y;
+    double sqz = Inversedquaterion.z*Inversedquaterion.z;
+	double unit = sqx + sqy + sqz + sqw; // if normalised is one, otherwise is correction factor
+	double test = Inversedquaterion.x*Inversedquaterion.y + Inversedquaterion.z*Inversedquaterion.w;
+	if (test > 0.499*unit) { // singularity at north pole
+		returnValue.z = 2 * atan2(Inversedquaterion.x,Inversedquaterion.w);
+		returnValue.y  = glm::pi<float>()/2;
+		returnValue.x = 0;
+		return returnValue;
+	}
+	if (test < -0.499*unit) { // singularity at south pole
+		returnValue.z = -2 * atan2(Inversedquaterion.x,Inversedquaterion.w);
+		returnValue.y = -glm::pi<float>()/2;
+		returnValue.x = 0;
+		return returnValue;
+	}
+    returnValue.z = atan2(2*Inversedquaterion.y*Inversedquaterion.w-2*Inversedquaterion.x*Inversedquaterion.z , sqx - sqy - sqz + sqw);
+	returnValue.y  = asin(2*test/unit);
+	returnValue.x = atan2(2*Inversedquaterion.x*Inversedquaterion.w-2*Inversedquaterion.y*Inversedquaterion.z , -sqx + sqy - sqz + sqw);
+	return returnValue;
+}
 glm::mat4 Transform::GetModelMatrice()const{
 	return glm::translate(glm::mat4(1.0f),position) * glm::mat4_cast(quaterion) * modelMatrix;
 }
@@ -566,6 +602,7 @@ glm::mat4 Transform::GetViewMatrix()const{
 	//return glm::lookAt(position,position + Front, Up);
 	//temporary frame quaternion from pitch,yaw,roll
 	//here roll is not used
+	
 	glm::mat4 rotate = glm::mat4_cast(quaterion);
 	glm::mat4 translate = glm::mat4(1.0f);
 	translate = glm::translate(translate,-position);

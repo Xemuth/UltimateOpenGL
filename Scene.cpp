@@ -8,6 +8,9 @@ Scene::Scene(UltimateOpenGL_Context& _context, const Upp::String& _name){
 	context = &_context;
 	name = _name;
 }
+Scene::Scene(Scene& _scene){
+	*this = _scene;
+}
 Scene& Scene::operator=(Scene& _scene){
 	context = _scene.context;
 	name = _scene.name;
@@ -19,8 +22,10 @@ Scene& Scene::operator=(Scene& _scene){
 	for (int i = 0; i < _scene.AllLights.GetCount(); ++i)
 		AllLights.Add(_scene.AllLights.GetKey(i), Upp::pick(_scene.AllLights[i].Clone()));
 	
-	for (int i = 0; i < _scene.AllCameras.GetCount(); ++i)
-		AllCameras.Add(_scene.AllCameras.GetKey(i), Upp::pick(_scene.AllCameras[i].Clone()));
+	for (int i = 0; i < _scene.AllCameras.GetCount(); ++i){
+		Camera& c = AllCameras.Add(_scene.AllCameras.GetKey(i), Upp::pick(_scene.AllCameras[i].Clone()));
+		if(_scene.ActiveCamera == &(_scene.AllCameras[i])) ActiveCamera = &c;
+	}
 
 	SkyBox = _scene.SkyBox;
 	return *this;
@@ -108,10 +113,12 @@ Scene& Scene::RemoveGameObject(const Upp::String& _ObjectName){//Will remove gam
 	return *this;
 }
 Scene& Scene::Load(){
-	for(GameObject& gm : AllGamesObjects){
-		gm.Load();
+	if(!loaded){
+		for(GameObject& gm : AllGamesObjects){
+			gm.Load();
+		}
+		loaded = true;
 	}
-	loaded = true;
 	return *this;
 }
 bool Scene::IsLoaded(){

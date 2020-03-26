@@ -67,7 +67,19 @@ class UltimateOpenGL_Context{
 			See explications above.
 			Without scene setted, Context.Draw will raise Assertion
 		*/
-		Scene& CreateScene(const Upp::String& name);
+		template <class... Args>
+		Scene& CreateScene(const Upp::String& name, Args&&... args){
+			if(AllScenes.Find(name) == -1){
+				Scene& s= AllScenes.Create<Scene>(name,std::forward<Args>(args)...);
+				s.SetName(name);
+				s.SetContext(*this);
+				if(ActiveScene == nullptr) ActiveScene = &s;
+				return s;
+			}else{
+				return AllScenes.Get(name);
+			}
+		}
+		
 		Scene& GetActiveScene();
 		Scene& GetScene(const Upp::String& name);
 		Upp::ArrayMap<Upp::String,Scene>& GetAllScene();
