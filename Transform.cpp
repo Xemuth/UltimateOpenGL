@@ -534,6 +534,23 @@ Transform&  Transform::LookAt(glm::vec3 const& lookTo,bool updateChildrens){
 	SetNewRotation(buffer,updateChildrens);
 	return *this;
 }
+
+glm::quat Transform::EulerToQuaterion(glm::vec3 euler){
+	//Extracted from ThreeJS
+	float c1 = glm::cos(euler.x / 2),
+    c2 = glm::cos(euler.y / 2),
+    c3 = glm::cos(euler.z / 2),
+    s1 = glm::cos(euler.x  / 2),
+    s2 = glm::cos(euler.y / 2),
+    s3 = glm::cos(euler.z / 2),
+    x = s1 * c2 * c3 + c1 * s2 * s3,
+    y = c1 * s2 * c3 - s1 * c2 * s3,
+    z = c1 * c2 * s3 + s1 * s2 * c3,
+    w = c1 * c2 * c3 - s1 * s2 * s3;
+
+	return glm::quat(x, y, z, w);
+}
+
 Transform& Transform::UpdateByEuler(float Pitch,float Yaw,float Roll){
 	glm::vec3 front;
 	front.x = cos(glm::radians(Yaw)) * cos(glm::radians(Pitch));
@@ -568,31 +585,24 @@ glm::quat Transform::RotationBetweenVectors(glm::vec3 start, glm::vec3 dest){
     return glm::quat(s*0.5f,rotationAxis.x * invs,rotationAxis.y * invs,rotationAxis.z * invs);
 }
 glm::vec3 Transform::GetEulerAngleFromQuaterion(){
-	//Taken from : http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToEuler/index.htm
-	/** quaterion can be non-normalised quaternion */
+	//https://stackoverflow.com/questions/1568568/how-to-convert-euler-angles-to-directional-vector
 	glm::vec3 returnValue;
-	glm::quat Inversedquaterion = glm::inverse(this->quaterion);
-	double sqw = Inversedquaterion.w*Inversedquaterion.w;
-    double sqx = Inversedquaterion.x*Inversedquaterion.x;
-    double sqy = Inversedquaterion.y*Inversedquaterion.y;
-    double sqz = Inversedquaterion.z*Inversedquaterion.z;
-	double unit = sqx + sqy + sqz + sqw; // if normalised is one, otherwise is correction factor
-	double test = Inversedquaterion.x*Inversedquaterion.y + Inversedquaterion.z*Inversedquaterion.w;
-	if (test > 0.499*unit) { // singularity at north pole
-		returnValue.z = 2 * atan2(Inversedquaterion.x,Inversedquaterion.w);
-		returnValue.y  = glm::pi<float>()/2;
-		returnValue.x = 0;
-		return returnValue;
-	}
-	if (test < -0.499*unit) { // singularity at south pole
-		returnValue.z = -2 * atan2(Inversedquaterion.x,Inversedquaterion.w);
-		returnValue.y = -glm::pi<float>()/2;
-		returnValue.x = 0;
-		return returnValue;
-	}
-    returnValue.z = atan2(2*Inversedquaterion.y*Inversedquaterion.w-2*Inversedquaterion.x*Inversedquaterion.z , sqx - sqy - sqz + sqw);
-	returnValue.y  = asin(2*test/unit);
-	returnValue.x = atan2(2*Inversedquaterion.x*Inversedquaterion.w-2*Inversedquaterion.y*Inversedquaterion.z , -sqx + sqy - sqz + sqw);
+	glm::mat4 rotate = glm::mat4_cast(quaterion);
+	glm::mat4 translate = glm::mat4(1.0f);
+	translate = glm::translate(translate,-position);
+	glm::mat4 mat = rotate * translate;
+	
+	
+	const glm::mat4 inverted = mat;
+	const glm::vec3 direction = - glm::vec3(inverted[2]);
+	/*
+		Pitch = X
+		Roll  = Z
+		Yaw   = Y
+	*/
+	returnValue.y   = glm::degrees(glm::atan(direction.z, direction.x));
+	returnValue.x = glm::degrees(glm::asin(direction.y));
+	returnValue.z  = glm::degrees(glm::asin(direction.x*glm::sin(returnValue.y) + direction.y*-glm::cos(returnValue.y)));
 	return returnValue;
 }
 glm::mat4 Transform::GetModelMatrice()const{

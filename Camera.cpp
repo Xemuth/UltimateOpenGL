@@ -508,16 +508,20 @@ bool CameraEuler::IsConstraintRollchEnable()const{
 	return ConstraintRollEnable;
 }
 glm::mat4 CameraEuler::GetViewMatrix(){
-	
 	return viewMatrix;
 }
 
 CameraEuler& CameraEuler::LookAt(glm::vec3 const& lookTo){
-	//https://stackoverflow.com/questions/50081475/opengl-local-up-and-right-from-matrix-4x4
 	viewMatrix = glm::lookAt(transform.GetPosition(), lookTo, transform.GetUp());
-	transform.SetFront(glm::vec3(viewMatrix[0][2], viewMatrix[1][2], viewMatrix[2][2]));
-	transform.SetUp(glm::vec3(viewMatrix[0][1], viewMatrix[1][1], viewMatrix[2][1]));
-	transform.SetRight(glm::vec3(viewMatrix[0][0], viewMatrix[1][0], viewMatrix[2][0]));
+	//https://gamedev.stackexchange.com/questions/160483/camera-pitch-yaw-from-view-matrix
+	const glm::mat4 inverted = glm::inverse(viewMatrix);
+	const glm::vec3 direction = - glm::vec3(inverted[2]);
+	Yaw   = glm::degrees(glm::atan(direction.z, direction.x));
+	Pitch = glm::degrees(glm::asin(direction.y));
+	Roll  = glm::degrees(glm::asin(direction.x*glm::sin(Yaw) + direction.y*-glm::cos(Yaw)));
+	transform.UpdateByEuler(Pitch,Yaw,Roll);
+	//glm::vec3  test = transform.GetEulerAngleFromQuaterion();
+	//Upp::Cout() << Upp::String( glm::to_string(test)) << Upp::EOL;
 	//Taken from https://www.gamedev.net/forums/topic/666236-converting-axis-angles-forward-right-up-to-euler/
 	/*transform.LookAt(lookTo);
 	glm::vec3 rotation = transform.GetEulerAngleFromQuaterion();
