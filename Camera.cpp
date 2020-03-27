@@ -241,7 +241,7 @@ CameraQuaterion& CameraQuaterion::ProcessKeyboardMouvement(Camera_Movement direc
 CameraQuaterion& CameraQuaterion::ProcessMouveMouvement(float xoffset, float yoffset){
 	xoffset *= GetRealMouseSensitivity();
 	yoffset *= GetRealMouseSensitivity();
-	GetTransform().UpdateQuaterion(yoffset,xoffset);
+	GetTransform().ProcessMouseMouvement(xoffset,yoffset,0);
 	return *this;
 }
 
@@ -508,11 +508,21 @@ bool CameraEuler::IsConstraintRollchEnable()const{
 	return ConstraintRollEnable;
 }
 glm::mat4 CameraEuler::GetViewMatrix(){
-	return viewMatrix;
+	return transform.GetViewMatrix();
 }
 
 CameraEuler& CameraEuler::LookAt(glm::vec3 const& lookTo){
-	viewMatrix = glm::lookAt(transform.GetPosition(), lookTo, transform.GetUp());
+	//Upp::Cout() << "Before Conversion : "<< Yaw << "," << Pitch << "," << Roll << Upp::EOL;
+	transform.LookAt(lookTo);
+	
+	
+	glm::vec3 euler = transform.QuaterionToEuler(transform.GetQuaterion());
+	if(ActivateYaw)   SetYaw(glm::degrees(euler.y));
+	if(ActivatePitch) SetPitch(glm::degrees(euler.x));
+	if(ActivateRoll)  SetRoll(glm::degrees(euler.z));
+	//Upp::Cout() << "After Conversion : "<< Yaw << "," << Pitch << "," << Roll << Upp::EOL;
+	/*
+	//viewMatrix = glm::lookAt(transform.GetPosition(), lookTo, transform.GetUp());
 	//https://gamedev.stackexchange.com/questions/160483/camera-pitch-yaw-from-view-matrix
 	const glm::mat4 inverted = glm::inverse(viewMatrix);
 	const glm::vec3 direction = - glm::vec3(inverted[2]);
@@ -551,7 +561,11 @@ CameraEuler& CameraEuler::ProcessMouveMouvement(float xoffset, float yoffset){
 	yoffset *= MouseSensitivity;
 	SetYaw(Yaw + xoffset);
 	SetPitch(Pitch + yoffset);
-	transform.UpdateByEuler(Pitch,Yaw,Roll);
-	viewMatrix = glm::lookAt(transform.GetPosition(), transform.GetPosition() + transform.GetFront(), transform.GetUp());
+	SetRoll(0);
+	transform.UpdateByEuler(Yaw,Pitch,Roll);
+	/*
+	glm::vec3 euler = transform.QuaterionToEuler(transform.GetQuaterion());
+	Upp::Cout() << "After Conversion : Pitch :"<< glm::degrees(euler.x) << ", Yaw :" << glm::degrees(euler.y) << ", Roll :" << glm::degrees(euler.z) << Upp::EOL;
+	*/
 	return *this;
 }

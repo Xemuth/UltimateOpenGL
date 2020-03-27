@@ -6,7 +6,7 @@ class Camera{
 	protected:
 		Scene* scene = nullptr;
 		Upp::String Name="defaultCamera";
-	
+			
 		Transform transform; //The Camera Transform object
 	
 		CameraType type = CT_PERSPECTIVE;
@@ -107,7 +107,7 @@ class CameraEuler : public Camera{
 		
 		glm::mat4 viewMatrix;
 		
-		float Yaw = -90.0f;
+		float Yaw = 0.0f;
 	    float Pitch = 0.0f;
 	    float Roll = 0.0f;
 	    

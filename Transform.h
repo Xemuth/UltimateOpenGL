@@ -73,39 +73,9 @@ class Transform{
 		Transform& RemoveChildren(Transform& _ptr);
 		int NumberOfChildrens();
 
-		/*// Yaw Pitch Roll manipulation
-		Transform& EnableLimiteYaw();
-		Transform& DisableLimiteYaw();
-		const float GetMaxYaw()const;
-		const float GetMinYaw()const;
-		Transform& SetMaxYaw(float _MaxYaw);
-		Transform& SetMinYaw(float _MinYaw);
-		
-		Transform& EnableLimitePitch();
-		Transform& DisableLimitePitch();
-		const float GetMaxPitch()const;
-		const float GetMinPitch()const;
-		Transform& SetMaxPitch(float _MaxPitch);
-		Transform& SetMinPitch(float _MinPitch);
-		
-		Transform& EnableLimiteRoll();
-		Transform& DisableLimiteRoll();
-		const float GetMaxRoll()const;
-		const float GetMinRoll()const;
-		Transform& SetMaxRoll(float _MaxRoll);
-		Transform& SetMinRoll(float _MinRoll);
-		
-		const float GetYaw()const;
-		const float GetPitch()const;
-		const float GetRoll()const;
-		
-		Transform& SetYaw(float _Yaw,bool updateChildrens = true);
-		Transform& SetPitch(float _Pitch,bool updateChildrens = true);
-		Transform& SetRoll(float _Roll,bool updateChildrens = true);
-		
-		Transform& IncreaseYaw(float _Yaw,bool updateChildrens = true);
-		Transform& IncreasePitch(float _Pitch,bool updateChildrens = true);
-		Transform& IncreaseRoll(float _Roll,bool updateChildrens = true);*/
+
+		glm::mat4 GetModelMatrice()const;
+		glm::mat4 GetViewMatrix()const;
 
 		//******************Position part******************
 		Transform& Move(glm::vec3 move,bool updateChildrens = true); //Move the position from the vec3 arg
@@ -128,17 +98,14 @@ class Transform{
 		Transform& SetNewSecondRotationFromAngles(float angleInDegree,glm::vec3 EulerAngles,bool updateChildrens = true);
 
 		//******************Quick function part*************
-		//Transform& RecalculateEulerAngles(bool updateChildrens = true);
-		Transform& UpdateQuaterion(float Pitch, float Yaw, float Roll =0.0f,bool updateChildrens = true);
 		Transform& LookAt(glm::vec3 const& lookTo,bool updateChildrens = true);
-		Transform& UpdateByEuler(float Pitch,float Yaw,float Roll);
+		Transform& ProcessMouseMouvement(float Yaw,float Pitch,float Roll,bool updateChildrens = true);
+		Transform& UpdateByEuler(float Yaw,float Pitch,float Roll,bool updateChildrens = true);
+		Transform& RecalculateFrontUpRight(bool updateChildrens = false);
 		
-		glm::vec3 GetEulerAngleFromQuaterion();
-		glm::quat EulerToQuaterion(glm::vec3 euler);
 		
-		glm::quat SafeQuatLookAt(glm::vec3 const& lookFrom,glm::vec3 const& lookTo,glm::vec3 const& up);
-		glm::quat RotationBetweenVectors(glm::vec3 start, glm::vec3 dest);
-		glm::mat4 GetModelMatrice()const;
-		glm::mat4 GetViewMatrix()const;
+		glm::quat QuatLookAt(glm::vec3 const& lookFrom,glm::vec3 const& lookTo,glm::vec3 const& up);
+		glm::vec3 QuaterionToEuler(glm::quat const& quaterion);
+		glm::quat EulerToQuaterion(float Yaw,float Pitch,float Roll);
 };
 #endif

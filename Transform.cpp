@@ -183,147 +183,17 @@ Transform& Transform::RemoveChildren(Transform& _ptr){
 int Transform::NumberOfChildrens(){
 	return childrens.GetCount();
 }
-/*
-// Yaw Pitch Roll manipulation
-Transform& Transform::EnableLimiteYaw(){
-	LimiteYaw =true;
-	return *this;
+
+glm::mat4 Transform::GetModelMatrice()const{
+	return glm::translate(glm::mat4(1.0f),position) * glm::mat4_cast(quaterion) * modelMatrix;
 }
-Transform& Transform::DisableLimiteYaw(){
-	LimiteYaw = false;
-	return *this;
+glm::mat4 Transform::GetViewMatrix()const{
+	return glm::lookAt(position,position + Front, Up);
+/*  glm::mat4 rotate = glm::mat4_cast(quaterion);
+	glm::mat4 translate = glm::mat4(1.0f);
+	translate = glm::translate(translate,-position);
+	return rotate * translate;*/
 }
-const float Transform::GetMaxYaw()const{return MaxYaw;}
-const float Transform::GetMinYaw()const{return MinYaw;}
-Transform& Transform::SetMaxYaw(float _MaxYaw){
-	MaxYaw = _MaxYaw;
-	return *this;
-}
-Transform& Transform::SetMinYaw(float _MinYaw){
-	MinYaw = _MinYaw;
-	return *this;
-}
-Transform& Transform::EnableLimitePitch(){
-	LimitePitch = true;
-	return *this;
-}
-Transform& Transform::DisableLimitePitch(){
-	LimitePitch = false;
-	return *this;
-}
-const float Transform::GetMaxPitch()const{return MaxPitch;}
-const float Transform::GetMinPitch()const{return MinPitch;}
-Transform& Transform::SetMaxPitch(float _MaxPitch){
-	MaxPitch = _MaxPitch;
-	return *this;
-}
-Transform& Transform::SetMinPitch(float _MinPitch){
-	MinPitch = _MinPitch;
-	return *this;
-}
-Transform& Transform::EnableLimiteRoll(){
-	LimiteRoll = true;
-	return *this;
-}
-Transform& Transform::DisableLimiteRoll(){
-	LimiteRoll = false;
-	return *this;
-}
-const float Transform::GetMaxRoll()const{return MaxRoll;}
-const float Transform::GetMinRoll()const{return MinRoll;}
-Transform& Transform::SetMaxRoll(float _MaxRoll){
-	MaxRoll = _MaxRoll;
-	return *this;
-}
-Transform& Transform::SetMinRoll(float _MinRoll){
-	MinRoll = _MinRoll;
-	return *this;
-}
-const float Transform::GetYaw()const{return Yaw;}
-const float Transform::GetPitch()const{return Pitch;}
-const float Transform::GetRoll()const{return Roll;}
-Transform& Transform::SetYaw(float _Yaw,bool updateChildrens){
-	float newYaw = _Yaw - Yaw;
-	Yaw = _Yaw;
-	if(LimiteYaw){
-		if(MaxYaw < Yaw) Yaw = MaxYaw;
-		else if( MinYaw > Yaw) Yaw = MinYaw;
-	}
-	if(updateChildrens){
-		for(Transform* ptr1 : childrens){
-			ptr1->IncreaseYaw(newYaw,updateChildrens);
-		}
-	}
-	return *this;
-}
-Transform& Transform::SetPitch(float _Pitch,bool updateChildrens){
-	float newPitch = _Pitch - Pitch;
-	Pitch = _Pitch;
-	if(LimitePitch){
-		if(MaxPitch < Pitch) Pitch = MaxPitch;
-		else if( MinPitch > Pitch) Pitch = MinPitch;
-	}
-	if(updateChildrens){
-		for(Transform* ptr1 : childrens){
-			ptr1->IncreasePitch(newPitch,updateChildrens);
-		}
-	}
-	return *this;
-}
-Transform& Transform::SetRoll(float _Roll,bool updateChildrens){
-	float newRoll = _Roll - Roll;
-	Roll = _Roll;
-	if(LimiteRoll){
-		if(MaxRoll < Roll) Roll = MaxRoll;
-		else if( MinRoll > Roll) Roll = MinRoll;
-	}
-	if(updateChildrens){
-		for(Transform* ptr1 : childrens){
-			ptr1->IncreaseRoll(newRoll,updateChildrens);
-		}
-	}
-	return *this;
-}
-Transform& Transform::IncreaseYaw(float _Yaw,bool updateChildrens){
-	Yaw += _Yaw;
-	if(LimiteYaw){
-		if(MaxYaw < Yaw) Yaw = MaxYaw;
-		else if( MinYaw > Yaw) Yaw = MinYaw;
-	}
-	if(updateChildrens){
-		for(Transform* ptr1 : childrens){
-			ptr1->IncreaseYaw(_Yaw,updateChildrens);
-		}
-	}
-	return *this;
-}
-Transform& Transform::IncreasePitch(float _Pitch,bool updateChildrens){
-	Pitch += _Pitch;
-	if(LimitePitch){
-		if(MaxPitch < Pitch) Pitch = MaxPitch;
-		else if( MinPitch > Pitch) Pitch = MinPitch;
-	}
-	if(updateChildrens){
-		for(Transform* ptr1 : childrens){
-			ptr1->IncreasePitch(_Pitch,updateChildrens);
-		}
-	}
-	return *this;
-}
-Transform& Transform::IncreaseRoll(float _Roll,bool updateChildrens){
-	Roll += _Roll;
-	if(LimiteRoll){
-		if(MaxRoll < Roll) Roll = MaxRoll;
-		else if( MinRoll > Roll) Roll = MinRoll;
-	}
-	if(updateChildrens){
-		for(Transform* ptr1 : childrens){
-			ptr1->IncreaseRoll(_Roll,updateChildrens);
-		}
-	}
-	return *this;
-}
-*/
 //******************Position part******************
 Transform& Transform::Move(glm::vec3 move,bool updateChildrens){//Move the position from the vec3 arg
 	if(eventEnable)LaunchTransformEvent();
@@ -374,23 +244,23 @@ Transform& Transform::SetNewScale(glm::vec3 newScallar,bool updateChildrens){//w
 Transform& Transform::Rotate(glm::quat _quaterion,bool updateChildrens){
 	if(eventEnable)LaunchTransformEvent();
 	quaterion =quaterion *_quaterion ;
+	RecalculateFrontUpRight(false);
 	if(updateChildrens){
 		for(Transform* ptr1 : childrens){
 			ptr1->Rotate(_quaterion,updateChildrens);
 		}
 	}
-	//RecalculateEulerAngles(updateChildrens);
 	return *this;
 }
 Transform& Transform::SetNewRotation(glm::quat newQuaterion,bool updateChildrens){
 	if(eventEnable)LaunchTransformEvent();
 	quaterion =newQuaterion;
+	RecalculateFrontUpRight(false);
 	if(updateChildrens){
 		for(Transform* ptr1 : childrens){
 			ptr1->SetNewRotation(newQuaterion,updateChildrens);
 		}
 	}
-	//RecalculateEulerAngles(updateChildrens);
 	return *this;
 }
 Transform& Transform::RotateFromAngles(float angleInDegree,glm::vec3 EulerAngles,bool updateChildrens){
@@ -404,7 +274,6 @@ Transform& Transform::RotateFromAngles(float angleInDegree,glm::vec3 EulerAngles
 	if(EulerAngles.z > 0){
 		Rotate(glm::angleAxis(glm::radians(angleInDegree), glm::vec3(0.0f,0.0f,1.0f)),updateChildrens);
 	}
-	//RecalculateEulerAngles(updateChildrens);
 	return *this;
 }
 Transform& Transform::SetNewRotationFromAngles(float angleInDegree,glm::vec3 EulerAngles,bool updateChildrens){
@@ -418,7 +287,6 @@ Transform& Transform::SetNewRotationFromAngles(float angleInDegree,glm::vec3 Eul
 	if(EulerAngles.z > 0){
 		SetNewRotation(glm::angleAxis(glm::radians(angleInDegree), glm::vec3(0.0f,0.0f,1.0f)),updateChildrens);
 	}
-	//RecalculateEulerAngles(updateChildrens);
 	return *this;
 }
 //******************Second Rotation part***********
@@ -469,152 +337,90 @@ Transform& Transform::SetNewSecondRotationFromAngles(float angleInDegree,glm::ve
 	return *this;
 }
 //******************Quick function part******************
-/*
-Transform& Transform::RecalculateEulerAngles(bool updateChildrens){
-	glm::vec3 eulerAngles = glm::eulerAngles(quaterion);
-	Yaw =eulerAngles.y;
-	Pitch =eulerAngles.x;
-	Roll =eulerAngles.z;
-	if(LimiteYaw){
-		if(MaxYaw < Yaw) Yaw = MaxYaw;
-		else if( MinYaw > Yaw) Yaw = MinYaw;
-	}
-	if(LimitePitch){
-		if(MaxPitch < Pitch) Pitch = MaxPitch;
-		else if( MinPitch > Pitch) Pitch = MinPitch;
-	}
-	if(LimiteRoll){
-		if(MaxRoll < Roll) Roll = MaxRoll;
-		else if( MinRoll > Roll) Roll = MinRoll;
-	}
-	if(updateChildrens){
-		for(Transform* ptr1 :childrens){
-			ptr1->RecalculateEulerAngles(updateChildrens);
-		}
-	}
+Transform&  Transform::LookAt(glm::vec3 const& lookTo,bool updateChildrens){
+	glm::quat buffer = glm::inverse(QuatLookAt(position,lookTo,Up));
+	SetNewRotation(buffer,updateChildrens);
 	return *this;
-}*/
-Transform& Transform::UpdateQuaterion(float Pitch, float Yaw, float Roll,bool updateChildrens){
+}
+Transform& Transform::ProcessMouseMouvement(float Yaw,float Pitch,float Roll,bool updateChildrens){
 	glm::quat key_quat = glm::quat(glm::vec3(-Pitch, Yaw, Roll));
 	quaterion = key_quat * quaterion;
 	quaterion = glm::normalize(quaterion);
-	
-	Front = glm::rotate(glm::inverse(quaterion), glm::vec3(0.0, 0.0, -1.0));
-    Right = glm::rotate(glm::inverse(quaterion), glm::vec3(1.0, 0.0, 0.0));
-    Up = glm::vec3(0.0, 1.0, 0.0);
+	RecalculateFrontUpRight(false);
 	if(updateChildrens){
-		for(Transform* ptr1 :childrens){
-			ptr1->UpdateQuaterion(Pitch,Yaw,Roll,updateChildrens);
+		for(Transform* ptr1 : childrens){
+			ptr1->ProcessMouseMouvement(Yaw,Pitch,Roll,updateChildrens);
 		}
 	}
-	//RecalculateEulerAngles(updateChildrens);
+	return *this;
+}
+
+Transform& Transform::UpdateByEuler(float Yaw,float Pitch,float Roll,bool updateChildrens){
+	quaterion = EulerToQuaterion(Yaw,-Pitch,Roll);
+	quaterion = glm::normalize(quaterion);
+	RecalculateFrontUpRight(false);
+	if(updateChildrens){
+		for(Transform* ptr1 : childrens){
+			ptr1->UpdateByEuler(Yaw,Pitch,Roll,updateChildrens);
+		}
+	}
+	return *this;
+}
+
+Transform& Transform::RecalculateFrontUpRight(bool updateChildrens){
+	Front = glm::rotate(glm::inverse(quaterion), glm::vec3(0.0, 0.0,-1.0));
+    Right = glm::rotate(glm::inverse(quaterion), glm::vec3(1.0, 0.0, 0.0));
+    Up    = glm::rotate(glm::inverse(quaterion), WorldUp);
+	if(updateChildrens){
+		for(Transform* ptr1 : childrens){
+			ptr1->RecalculateFrontUpRight(updateChildrens);
+		}
+	}
 	return *this;
 }
 
 //Taken from https://stackoverflow.com/questions/18172388/glm-quaternion-lookat-function
-glm::quat Transform::SafeQuatLookAt(glm::vec3 const& lookFrom,glm::vec3 const& lookTo,glm::vec3 const& up){
+glm::quat Transform::QuatLookAt(glm::vec3 const& lookFrom,glm::vec3 const& lookTo,glm::vec3 const& up){
     glm::vec3  direction       = lookTo - lookFrom;
     float      directionLength = glm::length(direction);
-
-    // Check if the direction is valid; Also deals with NaN
     if(!(directionLength > 0.0001))
-        return glm::quat(1, 0, 0, 0); // Just return identity
-
-    // Normalize direction
+        return glm::quat(1, 0, 0, 0);
     direction /= directionLength;
-
-    // Is the normal up (nearly) parallel to direction?
     return glm::quatLookAt(direction, up);
 }
 
-
-Transform&  Transform::LookAt(glm::vec3 const& lookTo,bool updateChildrens){
-//	glm::quat buffer = RotationBetweenVectors(direction, position);
-	glm::quat buffer = glm::inverse(SafeQuatLookAt(position,lookTo,Up));
-	SetNewRotation(buffer,updateChildrens);
-	return *this;
+//Taken from http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToEuler/index.htm
+glm::vec3 Transform::QuaterionToEuler(glm::quat const& q1){
+	double heading  = 0;
+	double attitude = 0;
+	double bank     = 0;
+	double sqw = q1.w*q1.w;
+    double sqx = q1.x*q1.x;
+    double sqy = q1.y*q1.y;
+    double sqz = q1.z*q1.z;
+	double unit = sqx + sqy + sqz + sqw; // if normalised is one, otherwise is correction factor
+	double test = q1.x*q1.y + q1.z*q1.w;
+	if (test > 0.499*unit) { // singularity at north pole
+		heading = 2 * atan2(q1.x,q1.w);
+		attitude = glm::pi<double>() /2;
+		bank = 0;
+		return glm::vec3(heading,attitude,bank);
+	}
+	if (test < -0.499*unit) { // singularity at south pole
+		heading = -2 * atan2(q1.x,q1.w);
+		attitude = -glm::pi<double>() /2;
+		bank = 0;
+		return glm::vec3(heading,attitude,bank);
+	}
+    heading = atan2(2*q1.y*q1.w-2*q1.x*q1.z , sqx - sqy - sqz + sqw);
+	bank = asin(2*test/unit);
+	attitude = atan2(2*q1.x*q1.w-2*q1.y*q1.z , -sqx + sqy - sqz + sqw);
+	return glm::vec3(attitude,heading,bank);
 }
-
-glm::quat Transform::EulerToQuaterion(glm::vec3 euler){
-	//Extracted from ThreeJS
-	float c1 = glm::cos(euler.x / 2),
-    c2 = glm::cos(euler.y / 2),
-    c3 = glm::cos(euler.z / 2),
-    s1 = glm::cos(euler.x  / 2),
-    s2 = glm::cos(euler.y / 2),
-    s3 = glm::cos(euler.z / 2),
-    x = s1 * c2 * c3 + c1 * s2 * s3,
-    y = c1 * s2 * c3 - s1 * c2 * s3,
-    z = c1 * c2 * s3 + s1 * s2 * c3,
-    w = c1 * c2 * c3 - s1 * s2 * s3;
-
-	return glm::quat(x, y, z, w);
-}
-
-Transform& Transform::UpdateByEuler(float Pitch,float Yaw,float Roll){
-	glm::vec3 front;
-	front.x = cos(glm::radians(Yaw)) * cos(glm::radians(Pitch));
-	front.y = sin(glm::radians(Pitch));
-	front.z = sin(glm::radians(Yaw)) * cos(glm::radians(Pitch));
-	//Cout() << front.x << " , " << front.y <<" , " << front.z << "\n";
-	Front = glm::normalize(front);
-	quaterion =glm::quat(glm::vec3(front.x, front.y, front.z));
-	// Also re-calculate the Right and Up vector
-	Right = glm::normalize(glm::cross(Front, WorldUp));  // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
-	Up    = glm::normalize(glm::cross(Right, Front));
-	return *this;
-}
-glm::quat Transform::RotationBetweenVectors(glm::vec3 start, glm::vec3 dest){
-    start = normalize(start);
-    dest = normalize(dest);
-    float cosTheta = dot(start, dest);
-    glm::vec3 rotationAxis;
-    if (cosTheta < -1 + 0.001f){
-        // cas spécifique lorsque les vecteurs ont des directions opposées :
-        // il n'y pas d'axe de rotation "idéal"
-        // Donc, devinez-en un, n'importe lequel fonctionnera tant qu'il est perpendiculaire avec start
-        rotationAxis = cross(glm::vec3(0.0f, 0.0f, 1.0f), start);
-        if (glm::length2(rotationAxis) < 0.01 ) // pas de chance, ils sont parallèles, essayez encore !
-            rotationAxis = cross(glm::vec3(1.0f, 0.0f, 0.0f), start);
-        rotationAxis = normalize(rotationAxis);
-        return glm::angleAxis(180.0f, rotationAxis);
-    }
-    rotationAxis = cross(start, dest);
-    float s = sqrt( (1+cosTheta)*2 );
-    float invs = 1 / s;
-    return glm::quat(s*0.5f,rotationAxis.x * invs,rotationAxis.y * invs,rotationAxis.z * invs);
-}
-glm::vec3 Transform::GetEulerAngleFromQuaterion(){
-	//https://stackoverflow.com/questions/1568568/how-to-convert-euler-angles-to-directional-vector
-	glm::vec3 returnValue;
-	glm::mat4 rotate = glm::mat4_cast(quaterion);
-	glm::mat4 translate = glm::mat4(1.0f);
-	translate = glm::translate(translate,-position);
-	glm::mat4 mat = rotate * translate;
-	
-	
-	const glm::mat4 inverted = mat;
-	const glm::vec3 direction = - glm::vec3(inverted[2]);
-	/*
-		Pitch = X
-		Roll  = Z
-		Yaw   = Y
-	*/
-	returnValue.y   = glm::degrees(glm::atan(direction.z, direction.x));
-	returnValue.x = glm::degrees(glm::asin(direction.y));
-	returnValue.z  = glm::degrees(glm::asin(direction.x*glm::sin(returnValue.y) + direction.y*-glm::cos(returnValue.y)));
-	return returnValue;
-}
-glm::mat4 Transform::GetModelMatrice()const{
-	return glm::translate(glm::mat4(1.0f),position) * glm::mat4_cast(quaterion) * modelMatrix;
-}
-glm::mat4 Transform::GetViewMatrix()const{
-	//return glm::lookAt(position,position + Front, Up);
-	//temporary frame quaternion from pitch,yaw,roll
-	//here roll is not used
-	
-	glm::mat4 rotate = glm::mat4_cast(quaterion);
-	glm::mat4 translate = glm::mat4(1.0f);
-	translate = glm::translate(translate,-position);
-	return rotate * translate;
+//Taken from http://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToQuaternion/index.htm
+glm::quat Transform::EulerToQuaterion(float Yaw,float Pitch,float Roll){
+	glm::quat myXQuat = glm::angleAxis<float>(glm::radians(Pitch), glm::vec3(1, 0, 0));
+	glm::quat myYQuat = glm::angleAxis<float>(glm::radians(Yaw), glm::vec3(0, 1, 0));
+	glm::quat myZQuat = glm::angleAxis<float>(glm::radians(Roll), glm::vec3(0, 0, 1));
+	return myXQuat * myYQuat * myZQuat;
 }

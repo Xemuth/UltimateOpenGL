@@ -22,6 +22,7 @@
 #include <plugin/glm/gtc/matrix_transform.hpp>
 #include <plugin/glm/gtc/type_ptr.hpp>
 #include <plugin/glm/gtx/quaternion.hpp>
+#include <plugin/glm/ext/quaternion_trigonometric.hpp>
 #include <plugin/glm/gtx/norm.hpp>
 #include <plugin/glm/gtx/string_cast.hpp>
 //Gestion of auto generated Shaders
