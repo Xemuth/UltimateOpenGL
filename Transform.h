@@ -98,7 +98,7 @@ class Transform{
 		Transform& SetNewSecondRotationFromAngles(float angleInDegree,glm::vec3 EulerAngles,bool updateChildrens = true);
 
 		//******************Quick function part*************
-		Transform& LookAt(glm::vec3 const& lookTo,bool updateChildrens = true);
+		Transform& LookAt(glm::vec3 const& lookTo,bool inverse = false,bool updateChildrens = true);
 		Transform& ProcessMouseMouvement(float Yaw,float Pitch,float Roll,bool updateChildrens = true);
 		Transform& UpdateByEuler(float Yaw,float Pitch,float Roll,bool updateChildrens = true);
 		Transform& RecalculateFrontUpRight(bool updateChildrens = false);

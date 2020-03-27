@@ -2,7 +2,7 @@
 #include "UltimateOpenGL.h"
 #include "Scene.h"
 //Camera CLASS
-Camera::Camera(){}
+Camera::Camera(){transform.SetCamera(*this);}
 Camera::Camera(Camera& camera){
 	scene = camera.scene;
 	Name= camera.Name;
@@ -11,8 +11,12 @@ Camera::Camera(Camera& camera){
 	
 	type = camera.type;
 	
+	OnDraw = camera.OnDraw;
+	OnDrawEventActivate = camera.OnDrawEventActivate;
+	
 	OnTransform= camera.OnTransform;
 	OnTransformEventActivate = camera.OnTransformEventActivate;
+	transform.SetCamera(*this);
 	
 	MaxFOV = camera.MaxFOV;
 	MinFOV = camera.MinFOV;
@@ -22,7 +26,7 @@ Camera::Camera(Camera& camera){
 	DrawDisanceMax = camera.DrawDisanceMax;
 	DrawDistanceMin = camera.DrawDistanceMin;
 }
-Camera&  Camera::operator=(Camera& camera){
+Camera& Camera::operator=(Camera& camera){
 	scene = camera.scene;
 	Name= camera.Name;
 	
@@ -30,8 +34,12 @@ Camera&  Camera::operator=(Camera& camera){
 	
 	type = camera.type;
 	
-	OnTransform= camera.OnTransform;
+	OnDraw = camera.OnDraw;
+	OnDrawEventActivate = camera.OnDrawEventActivate;
+	
+	OnTransform = camera.OnTransform;
 	OnTransformEventActivate = camera.OnTransformEventActivate;
+	transform.SetCamera(*this);
 	
 	MaxFOV = camera.MaxFOV;
 	MinFOV = camera.MinFOV;
@@ -70,6 +78,25 @@ Camera& Camera::SetCameraType(CameraType value){
 CameraType Camera::GetCameraType()const{
 	return type;
 }
+Camera& Camera::SetOnDrawFunction(CAMERA_FUNCTION myFunction){
+	OnDraw = myFunction;
+	return *this;
+}
+CAMERA_FUNCTION Camera::GetOnDrawFunction()const{
+	return OnDraw;
+}
+Camera& Camera::EnableDrawEvent(){
+	OnDrawEventActivate = true;
+	return *this;
+}
+Camera& Camera::DisableDrawEvent(){
+	OnDrawEventActivate = false;
+	return *this;
+}
+bool Camera::IsDrawEventActivated(){
+	return OnDrawEventActivate;
+}
+
 Camera& Camera::SetOnTransformFunction(CAMERA_FUNCTION myFunction){
 	OnTransform = myFunction;
 	return *this;
@@ -170,7 +197,7 @@ Camera& Camera::SetPosition(glm::vec3 const& position){
 	return *this;
 }
 Camera& Camera::LookAt(glm::vec3 const& lookTo){
-	transform.LookAt(lookTo);
+	transform.LookAt(lookTo,true);
 	return *this;
 }
 Camera& Camera::ProcessMouseScroll(float yoffset){
@@ -185,11 +212,13 @@ Camera& Camera::ProcessMouseScroll(float yoffset){
 }
 //CameraQuaterion CLASS
 
-CameraQuaterion::CameraQuaterion(){} //be carefull of setting scene correctly
+CameraQuaterion::CameraQuaterion(){transform.SetCamera(*this);} //be carefull of setting scene correctly
 CameraQuaterion::CameraQuaterion(Scene& _scene){
+	transform.SetCamera(*this);
 	scene = &_scene;
 }
 CameraQuaterion::CameraQuaterion(Scene& _scene,const Upp::String& _name){
+	transform.SetCamera(*this);
 	scene = &_scene;
 	Name = _name;
 }
@@ -246,9 +275,9 @@ CameraQuaterion& CameraQuaterion::ProcessMouveMouvement(float xoffset, float yof
 }
 
 //CameraEuler CLASS
-CameraEuler::CameraEuler(){transform.UpdateByEuler(Pitch,Yaw,Roll);viewMatrix = glm::lookAt(transform.GetPosition(), transform.GetPosition() + transform.GetFront(), transform.GetUp());} //Be carefull of setting scene correctly
-CameraEuler::CameraEuler(Scene& _scene){scene = &_scene;transform.UpdateByEuler(Pitch,Yaw,Roll);viewMatrix = glm::lookAt(transform.GetPosition(), transform.GetPosition() + transform.GetFront(), transform.GetUp());}
-CameraEuler::CameraEuler(Scene& _scene,const Upp::String& _name){scene = &_scene;Name = _name;transform.UpdateByEuler(Pitch,Yaw,Roll);viewMatrix = glm::lookAt(transform.GetPosition(), transform.GetPosition() + transform.GetFront(), transform.GetUp());}
+CameraEuler::CameraEuler(){transform.UpdateByEuler(Pitch,Yaw,Roll);transform.SetCamera(*this);} //Be carefull of setting scene correctly
+CameraEuler::CameraEuler(Scene& _scene){scene = &_scene;transform.UpdateByEuler(Pitch,Yaw,Roll);transform.SetCamera(*this);}
+CameraEuler::CameraEuler(Scene& _scene,const Upp::String& _name){scene = &_scene;Name = _name;transform.UpdateByEuler(Pitch,Yaw,Roll);transform.SetCamera(*this);}
 CameraEuler::CameraEuler(CameraEuler& cameraEuler) : Camera(cameraEuler){
 	MouseSensitivity = cameraEuler.MouseSensitivity;
 	MovementSpeed = cameraEuler.MovementSpeed;
@@ -271,8 +300,8 @@ CameraEuler::CameraEuler(CameraEuler& cameraEuler) : Camera(cameraEuler){
 	MaxRoll = cameraEuler.MaxRoll;
 	ActivateRoll = cameraEuler.ActivateRoll;
 	ConstraintRollEnable = cameraEuler.ConstraintRollEnable;
+	transform.SetCamera(*this);
 	transform.UpdateByEuler(Pitch,Yaw,Roll);
-	viewMatrix = glm::lookAt(transform.GetPosition(), transform.GetPosition() + transform.GetFront(), transform.GetUp());
 }
 CameraEuler& CameraEuler::operator=(CameraEuler& cameraEuler){
 	Camera::operator=(cameraEuler);
@@ -296,8 +325,9 @@ CameraEuler& CameraEuler::operator=(CameraEuler& cameraEuler){
 	MaxRoll = cameraEuler.MaxRoll;
 	ActivateRoll = cameraEuler.ActivateRoll;
 	ConstraintRollEnable = cameraEuler.ConstraintRollEnable;
+	
+	transform.SetCamera(*this);
 	transform.UpdateByEuler(Pitch,Yaw,Roll);
-	viewMatrix = glm::lookAt(transform.GetPosition(), transform.GetPosition() + transform.GetFront(), transform.GetUp());
 	return *this;
 }
 CameraEuler* CameraEuler::Clone(){
@@ -344,11 +374,12 @@ CameraEuler& CameraEuler::SetPitch(float value){
 CameraEuler& CameraEuler::SetRoll(float value){
 	if(ActivateRoll){
 		if(ConstraintRollEnable){
+			value =  Upp::roundr(value,1);
 			if(value < MinRoll) Roll = MinRoll;
 			else if(value > MaxRoll) Roll = MaxRoll;
 			else Roll = value;
 		}else{
-			Roll = value;
+			Roll = Upp::roundr(value,1);
 		}
 	}
 	return *this;
@@ -513,8 +544,7 @@ glm::mat4 CameraEuler::GetViewMatrix(){
 
 CameraEuler& CameraEuler::LookAt(glm::vec3 const& lookTo){
 	//Upp::Cout() << "Before Conversion : "<< Yaw << "," << Pitch << "," << Roll << Upp::EOL;
-	transform.LookAt(lookTo);
-	
+	transform.LookAt(lookTo,true);
 	
 	glm::vec3 euler = transform.QuaterionToEuler(transform.GetQuaterion());
 	if(ActivateYaw)   SetYaw(glm::degrees(euler.y));
@@ -539,6 +569,15 @@ CameraEuler& CameraEuler::LookAt(glm::vec3 const& lookTo){
 	if(ActivateYaw)  SetYaw(glm::degrees(rotation.y) );
 	if(ActivateRoll) SetRoll(glm::degrees(rotation.z) );
 	transform.UpdateByEuler(Pitch,Yaw,Roll);*/
+	return *this;
+}
+
+CameraEuler& CameraEuler::LookAt(glm::vec3 const& lookTo,bool UseYaw, bool UsePitch,bool UseRoll){
+	transform.LookAt(lookTo,true);
+	glm::vec3 euler = transform.QuaterionToEuler(transform.GetQuaterion());
+	if(ActivateYaw && UseYaw)     SetYaw(glm::degrees(euler.y));
+	if(ActivatePitch && UsePitch) SetPitch(glm::degrees(euler.x));
+	if(ActivateRoll && UseRoll)   SetRoll(glm::degrees(euler.z));
 	return *this;
 }
 

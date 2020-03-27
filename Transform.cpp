@@ -337,8 +337,9 @@ Transform& Transform::SetNewSecondRotationFromAngles(float angleInDegree,glm::ve
 	return *this;
 }
 //******************Quick function part******************
-Transform&  Transform::LookAt(glm::vec3 const& lookTo,bool updateChildrens){
-	glm::quat buffer = glm::inverse(QuatLookAt(position,lookTo,Up));
+Transform&  Transform::LookAt(glm::vec3 const& lookTo,bool inverse,bool updateChildrens){
+	glm::quat buffer = QuatLookAt(position,lookTo,Up);
+	if(inverse) buffer = glm::inverse(buffer);
 	SetNewRotation(buffer,updateChildrens);
 	return *this;
 }

@@ -11,6 +11,9 @@ class Camera{
 	
 		CameraType type = CT_PERSPECTIVE;
 		
+		CAMERA_FUNCTION OnDraw=nullptr;
+		bool OnDrawEventActivate = true;
+		
 		CAMERA_FUNCTION OnTransform=nullptr;
 		bool OnTransformEventActivate = true;
 		
@@ -40,12 +43,18 @@ class Camera{
 		Camera& SetCameraType(CameraType value);
 		CameraType GetCameraType()const;
 		
+		Camera& SetOnDrawFunction(CAMERA_FUNCTION myFunction);
+		CAMERA_FUNCTION GetOnDrawFunction()const;
+		Camera& EnableDrawEvent();
+		Camera& DisableDrawEvent();
+		bool IsDrawEventActivated();
+		
 		Camera& SetOnTransformFunction(CAMERA_FUNCTION myFunction);
 		CAMERA_FUNCTION GetOnTransformFunction()const;
 		Camera& EnableTransformEvent();
 		Camera& DisableTransformEvent();
 		bool IsTransformEventActivated();
-				
+		
 		Camera& SetFOV(float value);
 		float GetFOV()const;
 		Camera& SetMaxFOV(float value);
@@ -104,8 +113,6 @@ class CameraEuler : public Camera{
 	protected:
 		float MouseSensitivity = 0.1f;
 		float MovementSpeed = 15.0f;
-		
-		glm::mat4 viewMatrix;
 		
 		float Yaw = 0.0f;
 	    float Pitch = 0.0f;
@@ -187,6 +194,7 @@ class CameraEuler : public Camera{
 		virtual glm::mat4 GetViewMatrix();
 		
 		virtual CameraEuler& LookAt(glm::vec3 const& lookTo);
+		CameraEuler& LookAt(glm::vec3 const& lookTo,bool UseYaw, bool UsePitch,bool UseRoll);
 		
 		virtual CameraEuler& ProcessKeyboardMouvement(Camera_Movement direction);
 		virtual CameraEuler& ProcessMouveMouvement(float xoffset, float yoffset);

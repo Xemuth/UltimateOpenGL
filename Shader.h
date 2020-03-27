@@ -74,7 +74,7 @@ class Shader {
 		Shader& Use();
 		Shader& Unbind();
 		
-				enum VertexGenerationOption{
+		enum VertexGenerationOption{
 			VGO_DoBasics = 0x1,
 			
 			VGO_UseMaterialObject = 0x2,

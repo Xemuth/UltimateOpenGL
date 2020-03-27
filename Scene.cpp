@@ -132,6 +132,7 @@ Scene& Scene::Draw(const Upp::String& CameraToUse){
 				camera = AllCameras.Get(CameraToUse);
 			}
 		}
+		if( camera.IsDrawEventActivated() && camera.GetOnDrawFunction()) camera.GetOnDrawFunction()(camera);
 		glm::mat4 model = glm::mat4(1.0f);
 		glm::mat4 transform = glm::mat4(1.0f);
 		glm::mat4 view = glm::mat4(1.0f);
@@ -146,7 +147,7 @@ Scene& Scene::Draw(const Upp::String& CameraToUse){
 		//we must render all game object by distance To do proper blending (gestion of alpha)
 		Upp::ArrayMap<float,GameObject*> sorted;
 		for(const Upp::String& str : AllGamesObjects.GetKeys()){
-			if( IsGameObjectIsTypeOf<Object3D>(str)){
+			if( IsGameObjectTypeOf<Object3D>(str)){
 				Object3D& object = GetGameObject<Object3D>(str);
 				float distance = glm::length(camera.GetTransform().GetPosition() - object.GetTransform().GetPosition());
 				sorted.Add(distance,&object);

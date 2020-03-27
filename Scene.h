@@ -95,7 +95,7 @@ class Scene{
 		}
 		
 		template <class T>
-		bool IsCameraIsTypeOf(const Upp::String& _CameraName){//Return true if the game object exits and is type of template, else return false
+		bool IsCameraTypeOf(const Upp::String& _CameraName){//Return true if the game object exits and is type of template, else return false
 			if(AllCameras.Find(_CameraName) != -1){
 				try{
 					return (typeid(dynamic_cast<T&>(AllCameras.Get(_CameraName)))== typeid(T));
@@ -167,7 +167,7 @@ class Scene{
 		}
 		
 		template <class T>
-		bool IsGameObjectIsTypeOf(const Upp::String& _ObjectName){//Return true if the game object exits and is type of template, else return false
+		bool IsGameObjectTypeOf(const Upp::String& _ObjectName){//Return true if the game object exits and is type of template, else return false
 			if(AllGamesObjects.Find(_ObjectName) != -1){
 				try{
 					return (typeid(dynamic_cast<T&>(AllGamesObjects.Get(_ObjectName)))== typeid(T));
