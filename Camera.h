@@ -105,6 +105,8 @@ class CameraEuler : public Camera{
 		float MouseSensitivity = 0.1f;
 		float MovementSpeed = 15.0f;
 		
+		glm::mat4 viewMatrix;
+		
 		float Yaw = -90.0f;
 	    float Pitch = 0.0f;
 	    float Roll = 0.0f;

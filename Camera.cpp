@@ -246,9 +246,9 @@ CameraQuaterion& CameraQuaterion::ProcessMouveMouvement(float xoffset, float yof
 }
 
 //CameraEuler CLASS
-CameraEuler::CameraEuler(){transform.UpdateByEuler(Pitch,Yaw,Roll);} //Be carefull of setting scene correctly
-CameraEuler::CameraEuler(Scene& _scene){scene = &_scene;transform.UpdateByEuler(Pitch,Yaw,Roll);}
-CameraEuler::CameraEuler(Scene& _scene,const Upp::String& _name){scene = &_scene;Name = _name;transform.UpdateByEuler(Pitch,Yaw,Roll);}
+CameraEuler::CameraEuler(){transform.UpdateByEuler(Pitch,Yaw,Roll);viewMatrix = glm::lookAt(transform.GetPosition(), transform.GetPosition() + transform.GetFront(), transform.GetUp());} //Be carefull of setting scene correctly
+CameraEuler::CameraEuler(Scene& _scene){scene = &_scene;transform.UpdateByEuler(Pitch,Yaw,Roll);viewMatrix = glm::lookAt(transform.GetPosition(), transform.GetPosition() + transform.GetFront(), transform.GetUp());}
+CameraEuler::CameraEuler(Scene& _scene,const Upp::String& _name){scene = &_scene;Name = _name;transform.UpdateByEuler(Pitch,Yaw,Roll);viewMatrix = glm::lookAt(transform.GetPosition(), transform.GetPosition() + transform.GetFront(), transform.GetUp());}
 CameraEuler::CameraEuler(CameraEuler& cameraEuler) : Camera(cameraEuler){
 	MouseSensitivity = cameraEuler.MouseSensitivity;
 	MovementSpeed = cameraEuler.MovementSpeed;
@@ -272,6 +272,7 @@ CameraEuler::CameraEuler(CameraEuler& cameraEuler) : Camera(cameraEuler){
 	ActivateRoll = cameraEuler.ActivateRoll;
 	ConstraintRollEnable = cameraEuler.ConstraintRollEnable;
 	transform.UpdateByEuler(Pitch,Yaw,Roll);
+	viewMatrix = glm::lookAt(transform.GetPosition(), transform.GetPosition() + transform.GetFront(), transform.GetUp());
 }
 CameraEuler& CameraEuler::operator=(CameraEuler& cameraEuler){
 	Camera::operator=(cameraEuler);
@@ -296,6 +297,7 @@ CameraEuler& CameraEuler::operator=(CameraEuler& cameraEuler){
 	ActivateRoll = cameraEuler.ActivateRoll;
 	ConstraintRollEnable = cameraEuler.ConstraintRollEnable;
 	transform.UpdateByEuler(Pitch,Yaw,Roll);
+	viewMatrix = glm::lookAt(transform.GetPosition(), transform.GetPosition() + transform.GetFront(), transform.GetUp());
 	return *this;
 }
 CameraEuler* CameraEuler::Clone(){
@@ -506,17 +508,23 @@ bool CameraEuler::IsConstraintRollchEnable()const{
 	return ConstraintRollEnable;
 }
 glm::mat4 CameraEuler::GetViewMatrix(){
-	return glm::lookAt(transform.GetPosition(), transform.GetPosition() + transform.GetFront(), transform.GetUp());
+	
+	return viewMatrix;
 }
 
 CameraEuler& CameraEuler::LookAt(glm::vec3 const& lookTo){
+	//https://stackoverflow.com/questions/50081475/opengl-local-up-and-right-from-matrix-4x4
+	viewMatrix = glm::lookAt(transform.GetPosition(), lookTo, transform.GetUp());
+	transform.SetFront(glm::vec3(viewMatrix[0][2], viewMatrix[1][2], viewMatrix[2][2]));
+	transform.SetUp(glm::vec3(viewMatrix[0][1], viewMatrix[1][1], viewMatrix[2][1]));
+	transform.SetRight(glm::vec3(viewMatrix[0][0], viewMatrix[1][0], viewMatrix[2][0]));
 	//Taken from https://www.gamedev.net/forums/topic/666236-converting-axis-angles-forward-right-up-to-euler/
-	transform.LookAt(lookTo);
+	/*transform.LookAt(lookTo);
 	glm::vec3 rotation = transform.GetEulerAngleFromQuaterion();
 	if(ActivatePitch)SetPitch(glm::degrees(rotation.x) );
 	if(ActivateYaw)  SetYaw(glm::degrees(rotation.y) );
 	if(ActivateRoll) SetRoll(glm::degrees(rotation.z) );
-	transform.UpdateByEuler(Pitch,Yaw,Roll);
+	transform.UpdateByEuler(Pitch,Yaw,Roll);*/
 	return *this;
 }
 
@@ -540,5 +548,6 @@ CameraEuler& CameraEuler::ProcessMouveMouvement(float xoffset, float yoffset){
 	SetYaw(Yaw + xoffset);
 	SetPitch(Pitch + yoffset);
 	transform.UpdateByEuler(Pitch,Yaw,Roll);
+	viewMatrix = glm::lookAt(transform.GetPosition(), transform.GetPosition() + transform.GetFront(), transform.GetUp());
 	return *this;
 }
