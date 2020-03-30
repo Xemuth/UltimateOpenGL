@@ -210,6 +210,10 @@ Camera& Camera::ProcessMouseScroll(float yoffset){
 	}
 	return *this;
 }
+bool Camera::ProcessKeyBoard(unsigned long Key,int count){
+	//Default keyboard handler
+	return false;
+}
 //CameraQuaterion CLASS
 
 CameraQuaterion::CameraQuaterion(){transform.SetCamera(*this);} //be carefull of setting scene correctly

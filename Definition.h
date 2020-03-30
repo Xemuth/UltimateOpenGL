@@ -15,6 +15,8 @@
 	https://github.com/izabala123
 	https://www.ultimatepp.org/forums/index.php?t=usrinfo&id=648&
 */
+
+
 #include <plugin/Assimp/assimp.h>
 //GLM Package used to do a lot of mathematical function
 #define GLM_ENABLE_EXPERIMENTAL

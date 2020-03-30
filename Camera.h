@@ -78,6 +78,7 @@ class Camera{
 		virtual Camera& LookAt(glm::vec3 const& lookTo);
 		
 		virtual Camera& ProcessKeyboardMouvement(Camera_Movement direction)=0;
+		virtual bool ProcessKeyBoard(unsigned long Key,int count); //To process key
 		virtual Camera& ProcessMouveMouvement(float xoffset, float yoffset)=0;
 		virtual Camera& ProcessMouseScroll(float yoffset);
 };
