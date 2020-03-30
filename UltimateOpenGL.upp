@@ -1,4 +1,4 @@
-description "UltimateOpenGL V4  3D Engine to be used with Ultimate++ Framework !\377BI255,42,200";
+description "UltimateOpenGL V5  3D Engine of Ultimate++ Framework !\377BI255,42,200";
 
 uses
 	Core,

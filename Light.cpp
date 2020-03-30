@@ -13,7 +13,7 @@ Light& Light::SetName(const Upp::String& _name) {
 	name = _name;
 	return *this;
 }
-Upp::String Light::GetName(){
+Upp::String Light::GetName()const{
 	return name;
 }
 Light& Light::SetOnDrawFunction(LIGHT_FUNCTION myFunction){
@@ -109,19 +109,22 @@ DirLight& DirLight::operator=(DirLight& dirLight){
 DirLight* DirLight::Clone(){
 	return new DirLight(*this);
 }
-const Upp::String& DirLight::GetShaderDataStructure(){ //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+const Upp::String DirLight::GetShaderDataStructure()const{ //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 	return LIGHT_DIR_STRUCT();
 }
-const Upp::String& DirLight::GetShaderColorCalculationFunction(){ //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+const Upp::String DirLight::GetShaderNameStructure()const{
+	return "DirLight";
+}
+const Upp::String DirLight::GetShaderColorCalculationFunction()const{ //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 	return LIGHT_DIR_COLOR_FUNCTION();
 }
-const Upp::String& DirLight::GetShaderColorPrototypeFunction(){//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+const Upp::String DirLight::GetShaderColorPrototypeFunction()const{//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 	return LIGHT_DIR_COLOR_PROTOTYPE();
 }
-const Upp::String& DirLight::GetShaderTextureCalculationFunction(){ //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+const Upp::String DirLight::GetShaderTextureCalculationFunction()const{ //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 	return LIGHT_DIR_TEXTURE_FUNCTION();
 }
-const Upp::String& DirLight::GetShaderTexturePrototypeFunction(){//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+const Upp::String DirLight::GetShaderTexturePrototypeFunction()const{//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 	return LIGHT_DIR_TEXTURE_PROTOTYPE();
 }
 
@@ -131,7 +134,6 @@ void DirLight::SentToShader(Shader& shader,const Upp::String& CustomName){
 		shader.SetVec3(nameToUse +".ambient",ambient);
 		shader.SetVec3(nameToUse +".diffuse",diffuse);
 		shader.SetVec3(nameToUse +".specular",specular);
-
 		shader.SetVec3(nameToUse +".direction",direction);
 	}
 }
@@ -215,19 +217,22 @@ SpotLight& SpotLight::operator=(SpotLight& spotLight){//Be carefull of setting t
 SpotLight* SpotLight::Clone(){
 	return new SpotLight(*this);
 }
-const Upp::String& SpotLight::GetShaderDataStructure(){ //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+const Upp::String SpotLight::GetShaderDataStructure()const{ //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 	return LIGHT_SPOT_STRUCT();
 }
-const Upp::String& SpotLight::GetShaderColorCalculationFunction(){ //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+const Upp::String SpotLight::GetShaderNameStructure()const{
+	return "SpotLight";
+}
+const Upp::String SpotLight::GetShaderColorCalculationFunction()const{ //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 	return LIGHT_SPOT_COLOR_FUNCTION();
 }
-const Upp::String& SpotLight::GetShaderColorPrototypeFunction(){//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+const Upp::String SpotLight::GetShaderColorPrototypeFunction()const{//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 	return LIGHT_SPOT_COLOR_PROTOTYPE();
 }
-const Upp::String& SpotLight::GetShaderTextureCalculationFunction(){ //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+const Upp::String SpotLight::GetShaderTextureCalculationFunction()const{ //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 	return LIGHT_SPOT_TEXTURE_FUNCTION();
 }
-const Upp::String& SpotLight::GetShaderTexturePrototypeFunction(){//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+const Upp::String SpotLight::GetShaderTexturePrototypeFunction()const{//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 	return LIGHT_SPOT_TEXTURE_PROTOTYPE();
 }
 
@@ -366,19 +371,22 @@ PointLight& PointLight::operator=(PointLight& _pointLight){//Be carefull of sett
 PointLight* PointLight::Clone(){
 	return new PointLight(*this);
 }
-const Upp::String& PointLight::GetShaderDataStructure(){ //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+const Upp::String PointLight::GetShaderDataStructure()const{ //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 	return LIGHT_POINT_STRUCT();
 }
-const Upp::String& PointLight::GetShaderColorCalculationFunction(){ //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+const Upp::String PointLight::GetShaderNameStructure()const{
+	return "PointLight";
+}
+const Upp::String PointLight::GetShaderColorCalculationFunction()const{ //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 	return LIGHT_POINT_COLOR_FUNCTION();
 }
-const Upp::String& PointLight::GetShaderColorPrototypeFunction(){//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+const Upp::String PointLight::GetShaderColorPrototypeFunction()const{//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 	return LIGHT_POINT_COLOR_PROTOTYPE();
 }
-const Upp::String& PointLight::GetShaderTextureCalculationFunction(){ //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+const Upp::String PointLight::GetShaderTextureCalculationFunction()const{ //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 	return LIGHT_POINT_TEXTURE_FUNCTION();
 }
-const Upp::String& PointLight::GetShaderTexturePrototypeFunction(){//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+const Upp::String PointLight::GetShaderTexturePrototypeFunction()const{//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 	return LIGHT_POINT_TEXTURE_PROTOTYPE();
 }
 

@@ -33,6 +33,7 @@ class Shader {
 		
 		void IncreasePositionVariable(int position,int lenght);
 		int InsertInShader(Upp::String& shader, int position,const Upp::String& s);
+		int InsertIfNotFind(Upp::String& shader,int position,const Upp::String& s); //return -1 if not inserted
 		int RemoveInsertInShader(Upp::String& shader, const Upp::String& remove,const Upp::String& s, int position =0);
 	public:
 	    Shader();
@@ -69,7 +70,7 @@ class Shader {
 		
 		bool AssignSimpleShader(); //Assign a simple shader wich just get model matrix and view matrix
 		bool AssignSimpleShaderMaterial(const Material* material); //Craete and assign a simple shader wich can show texture
-		bool AssignSimpleShaderMaterialLights(Upp::ArrayMap<Upp::String, Light>& AllSceneLights,const Material* material);
+		bool AssignSimpleShaderMaterialLights(const Upp::ArrayMap<Upp::String, Light>& AllSceneLights,const Material* material);
 		
 		Shader& Use();
 		Shader& Unbind();
@@ -105,7 +106,7 @@ class Shader {
 			
 			FGO_CustomMain = 0x200
 		};
-		Upp::String GenerateFragmentShader(unsigned int FragmentGenerationOption,const Material* material = nullptr,const Upp::VectorMap<Upp::String, Light>* AllSceneLights = nullptr,const Upp::Vector<Upp::String>* In = nullptr,const Upp::Vector<Upp::String>* Out = nullptr,const Upp::Vector<Upp::String>* Uniform = nullptr,const Upp::Vector<Upp::String>* Structure = nullptr,const Upp::Vector<Upp::String>* Function = nullptr,const Upp::String* Main = nullptr);
+		Upp::String GenerateFragmentShader(unsigned int FragmentGenerationOption,const Material* material = nullptr,const Upp::ArrayMap<Upp::String, Light>* AllSceneLights = nullptr,const Upp::Vector<Upp::String>* In = nullptr,const Upp::Vector<Upp::String>* Out = nullptr,const Upp::Vector<Upp::String>* Uniform = nullptr,const Upp::Vector<Upp::String>* Structure = nullptr,const Upp::Vector<Upp::String>* Function = nullptr,const Upp::String* Main = nullptr);
 		
 		
 };

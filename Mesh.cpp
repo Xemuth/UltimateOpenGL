@@ -268,7 +268,7 @@ Mesh& Mesh::LoadDefaultIndices(){
     }
     return *this;
 }
-Mesh& Mesh::Draw(int MeshNumber,glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform,bool DifferentShader, bool DifferentMaterial){
+Mesh& Mesh::Draw(int MeshNumber,glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform,Camera& camera,bool DifferentShader, bool DifferentMaterial){
 	if(IsLoaded()){
 		shader.Use();
 		model = GetTransform().GetModelMatrice(); // glm::translate(model,GetTransform().GetPosition())*glm::mat4_cast(GetTransform().GetQuaterion())*GetTransform().GetModelMatrixScaller();
@@ -284,6 +284,12 @@ Mesh& Mesh::Draw(int MeshNumber,glm::mat4 model,glm::mat4 view,glm::mat4 project
 		        material->Use();
 				material->SentToShader(shader);
 		    }
+	    }
+	    if(GetObject3D().GetScene().GetAllLights().GetCount() > 0){
+	        shader.SetVec3("viewPos",camera.GetTransform().GetPosition());
+			for(const Upp::String& str : GetObject3D().GetScene().GetAllLights().GetKeys()){
+				GetObject3D().GetScene().GetAllLights().Get(str).SentToShader(shader);
+			}
 	    }
 	    //glLineWidth(2.5); //Allow user to change LineWidth
 	    glBindVertexArray(VAO);

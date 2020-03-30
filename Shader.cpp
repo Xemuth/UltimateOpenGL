@@ -1,6 +1,6 @@
 #include "Shader.h"
 #include "Material.h"
-
+#include "Light.h"
 Upp::String IncludeShader(Upp::String& shader){
 	shader.Replace("MATERIAL_TEXTURE_STRUCT()",MATERIAL_TEXTURE_STRUCT());
 	shader.Replace("MATERIAL_COLOR_STRUCT()",MATERIAL_COLOR_STRUCT());
@@ -344,7 +344,12 @@ int Shader::InsertInShader(Upp::String& shader, int position,const Upp::String& 
 	}
 	return 0;
 }
-
+int Shader::InsertIfNotFind(Upp::String& shader,int position,const Upp::String& s){ //return -1 if not inserted
+	if(shader.Find(s) == -1){
+		return InsertInShader(shader,position,s);
+	}
+	return -1;
+}
 int Shader::RemoveInsertInShader(Upp::String& shader, const Upp::String& remove,const Upp::String& s, int position){
 	if(shader.Find(remove,position) != -1){
 		int pos = shader.Find(remove,position);
@@ -384,6 +389,7 @@ Upp::String Shader::GenerateVertexShader(unsigned int VertexGenerationOption,con
 				
 				InsertInShader(ShadV, OutPosition,"out vec3 FragPos;\n");
 				InsertInShader(ShadV, OutPosition,"out vec4 Colors;\n");
+				InsertInShader(ShadV, OutPosition,"out vec3 normal;\n");
 				
 				InsertInShader(ShadV, UniformPosition,"uniform mat4 view;\n");
 				InsertInShader(ShadV, UniformPosition,"uniform mat4 projection;\n");
@@ -391,6 +397,7 @@ Upp::String Shader::GenerateVertexShader(unsigned int VertexGenerationOption,con
 				
 				InsertInShader(ShadV, MainPosition,"FragPos = vec3(model * vec4(aPos, 1.0));\n");
 				InsertInShader(ShadV, MainPosition,"Colors = aColors;\n");
+				InsertInShader(ShadV, MainPosition,"normal = aNorm;\n");
 				InsertInShader(ShadV, MainPosition,"gl_Position = projection * view * model * vec4(aPos, 1.0f);\n");
 			}
 			if(VertexGenerationOption & VGO_UseMaterialObject && material){
@@ -451,7 +458,7 @@ Upp::String Shader::GenerateVertexShader(unsigned int VertexGenerationOption,con
 	}
 	return ShadV;
 }
-Upp::String Shader::GenerateFragmentShader(unsigned int FragmentGenerationOption,const Material* material,const Upp::VectorMap<Upp::String, Light>* AllSceneLights,const Upp::Vector<Upp::String>* In,const Upp::Vector<Upp::String>* Out,const Upp::Vector<Upp::String>* Uniform,const Upp::Vector<Upp::String>* Structure,const Upp::Vector<Upp::String>* Function,const Upp::String* Main){
+Upp::String Shader::GenerateFragmentShader(unsigned int FragmentGenerationOption,const Material* material,const Upp::ArrayMap<Upp::String, Light>* AllSceneLights,const Upp::Vector<Upp::String>* In,const Upp::Vector<Upp::String>* Out,const Upp::Vector<Upp::String>* Uniform,const Upp::Vector<Upp::String>* Structure,const Upp::Vector<Upp::String>* Function,const Upp::String* Main){
 	Upp::String ShadF = BasicShaders.Get("Simple_Fragment_Shader");
 	if(FragmentGenerationOption){
 		InPosition = ShadF.FindAfter("//IN_VARIABLE\n");
@@ -471,6 +478,7 @@ Upp::String Shader::GenerateFragmentShader(unsigned int FragmentGenerationOption
 				*/
 				InsertInShader(ShadF, InPosition,"in vec3 FragPos;\n");
 				InsertInShader(ShadF, InPosition,"in vec4 Colors;\n");
+				
 				InsertInShader(ShadF, OutPosition,"out vec4 FragColor;\n");
 				InsertInShader(ShadF, MainPosition,"FragColor = Colors;\n");
 			}
@@ -481,13 +489,37 @@ Upp::String Shader::GenerateFragmentShader(unsigned int FragmentGenerationOption
 				*/
 				InsertInShader(ShadF, StructurePosition, material->GetShaderDataStructure());
 				InsertInShader(ShadF, InPosition, "in vec2 TextureCoordinate;\n");
-				InsertInShader(ShadF, UniformPosition,"uniform " + material->GetNameOfStructure() + " " + material->GetName()+";\n");
+				InsertInShader(ShadF, UniformPosition,"uniform " + material->GetShaderNameStructure() + " " + material->GetName()+";\n");
 				RemoveInsertInShader(ShadF,"FragColor = Colors;\n",material->GetCalculationCode(),ShadF.FindAfter("//CUSTOM_MAIN\n"));
 			}
 			if((FragmentGenerationOption & FGO_LoadLight) && AllSceneLights){
 				/*
 					Prepare necessary things relative to Light object (Function / Structure)
 				*/
+				InsertInShader(ShadF, UniformPosition,"uniform vec3 viewPos;\n");
+				bool useMaterial = false;
+				if(FGO_UseMaterialObject && material){
+					if(typeid(*material) == typeid(Texture2D)){
+						useMaterial =true;
+					}
+				}
+				RemoveInsertInShader(ShadF,"FragColor = Colors;\n","");
+				RemoveInsertInShader(ShadF,material->GetCalculationCode(),"vec3 norm = normalize(normal);\nvec3 viewDir = normalize(viewPos - FragPos);\nvec4 result;\n");
+				
+				for(const Upp::String& str : AllSceneLights->GetKeys()){
+					const Light& t = AllSceneLights->Get(str);
+
+					InsertIfNotFind(ShadF,StructurePosition,t.GetShaderDataStructure());
+					
+					InsertIfNotFind(ShadF,FunctionPrototypePosition,((useMaterial)? (t.GetShaderTexturePrototypeFunction()):(t.GetShaderColorPrototypeFunction())));
+					InsertIfNotFind(ShadF,FunctionDeclarationPosition,((useMaterial)?(t.GetShaderTextureCalculationFunction()):(t.GetShaderColorCalculationFunction())));
+					InsertInShader(ShadF, InPosition, "in vec3 normal;\n");
+					InsertInShader(ShadF,UniformPosition,"uniform " + t.GetShaderNameStructure() + " " + t.GetName()+";\n");
+					
+					if(material && useMaterial) InsertInShader(ShadF, MainPosition,"result += CalcTextureDirLight(" + material->GetName() +","+ t.GetName() +", norm, viewDir);\n");
+					else if(material)	InsertInShader(ShadF, MainPosition,"result += CalcColorDirLight(" + material->GetName() +","+ t.GetName() +", norm, viewDir);\n");
+				}
+				InsertInShader(ShadF, MainPosition,"FragColor = result;\n");
 			}
 			if((FragmentGenerationOption & FGO_CustomIn) && In){
 				/*
@@ -554,9 +586,12 @@ bool Shader::AssignSimpleShaderMaterial(const Material* material){ //Craete and 
 	AddShader("VERTEX",ST_VERTEX, GenerateVertexShader(VGO_DoBasics| VGO_UseMaterialObject,material));
 	return Load(true);
 }
-bool Shader::AssignSimpleShaderMaterialLights(Upp::ArrayMap<Upp::String, Light>& AllSceneLights,const Material* material){
-	
-	return false;
+bool Shader::AssignSimpleShaderMaterialLights(const Upp::ArrayMap<Upp::String, Light>& AllSceneLights,const Material* material){
+	Unload();
+	shaders.Clear();
+	AddShader("VERTEX",ST_VERTEX, GenerateVertexShader(VGO_DoBasics| VGO_UseMaterialObject,material));
+	AddShader("FRAGMENT",ST_FRAGMENT, GenerateFragmentShader(FGO_DoBasics | FGO_UseMaterialObject | FGO_LoadLight,material,&AllSceneLights));
+	return Load(true);
 }
 bool Shader::Reload(bool autoGenerated){
 	Unload();

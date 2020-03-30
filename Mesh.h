@@ -45,6 +45,6 @@ class Mesh{
         bool ReadData(Upp::Vector<float>& data, ReaderParameters& readerParameter, bool UseMaterialColor = false);
         Mesh& Load(int MeshNumber);
         Mesh& LoadDefaultIndices();
-        Mesh& Draw(int MeshNumber,glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4,bool DifferentShader = false, bool DifferentMaterial = false);
+        Mesh& Draw(int MeshNumber,glm::mat4 model,glm::mat4 view,glm::mat4 projection,glm::mat4 transform,Camera& camera,bool DifferentShader = false, bool DifferentMaterial = false);
 };
 #endif

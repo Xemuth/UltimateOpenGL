@@ -14,9 +14,9 @@ class Light
 		
 		bool drawable = true;
 		
-		glm::vec3 ambient=glm::vec3(0.05f, 0.05f, 0.05f);
-	    glm::vec3 diffuse=glm::vec3(0.8f, 0.8f, 0.8f);
-	    glm::vec3 specular=glm::vec3(1.0f,1.0f,1.0f);
+		glm::vec3 ambient=glm::vec3(0.18f, 0.18f, 0.18f); //puissance de la lumière
+	    glm::vec3 diffuse=glm::vec3(0.8f, 0.8f, 0.8f); //puisance de diffusion
+	    glm::vec3 specular=glm::vec3(0.3f,0.3f,0.3f); //puissance des reflets
 	    
 	public:
 		virtual ~Light();
@@ -27,13 +27,13 @@ class Light
 			that will allow a proper calculation of lighting during the generation of custom
 			shader
 		*/
-		virtual const Upp::String& GetShaderDataStructure() = 0; //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+		virtual const Upp::String GetShaderDataStructure()const = 0; //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+		virtual const Upp::String GetShaderNameStructure()const = 0;
+		virtual const Upp::String GetShaderColorCalculationFunction()const = 0; //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+		virtual const Upp::String GetShaderColorPrototypeFunction()const = 0;//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 		
-		virtual const Upp::String& GetShaderColorCalculationFunction() = 0; //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
-		virtual const Upp::String& GetShaderColorPrototypeFunction() = 0;//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
-		
-		virtual const Upp::String& GetShaderTextureCalculationFunction() = 0; //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
-		virtual const Upp::String& GetShaderTexturePrototypeFunction() = 0;//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+		virtual const Upp::String GetShaderTextureCalculationFunction()const = 0; //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+		virtual const Upp::String GetShaderTexturePrototypeFunction()const = 0;//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 		
 		/*
 			This one allow you to define how you want to send data to your shader
@@ -44,7 +44,7 @@ class Light
 		Scene& GetScene(); //Raise Assertion in case of no scene setted !
 		
 		Light& SetName(const Upp::String& _name);
-		Upp::String GetName();
+		Upp::String GetName()const;
 		
 		Light& SetOnDrawFunction(LIGHT_FUNCTION myFunction);
 		LIGHT_FUNCTION GetOnDrawFunction();
@@ -83,13 +83,13 @@ class DirLight : public Light
 		
 		DirLight& operator=(DirLight& dirLight);
 		virtual DirLight* Clone();
-		virtual const Upp::String& GetShaderDataStructure(); //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+		virtual const Upp::String GetShaderDataStructure()const; //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+		virtual const Upp::String GetShaderNameStructure()const;
+		virtual const Upp::String GetShaderColorCalculationFunction()const; //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+		virtual const Upp::String GetShaderColorPrototypeFunction()const;//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 		
-		virtual const Upp::String& GetShaderColorCalculationFunction(); //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
-		virtual const Upp::String& GetShaderColorPrototypeFunction();//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
-		
-		virtual const Upp::String& GetShaderTextureCalculationFunction(); //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
-		virtual const Upp::String& GetShaderTexturePrototypeFunction();//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+		virtual const Upp::String GetShaderTextureCalculationFunction()const; //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+		virtual const Upp::String GetShaderTexturePrototypeFunction()const;//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 		
 		virtual void SentToShader(Shader& shader,const Upp::String& CustomName = "");
 		
@@ -119,13 +119,13 @@ class SpotLight : public Light
 		
 		SpotLight& operator=(SpotLight& spotLight);//Be carefull of setting the Scene
 		virtual SpotLight* Clone();
-		virtual const Upp::String& GetShaderDataStructure(); //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+		virtual const Upp::String GetShaderDataStructure()const; //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+		virtual const Upp::String GetShaderNameStructure()const;
+		virtual const Upp::String GetShaderColorCalculationFunction()const; //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+		virtual const Upp::String GetShaderColorPrototypeFunction()const;//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 		
-		virtual const Upp::String& GetShaderColorCalculationFunction(); //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
-		virtual const Upp::String& GetShaderColorPrototypeFunction();//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
-		
-		virtual const Upp::String& GetShaderTextureCalculationFunction(); //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
-		virtual const Upp::String& GetShaderTexturePrototypeFunction();//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+		virtual const Upp::String GetShaderTextureCalculationFunction()const; //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+		virtual const Upp::String GetShaderTexturePrototypeFunction()const;//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 		
 		virtual void SentToShader(Shader& shader,const Upp::String& CustomName = "");
 		
@@ -166,13 +166,14 @@ class PointLight : public Light
 		virtual PointLight* Clone();
 		PointLight& operator=(PointLight& _pointLight);//Be carefull of setting the Scene
 		
-		virtual const Upp::String& GetShaderDataStructure(); //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+		virtual const Upp::String GetShaderDataStructure()const; //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+		virtual const Upp::String GetShaderNameStructure()const;
 		
-		virtual const Upp::String& GetShaderColorCalculationFunction(); //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
-		virtual const Upp::String& GetShaderColorPrototypeFunction();//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+		virtual const Upp::String GetShaderColorCalculationFunction()const; //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+		virtual const Upp::String GetShaderColorPrototypeFunction()const;//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 		
-		virtual const Upp::String& GetShaderTextureCalculationFunction(); //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
-		virtual const Upp::String& GetShaderTexturePrototypeFunction();//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+		virtual const Upp::String GetShaderTextureCalculationFunction()const; //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
+		virtual const Upp::String GetShaderTexturePrototypeFunction()const;//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 		
 		virtual void SentToShader(Shader& shader,const Upp::String& CustomName = "");
 		

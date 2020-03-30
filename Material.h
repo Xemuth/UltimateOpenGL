@@ -35,8 +35,11 @@ class Material {
 		virtual bool IsLoaded()const = 0;
 		virtual const Material& Use()const = 0;
 		
-		virtual Upp::String GetNameOfStructure()const= 0;
+		
+		/*** Obsolete ***/
+		
 		virtual Upp::String GetCalculationCode(const Upp::String& CustomName ="")const= 0;
+		virtual Upp::String GetShaderNameStructure()const= 0;
 		virtual Upp::String GetShaderDataStructure()const= 0; //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 		virtual Upp::String GetShaderMaterialFunction()const= 0; //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 		virtual Upp::String GetShaderMaterialPrototypeFunction()const= 0;//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
@@ -68,9 +71,9 @@ class Color_Material : public Material{ //this one is named :Color_Material inst
 		virtual Color_Material& Reload();
 		virtual bool IsLoaded()const;
 		virtual const Color_Material& Use()const;
-		
-		virtual Upp::String GetNameOfStructure()const;
+
 		virtual Upp::String GetCalculationCode(const Upp::String& CustomName ="")const;
+		virtual Upp::String GetShaderNameStructure()const;
 		virtual Upp::String GetShaderDataStructure()const; //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 		virtual Upp::String GetShaderMaterialFunction()const; //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 		virtual Upp::String GetShaderMaterialPrototypeFunction()const;//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
@@ -139,8 +142,9 @@ class Texture2D : public Material{
 		virtual bool IsLoaded()const;
 		virtual const Texture2D& Use()const;
 		
-		virtual Upp::String GetNameOfStructure()const;
+		
 		virtual Upp::String GetCalculationCode(const Upp::String& CustomName ="")const;
+		virtual Upp::String GetShaderNameStructure()const;
 		virtual Upp::String GetShaderDataStructure()const; //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 		virtual Upp::String GetShaderMaterialFunction()const; //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
 		virtual Upp::String GetShaderMaterialPrototypeFunction()const;//This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)

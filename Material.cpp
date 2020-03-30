@@ -105,7 +105,7 @@ const Color_Material& Color_Material::Use()const{
 	return  *this;
 }
 
-Upp::String Color_Material::GetNameOfStructure()const{
+Upp::String Color_Material::GetShaderNameStructure()const{
 	return "MaterialColor";
 }
 Upp::String Color_Material::GetCalculationCode(const Upp::String& CustomName)const{
@@ -401,7 +401,7 @@ Upp::String Texture2D::GetCalculationCode(const Upp::String& CustomName)const{
 	Upp::String nameToUse = (CustomName.GetCount()>0)? CustomName : name;
 	return "FragColor = texture(" + nameToUse + ".diffuse, TextureCoordinate);";
 }
-Upp::String Texture2D::GetNameOfStructure()const{
+Upp::String Texture2D::GetShaderNameStructure()const{
 	return "MaterialTexture";
 }
 Upp::String Texture2D::GetShaderDataStructure()const{ //This one must be rewritted to sent the custom data structure defined by the user (See every .GLSL files in UOGL)
