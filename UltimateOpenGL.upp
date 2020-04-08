@@ -14,6 +14,8 @@ file
 	Definition.h,
 	UltimateOpenGL.h,
 	UltimateOpenGL.cpp,
+	UOGLCtrl.h,
+	UOGLCtrl.cpp,
 	UtilityObject readonly separator,
 	Material.h,
 	Material.cpp,
@@ -46,7 +48,10 @@ file
 	Simps\SimpleFragment.glsl highlight cpp,
 	OtherLibs readonly separator,
 	stb_image.cpp,
-	stb_image.h;
+	stb_image.h,
+	srcdoc.tpp,
+	src.tpp,
+	srcimp.tpp;
 
 mainconfig
 	"" = "";

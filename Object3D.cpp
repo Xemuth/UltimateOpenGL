@@ -99,10 +99,10 @@ Object3D& Object3D::LoadModel(const Upp::String& path){ //Used to load 3D Model
 		aiProcess_RemoveRedundantMaterials |	// remove redundant materials
 		aiProcess_GenUVCoords |					// convert spherical, cylindrical, box and planar mapping to proper UVs
 		aiProcess_TransformUVCoords |			// pre-process UV transformations (scaling, translation ...)
-		//aiProcess_FindInstances |				// search for instanced meshes and remove them by references to one master
+		aiProcess_FindInstances |				// search for instanced meshes and remove them by references to one master
 		aiProcess_LimitBoneWeights |			// limit bone weights to 4 per vertex
 		aiProcess_OptimizeMeshes |				// join small meshes, if possible;
-		//aiProcess_PreTransformVertices |
+		aiProcess_PreTransformVertices |
 		aiProcess_GenSmoothNormals |			// generate smooth normal vectors if not existing
 		aiProcess_SplitLargeMeshes |			// split large, unrenderable meshes into sub-meshes
 		aiProcess_Triangulate |					// triangulate polygons with more than 3 edges

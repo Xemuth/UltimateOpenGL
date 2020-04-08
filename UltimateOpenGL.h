@@ -59,7 +59,7 @@ class UltimateOpenGL_Context{
 		int GetFPS();
 		
 		//ScreenManagement
-		void SetScreenSize(float ScreenHeight,float ScreenWidth);
+		UltimateOpenGL_Context& SetScreenSize(float ScreenHeight,float ScreenWidth);
 		Upp::Sizef GetScreenSize();
 		
 		//scenes Management

@@ -18,7 +18,7 @@ Upp::String Material::GetName()const{
 	return name;
 }
 Material& Material::SetName(const Upp::String& _name){
-	name = _name;
+	name = "Texture_"+_name;
 	return *this;
 }
 float Material::GetShininess(){
@@ -188,6 +188,7 @@ Texture2D::~Texture2D(){
 Texture2D& Texture2D::LoadDefaultname(){
 	name = Path.Right(Path.GetCount()- Path.ReverseFind("/") -1);
 	name = name.Left(name.Find("."));
+	SetName(name);
 	LOG("Info : Texture2D::LoadDefaultname() default name have been setted : \""+ name +"\"");
 	return *this;
 }
