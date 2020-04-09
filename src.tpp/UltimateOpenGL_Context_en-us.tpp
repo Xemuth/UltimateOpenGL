@@ -57,7 +57,6 @@ emplate]_<[@(0.0.255) class...]_[*@4 Args]>_[_^Scene^ Scene][@(0.0.255) `&]_[* C
 [s2;%% Create a scene, you must provide the Type of scene you want 
 to create, If it`'s the first scene you created then it will 
 be defined as the ActiveScene. :&]
-[s2;%% &]
 [s2;%% -|-|[%-_^Scene^1 Scene][@(28.42.200)1 `& ][1 scene `= context.][%-*1 CreateScene][1 <][%-_^Scene^1 S
 cene][1 >(][@(28.127.0)1 `"MyFirstScene`"][1 );]&]
 [s3;%% &]
@@ -104,7 +103,6 @@ MaterialName], [*@4 Args][@(0.0.255) `&`&...]_args)&]
 you want to create. By default Two material are provided in UOGL 
 : Color`_Material and Texture2D. To create a Texture2D by example, 
 you must do:&]
-[s0; &]
 [s2;%% [%- -|-|][%-_^Scene^1 Texture2D][@(28.42.200)1 `&][1  myTexture `= context.][%-*1 CreateMa
 terial][1 <][%-_^Scene^1 Texture2D][1 >(][@(28.127.0)1 `"Sand`"][1 ,][@(28.127.0)1 `"Path 
 of Texture`"][1 );]&]
@@ -116,7 +114,6 @@ t]_[_^Upp`:`:String^ Upp`::String][@(0.0.255) `&]_[*@3 `_MaterialName],[*@4 T][@
 ]_[*@3 MaterialToAdd])&]
 [s2;%% Add a new material from an existing one, you must provide 
 the type of material you want to copy :&]
-[s0;%% &]
 [s2;%% -|-|[%-_^Scene^1 Texture2D][@(28.42.200)1 `&][1  myTexture2 `= context.][%-*1 AddMateria
 l][1 <][%-_^Scene^1 Texture2D][1 >(][@(28.127.0)1 `"Sand`"][1 ,ReferenceOfTexture2D);]&]
 [s3;%% &]
@@ -127,7 +124,6 @@ pp`::String][@(0.0.255) `&]_[*@3 `_MaterialName])&]
 [s2;%% Return material. you must provide the type of material you 
 want. Raise UoglException if materialName is unknow. Raise UoglException 
 if cast of material have gone wrong.&]
-[s2;%% &]
 [s2;%% -|-|[%-_^Scene^1 Texture2D][@(28.42.200)1 `&][1  texture `= context.][%-*1 AddMaterial][1 <
 ][%-_^Scene^1 Texture2D][1 >(][@(28.127.0)1 `"Sand`"][1 ,ReferenceOfTexture2D);]&]
 [s2;%% &]
@@ -137,7 +133,6 @@ emplate]_<[@(0.0.255) class]_[*@4 T]>_[@(0.0.255) bool]_[* IsMaterialTypeOf]([@(
 nst]_[_^Upp`:`:String^ Upp`::String][@(0.0.255) `&]_[*@3 `_MaterialName])&]
 [s2;%% Return true if the type specified in template parameter are 
 the same of the material looked for:&]
-[s2;%% &]
 [s0;%% -|-|[%-@(0.0.255)1 if][%-1 (context][%- .][%-*1 IsMaterialTypeOf][1 <][%-_^Scene^1 Texture2D
 >][1 (][@(28.127.0)1 `"Sand`"][1 )) ][@(28.127.0)1 //Will return true]&]
 [s3;%% &]
@@ -174,7 +169,7 @@ SceneToDraw and a CameraToUse.&]
 [s6;%% &]
 [s5;:UltimateOpenGL`_Context`:`:Initialise`(`): [@(0.0.255) void]_[* Initialise]()&]
 [s2;%% Initialise OpenGL parameters like Blending (simulation of 
-transparency) or Multisample. [@(255.42.0) Must be called before 
-drawing anything].&]
+transparency) or Multisample. [@6 Must be called before drawing 
+anything.]&]
 [s3;%% &]
 [s2;%% ]]
