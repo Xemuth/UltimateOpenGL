@@ -94,6 +94,7 @@ double UltimateOpenGL_Context::GetDeltaTime(){
 UltimateOpenGL_Context& UltimateOpenGL_Context::SetScreenSize(float ScreenHeight,float ScreenWidth){
 	ScreenSize.cx = ScreenWidth;
 	ScreenSize.cy = ScreenHeight;
+	return *this;
 }
 Upp::Sizef UltimateOpenGL_Context::GetScreenSize(){
 	return ScreenSize;
