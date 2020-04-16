@@ -80,6 +80,24 @@ class UltimateOpenGL_Context{
 			}
 		}
 		
+		Scene& AddScene(const Upp::String& name, Scene& sceneToCopy){
+			if(AllScenes.Find(name) == -1){
+				Scene& s= AllScenes.Create<Scene>(name,sceneToCopy);
+				s.SetName(name);
+				s.SetContext(*this);
+				if(ActiveScene == nullptr) ActiveScene = &s;
+				return s;
+			}else{
+				if(&AllScenes.Get(name) == ActiveScene) ActiveScene = nullptr;
+				AllScenes.Remove(AllScenes.Find(name));
+				Scene& s= AllScenes.Create<Scene>(name,sceneToCopy);
+				s.SetName(name);
+				s.SetContext(*this);
+				if(ActiveScene == nullptr) ActiveScene = &s;
+				return s;
+			}
+		}
+		
 		Scene& GetActiveScene();
 		Scene& GetScene(const Upp::String& name);
 		Upp::ArrayMap<Upp::String,Scene>& GetAllScene();

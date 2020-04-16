@@ -61,8 +61,13 @@ be defined as the ActiveScene. :&]
 cene][1 >(][@(28.127.0)1 `"MyFirstScene`"][1 );]&]
 [s3;%% &]
 [s6;%% &]
-[s5;:UltimateOpenGL`_Context`:`:GetActiveScene`(`): [_^Scene^ Scene][@(0.0.255) `&]_[* GetA
-ctiveScene]()&]
+[s5; [_^Scene^ Scene][@(0.0.255) `&][%%  ][* AddScene]([@(0.0.255) const]_[_^Upp`:`:String^ Upp`:
+:String][@(0.0.255) `&]_[*@3 name], [_^Scene^ Scene][@(0.0.255) `& ]SceneToCopy)&]
+[s2; -|Copy and add the scene to the context. It also set context 
+and name to the new created scene.&]
+[s0;2 &]
+[s6;%% &]
+[s0; [_^Scene^ Scene][@(0.0.255) `&]_[* GetActiveScene]()&]
 [s2;%% return the active Scene (by default the first created is the 
 active one) if no scene have been created it will raise an [_@(255.42.0) assertion].
 &]
