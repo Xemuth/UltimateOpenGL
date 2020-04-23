@@ -19,7 +19,7 @@ allow to set color of background (real skybox will be implemented
 in futurs).While drawing process, Draw method of scene will be 
 called. While loading process, Load method will be called. Many 
 of GamesObject will requiere access to context wich mean you 
-must ensure the scene have a valid context  UOGL`_context pointers 
+must ensure the scene have a valid context UOGL`_context pointers 
 stored in context variable. This last point wont be a problem 
 is you always create your scene using the method provided by 
 UOGL`_context object ([_^Scene^ Scene][@(0.0.255) `&]_[* CreateScene]([@(0.0.255) const]_
