@@ -1,3 +1,6 @@
+
+ :warning: Ultimate OpenGL is still actually under developpement (even if last commit is 2 month old) 
+
 # UltimateOpenGL 
 UltimateOpenGL is a 3D engine intended to make 3D scenes. It's designed to be "code only". It means you don't have (at this time) any GUI to help you to create a scene with your mouse.
 Furthermore, it needs Ultimate++ Framework (A powerful C++ Framework) and the IDE used by it : [TheIDE](https://www.ultimatepp.org/index.html)
@@ -23,7 +26,6 @@ Things are coming :
 
 ## Getting Started and Showing a 3D model 
 
- :warning: Ultimate OpenGL is actually under V5 wich is still in developpement, ATM light is not handled
 
 
 ![Ex1](https://i.imgur.com/bI2kepS.png)
